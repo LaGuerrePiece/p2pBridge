@@ -47,6 +47,7 @@ struct Request {
     mapping(address => ChainBChallenge) challenges;
 }
 
+/// @title A simple Decentralized bridge
 contract BridgeDex {
     uint256 public chainId;
     address public owner;
@@ -89,6 +90,13 @@ contract BridgeDex {
         owner = _owner;
     }
 
+    /**
+     * @notice Used to lock a certain amount of a certain token before
+     * starting the bridge operation
+     *
+     * @param _amount - The amount to lock into the contract
+     * @param _tokenAContract - The ERC20 token address to lock
+     */
     function lock(uint256 _amount, address _tokenAContract) external {
         uint256 id = ++nonce;
 
@@ -113,6 +121,12 @@ contract BridgeDex {
         );
     }
 
+    /**
+     * @notice Used to withdraw the locked funds, funds can be withdraw immediatly if there is no challenger
+     * else the locker will need to wait for 7 days to unlock its funds
+     *
+     * @param _lockId - The lock id on the chain A
+     */
     function withdrawLocked(uint256 _lockId) external {
         Lock storage l = idToLock[_lockId];
 
@@ -133,6 +147,20 @@ contract BridgeDex {
         ERC20(token).transfer(msg.sender, amount);
     }
 
+    /**
+     * @notice Used to publish a bridge request on chainB
+     *
+     * @param _amount - The total amount of token to bridge
+     * @param _minBidAmount - The minimal amount the bridge seeker is willing to accept for an operation
+     * @param _date - The date corresponding to the chain A lock
+     * @param _chainAId - The id of the chain where the bridger will provide tokens
+     * @param _chainANonce - The nonce of the lock on the chain A
+     * @param _signature - The signature of the bridger for the given request
+     * @param _tokenAContract - The address of the token willing to be exchanged on chain A
+     * @param _tokenBContract - The address of the token willing to be exchanged on chain B
+     * @param _nonce - The nonce of the contract
+     * @param _fees - The amount of fee willing to be given by the sender (on a /10000 basis)
+     */
     function publishRequest(
         uint256 _amount,
         uint256 _minBidAmount,
@@ -178,6 +206,17 @@ contract BridgeDex {
         _splice(myRequests[msg.sender], _index);
     }
 
+    /**
+     * @notice Used to become the challenger of a given lock on the chainA
+     * The user first submits its challenge and needs to be accepted
+     *
+     * @param _bidAmount - The amount the provider is willing to provide to the bridger from chain B
+     * @param _chainBId - The id of the chainB
+     * @param _nonce - The nonce of the transaction
+     * @param _initialSignature - The signature provided by the the bridger on chain B (to be verified here)
+     * @param _lockId - The address which initiated the exchange of token on chain A
+     *
+     */
     function becomeChainAChallenger(
         uint256 _bidAmount,
         uint256 _chainBId,
@@ -215,6 +254,13 @@ contract BridgeDex {
         l.challenged = true;
     }
 
+    /**
+     * @notice - Used by the bridger to choose the challengers he wants to went with
+     *
+     * @param _lockId - The lock for the given transaction
+     * @param _challengerId - The id of the challenger into the challengers to accept the challenge
+     *
+     */
     function acceptChainAChallenger(uint256 _lockId, uint256 _challengerId)
         external
     {
@@ -232,6 +278,14 @@ contract BridgeDex {
         l.accepted += l.challenges[_challengerId].bidAmount;
     }
 
+    /**
+     * @notice - Used to submit the signature after being accepted for a challenge
+     *
+     * @param _challengerId - The id of our submit on the lock challenges array
+     * @param _challengerSignature - The signature for the bridger to take our funds on the chain B
+     * @param _lockId - The id of the current lock
+     * @param _initialSignature - The signature of the bridger for the given transaction on chain B
+     */
     function submitChainAChallengerSignature(
         uint256 _challengerId,
         bytes memory _challengerSignature,
@@ -262,6 +316,14 @@ contract BridgeDex {
         l.challenges[_challengerId].challengerSignature = _challengerSignature;
     }
 
+    /**
+     * @notice Used to become one of the challengers on the chain B and
+     * to deposit the tokens for becoming a challenger
+     *
+     * @param _id - the id for the mapping of the request to become challenger of
+     * @param _bidAmount - The amount to be deposited to the bridge
+     * @param _fees - The amount of fees the challenger want to keep
+     */
     function becomeChainBChallenger(
         uint256 _id,
         uint256 _bidAmount,
@@ -289,6 +351,10 @@ contract BridgeDex {
         );
     }
 
+    /**
+     * @notice - Used to withdraw the funds locked for a particular token request
+     * @param _id - The id of the challenge to withdraw the funds from
+     */
     function withdrawChainBChallenge(uint256 _id) external {
         ChainBChallenge storage challenge = idToRequest[_id].challenges[
             msg.sender
@@ -305,6 +371,14 @@ contract BridgeDex {
         ERC20(request.tokenBContract).transfer(msg.sender, amount);
     }
 
+    /**
+     * @notice Used on chain B to withdraw the funds of the provider by the bridge seeker
+     *
+     * @param _challengerSignature - The signature sent on the chain A by the challenger to become the challenger
+     * @param _bridgerSignature - The signature of the bridger for the coming request (needed by the provided to withdraw the funds on chain A)
+     * @param _challenger - The address of the challenger which accpted the bridger request
+     * @param _id - The id of the element we are going to withdraw from
+     */
     function withdrawRequest(
         bytes memory _challengerSignature,
         bytes memory _bridgerSignature,
@@ -348,6 +422,13 @@ contract BridgeDex {
         ERC20(request.tokenBContract).transfer(owner, fees / 2);
     }
 
+    /**
+     * @notice Used by the provided to withdraw its funds on the chain A
+     *
+     * @param _bridgerSignature - The last signature of the bridger allonwing the provider to withdraw its funds on chain A
+     * @param _challengeId - The id of the challenge in the challenge list
+     * @param _lockId - The id of the lock to withdraw from
+     */
     function finalWithdraw(
         bytes memory _bridgerSignature,
         uint256 _challengeId,
@@ -369,6 +450,11 @@ contract BridgeDex {
         ERC20(l.token).transfer(challenge.challenger, challenge.bidAmount);
     }
 
+    /**
+     * @notice - Used to get acces to all the address' locks at once
+     * @param _owner - The address to retrieve the locks from
+     * @return uint256[] - An array containing the address active lock ids
+     */
     function getMyLocks(address _owner)
         external
         view
@@ -377,6 +463,11 @@ contract BridgeDex {
         return myLocks[_owner];
     }
 
+    /**
+     * @notice - Used to get acces to all the address' challenges at once
+     * @param _owner - The address to retrieve the challenges from
+     * @return uint256[] - An array containing the address active challenges ids
+     */
     function getMyChallenges(address _owner)
         external
         view
@@ -385,6 +476,11 @@ contract BridgeDex {
         return myChallenges[_owner];
     }
 
+    /**
+     * @notice - Used to get the challenges of a given lock, not possible other way
+     * @param _lockId - The id of the lock to get the challenges
+     * @return - The array of the challenges for the given lock
+     */
     function getLockChallenges(uint256 _lockId)
         external
         view
@@ -393,6 +489,12 @@ contract BridgeDex {
         return idToLock[_lockId].challenges;
     }
 
+    /**
+     *
+     * @notice - Used to get the list of the request id for a given token
+     * @param _token - The address of the token contract to look for requests
+     * @return uint256[] - Array of the requests ids
+     */
     function getTokenContractRequests(address _token)
         external
         view
@@ -401,6 +503,11 @@ contract BridgeDex {
         return tokenContractToRequestId[_token];
     }
 
+    /**
+     * @notice Used to get the request ids for a given address
+     * @param _owner - The address to look for request ids
+     * @return uint256[] - The list of the request ids for a given address
+     */
     function getMyRequests(address _owner)
         external
         view
@@ -409,6 +516,11 @@ contract BridgeDex {
         return myRequests[_owner];
     }
 
+    /**
+     * @notice - Used to get the requests ids where the _owner made deposits
+     * @param _owner - The address from which to get the requests Ids of the deposits made
+     * @return - The list of the request ids where deposits where made
+     */
     function getMyDepositsIds(address _owner)
         external
         view
@@ -417,6 +529,14 @@ contract BridgeDex {
         return myDeposits[_owner];
     }
 
+    /**
+     * @notice - Used to the the formal details of a deposit on a specific token request
+     *
+     * @param _id - The id of the token request considered
+     * @param _owner - The address of the challenger to get the informations
+     *
+     * @return - The Challenge details
+     */
     function getDepositDetails(uint256 _id, address _owner)
         external
         view
@@ -425,6 +545,10 @@ contract BridgeDex {
         return idToRequest[_id].challenges[_owner];
     }
 
+    /**
+     * @notice - Used to get the list of the request ids for a given token
+     * @param _token - The token address on chain B to look for token requests
+     */
     function getRequestsIdsForToken(address _token)
         external
         view
@@ -445,6 +569,12 @@ contract BridgeDex {
         );
     }
 
+    /**
+     * @notice - Used to pop an element from a list (modifies the order of the elements)
+     *
+     * @param _array - The array from which the element will be deleted
+     * @param _index - The index of the element to pop
+     */
     function _splice(uint256[] storage _array, uint256 _index) private {
         if (_index == _array.length - 1) {
             _array.pop();

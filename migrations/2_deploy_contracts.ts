@@ -9,10 +9,12 @@ module.exports = (artifacts: Truffle.Artifacts, web3: Web3) => {
     if (network.includes("Mainnet") || network.includes("Testnet")) return;
 
     (deployer as any).then(async () => {
-      const Test = artifacts.require("Test");
+      const BridgeDex = artifacts.require("BridgeDex"); 
+      const DummyERC20 = artifacts.require("DummyERC20"); 
       
-      await deployer.deploy(Test)
-      console.log("Deployed test contract : ", Test.address)
+      await deployer.deploy(BridgeDex, 1, accounts[9])
+      await deployer.deploy(DummyERC20)
+      console.log("Deployed Bridge contract : ", BridgeDex.address)
 
       const config = require("../dev.config.js");
       try {

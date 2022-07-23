@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@coinbase/wallet-sdk": "^3.3.0",
     "@fortawesome/fontawesome-free": "^6.0.0-beta3",
     "@kyvg/vue3-notification": "^2.3.4",
     "@metamask/detect-provider": "^1.2.0",
@@ -8,6 +9,8 @@
     "@openzeppelin/contracts": "^4.5.0",
     "@openzeppelin/contracts-upgradeable": "^4.5.2",
     "@truffle/hdwallet-provider": "^2.0.8",
+    "@walletconnect/types": "^1.7.8",
+    "@walletconnect/web3-provider": "^1.7.8",
     "assert": "^2.0.0",
     "bignumber.js": "^9.0.2",
     "chai": "^4.3.6",
@@ -26,7 +29,10 @@
     "vue": "^3.2.29",
     "vue-router": "^4.0.12",
     "vuex": "^4.0.2",
-    "web3": "^1.7.3"
+    "web3": "^1.7.4",
+    "web3-eth-contract": "^1.7.4",
+    "web3-utils": "^1.7.4",
+    "web3modal": "^1.9.8"
   },
   "devDependencies": {
     "@babel/core": "^7.16.12",
@@ -70,11 +76,11 @@
     "sass-loader": "^12.4.0",
     "style-loader": "^3.3.1",
     "tailwindcss": "^3.0.18",
-    "truffle": "^5.1.67",
+    "truffle": "^5.5.19",
     "ts-jest": "^27.1.3",
     "ts-loader": "^9.2.6",
     "ts-node": "^10.7.0",
-    "typechain": "^8.0.0",
+    "typechain": "^8.1.0",
     "typescript": "^4.6.3",
     "vue-loader": "^17.0.0",
     "vue-template-compiler": "^2.6.14",
@@ -84,8 +90,16 @@
     "webpack-pwa-manifest": "^4.3.0",
     "workbox-webpack-plugin": "^6.5.3"
   },
-  "name": "bgame",
-  "sideEffects": ["*.css", "*.png", "*.jpg", "*.jpeg", "*.scss", "*.woff", "*.woff2"],
+  "name": "bridgedex",
+  "sideEffects": [
+    "*.css",
+    "*.png",
+    "*.jpg",
+    "*.jpeg",
+    "*.scss",
+    "*.woff",
+    "*.woff2"
+  ],
   "version": "1.0.0",
   "private": true,
   "scripts": {

@@ -21,7 +21,7 @@ export async function connectContract(
 
   for (const chainId in CONFIG["chains"]) {
     this.$state[chainId].contract = new new Web3(
-      new Web3.providers.WebsocketProvider(CONFIG["chains"][chainId].rpcUrls[1]) // TODO add the websocket url
+      new Web3.providers.WebsocketProvider(CONFIG["chains"][chainId].rpcUrls[1])
     ).eth.Contract(
       CONFIG.abi.BridgeAbi,
       CONFIG["chains"][chainId].bridgeAddress
@@ -108,7 +108,7 @@ export async function populateMyChallenges(
       if (!nonce) return;
 
       const index = `${chainAid}${lockId}${chainBId}${nonce}`;
-      challengeStore[ChallengeActions.AddChainAChallenge](index, value);
+      challengeStore[ChallengeActions.AddChainAChallenge](index, chainAid, value);
     });
   }
 }
@@ -159,7 +159,7 @@ export async function populateMyRequests(
 
   requests.forEach((request) => {
     if (!Number(request[0])) return;
-    
+
     requestStore[RequestActions.AddRequest](request, chainId);
   });
 }

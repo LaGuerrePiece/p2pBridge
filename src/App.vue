@@ -35,9 +35,6 @@ import { useBridgesStore } from "./store/bridges";
 import { useWeb3Store } from "./store/web3";
 import { BridgesActions } from "./types/bridges";
 const web3Store = useWeb3Store();
-const bridgesStore = useBridgesStore();
-
-bridgesStore[BridgesActions.InitializeGetterWeb3s]();
 
 const Suspense = suspense_ as {
   new (): {

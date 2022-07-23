@@ -13,8 +13,8 @@ const { DefinePlugin } = require("webpack");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 const WorkboxPlugin = require("workbox-webpack-plugin");
-const WebpackPwaManifest = require('webpack-pwa-manifest')
-const PreloadWebpackPlugin = require('@vue/preload-webpack-plugin');
+const WebpackPwaManifest = require("webpack-pwa-manifest");
+const PreloadWebpackPlugin = require("@vue/preload-webpack-plugin");
 
 var config;
 var optimize;
@@ -132,29 +132,29 @@ module.exports = {
       },
     }),
     new DefinePlugin({
-      CONFIG: JSON.stringify(config)
+      CONFIG: JSON.stringify(config),
     }),
     new NodePolyfillPlugin(),
     new WebpackPwaManifest({
-      name: 'your app name',
-      short_name: 'your app name',
-      description: 'app description',
-      background_color: '#ffffff',
-      crossorigin: 'use-credentials',
+      name: "Bridge Dex",
+      short_name: "Bridge Dex",
+      description: "Trustless bridge",
+      background_color: "#ffffff",
+      crossorigin: "use-credentials",
       ios: true,
       publicPath: ".",
       icons: [
         {
-          src: path.resolve('public/favicon.ico'),
+          src: path.resolve("public/favicon.ico"),
           type: "image/png",
           sizes: [96, 128, 192, 256, 384, 512], // multiple sizes,
-          ios: true
+          ios: true,
         },
-      ]
+      ],
     }),
     new PreloadWebpackPlugin({
-      rel: 'preload',
-      include: 'all'
+      rel: "preload",
+      include: "all",
     }),
     ...optimize,
     // new CircularDependencyPlugin({

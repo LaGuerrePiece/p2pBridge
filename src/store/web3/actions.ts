@@ -7,9 +7,6 @@ import { useBridgesStore } from "../bridges";
 export async function connect(
   this: ReturnType<typeof useWeb3Store>
 ): Promise<void> {
-  if (this.connected) {
-    return;
-  }
 
   const web3Modal = new Web3Modal({
     network: "mainnet",
@@ -22,6 +19,7 @@ export async function connect(
 
   this.provider = provider;
   this.web3 = new Web3(provider);
+  console.log((await this.web3.eth.accounts.wallet))
   this.address = (await this.web3.eth.getAccounts())[0];
   this.chainId = await this.web3.eth.getChainId();
 
@@ -34,6 +32,7 @@ export async function connect(
 
   provider.on("accountsChanged", (accounts: string[]) => {
     this.address = accounts[0];
+    console.log(accounts)
   });
 
   provider.on("chainChanged", (chainId: string) => {
