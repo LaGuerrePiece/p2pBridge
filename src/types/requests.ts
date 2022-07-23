@@ -1,4 +1,4 @@
-export type request = {
+export type Request = {
   amount: number;
   minBidAmount: number;
   chainAId: number;
@@ -13,7 +13,7 @@ export type request = {
   fees: number;
 };
 
-export type lock = {
+export type Lock = {
   amount: number;
   bridged: number;
   accepted: number;
@@ -28,8 +28,8 @@ export type lock = {
 
 export type RequestState = {
   [key in string]: {
-    request?: request;
-    lock?: lock;
+    request?: Request;
+    lock?: Lock;
   };
 };
 

@@ -3,8 +3,7 @@ import { useBridgesStore } from ".";
 import { BridgeDexInstance } from "../../../types/truffle-contracts";
 import { BridgesActions } from "../../types/bridges";
 import { ChallengeActions } from "../../types/challenges";
-import { Request } from "../../types/commons";
-import { RequestActions } from "../../types/requests";
+import { RequestActions, Request } from "../../types/requests";
 import { useChallengeStore } from "../challenges";
 import { useRequestStore } from "../requests";
 import { useWeb3Store } from "../web3";
@@ -90,9 +89,9 @@ export async function populateMyChallenges(
     const deposit = deposits[i];
     const index = `${Number(request.chainAId)}${Number(
       request.chainANonce
-    )}${chainId}${Number(request.index)}`;
+    )}${chainId}${Number(request.chainBNonce)}`;
 
-    if (!Number(request.index)) return;
+    if (!Number(request.chainBNonce)) return;
 
     challengeStore[ChallengeActions.AddChainBChallenge](index, deposit);
   }
