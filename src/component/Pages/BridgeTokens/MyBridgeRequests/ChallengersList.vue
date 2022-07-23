@@ -69,10 +69,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { computed } from "@vue/reactivity";
 import { reactive } from "vue";
-import { trimAddress } from "../../../../composition/functions";
 import { tick } from "../../../../asset/images/images";
+
 const props = defineProps<{
   id: string;
 }>();
