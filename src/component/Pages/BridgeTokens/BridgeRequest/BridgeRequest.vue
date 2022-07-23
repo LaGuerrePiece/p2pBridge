@@ -14,18 +14,21 @@
       <div class="text-left w-20">From :</div>
 
       <SelectElementSpan
+        class="w-36"
         :data="data.networks"
         v-model:actualValue="fromNetwork"
       ></SelectElementSpan>
       <div class="text-left w-20">To :</div>
 
       <SelectElementSpan
+        class="w-36"
         :data="data.networks"
         v-model:actualValue="toNetwork"
       ></SelectElementSpan>
       <div class="text-left w-20">Token :</div>
 
       <SelectElementSpan
+        class="w-36"
         :data="data.tokens"
         v-model:actualValue="token"
       ></SelectElementSpan>
@@ -57,17 +60,11 @@
 </template>
 
 <script setup lang="ts">
-import PageFrame from "../PageFrame.vue";
 
 import { ref } from "vue";
 import {
-  avalanche,
-  bsc,
-  polygon,
-  ethereum,
-  usdc,
-  busd,
-  tether,
+avalanche,
+bsc, busd, ethereum, polygon, tether, usdc
 } from "../../../../asset/images/images";
 import SelectElementSpan from "./SelectElementSpan.vue";
 

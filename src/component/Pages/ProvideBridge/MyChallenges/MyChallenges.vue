@@ -94,7 +94,7 @@
         </template>
       </div>
     </div>
-    <div class="p-6">
+    <div class="hidden lg:block p-6">
       <Documentation></Documentation>
     </div>
   </div>
