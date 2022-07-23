@@ -26,15 +26,15 @@
 </template>
 <script setup lang="ts">
 import { Suspense as suspense_, SuspenseProps, VNodeProps } from "vue";
-import Metamask from "./component/Metamask/Metamask.vue";
+import { RouterView } from "vue-router";
 import ChainInfo from "./component/ChainInfo/ChainInfo.vue";
 import Logo from "./component/Logo/Logo.vue";
+import Metamask from "./component/Metamask/Metamask.vue";
 import Navigation from "./component/Navigation/Navigation.vue";
-import { RouterView } from "vue-router";
-import { useBridgesStore } from "./store/bridges";
 import { useWeb3Store } from "./store/web3";
-import { BridgesActions } from "./types/bridges";
+import { Web3Actions } from "./types/web3";
 const web3Store = useWeb3Store();
+web3Store[Web3Actions.CheckConnection]();
 
 const Suspense = suspense_ as {
   new (): {

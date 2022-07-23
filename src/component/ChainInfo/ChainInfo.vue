@@ -17,7 +17,7 @@
       />
     </div>
     <div
-      class="px-3 flex grow justify-center font-mono font-bold text-xs text-white"
+      class="px-3 flex grow justify-center font-mono font-bold text-xs text-white w-28"
     >
       {{
         web3Store.chainId in web3Store.config.chains
@@ -33,9 +33,9 @@
     :key="index"
   >
     <div
-      class="absolute flex items-center grow rounded-full bg-slate-400 shadow-md shadow-white/20 p-0.5 lg:p-2 cursor-pointer hover:shadow-xl hover:shadow-black transition-all active:shadow-none bg-gradient-to-r from-transparent via-transparent to-black/30 mr-3"
+      class="absolute w-36 flex items-center grow rounded-full bg-slate-400 shadow-md shadow-white/20 p-0.5 lg:p-2 cursor-pointer hover:shadow-xl hover:shadow-black transition-all active:shadow-none bg-gradient-to-r from-transparent via-transparent to-black/30 mr-3"
       :class="expandSpan ? 'opacity-1 z-20' : 'opacity-0 top-0 z-10'"
-      :style="{ top: expandSpan ? (index + 1) * 30 + 35 + 'px' : '' }"
+      :style="{ top: expandSpan ? (index + 1) * 45 + 30 + 'px' : '' }"
       @click.capture="
         web3Store[Web3Actions.SwitchChain](Number(key));
         expandSpan = !expandSpan;

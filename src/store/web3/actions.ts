@@ -4,6 +4,27 @@ import Web3 from "web3";
 import { BridgesActions } from "../../types/bridges";
 import { useBridgesStore } from "../bridges";
 
+/**
+ * @notice Function used to check if the user has granted the access
+ * to its metamask accounts to the application
+ */
+ export async function checkConnection(
+  this: ReturnType<typeof useWeb3Store>
+): Promise<void> {
+  try {
+    const accounts: Truffle.Accounts = await (window.ethereum as any).request({
+      method: "eth_accounts",
+    });
+
+    if (accounts.length === 0) return;
+    await connect.bind(this)();
+  } catch (e: any) {
+    console.log("An error occured during the connection checking : ", e);
+    return;
+  }
+}
+
+
 export async function connect(
   this: ReturnType<typeof useWeb3Store>
 ): Promise<void> {
@@ -19,7 +40,6 @@ export async function connect(
 
   this.provider = provider;
   this.web3 = new Web3(provider);
-  console.log((await this.web3.eth.accounts.wallet))
   this.address = (await this.web3.eth.getAccounts())[0];
   this.chainId = await this.web3.eth.getChainId();
 
@@ -32,7 +52,6 @@ export async function connect(
 
   provider.on("accountsChanged", (accounts: string[]) => {
     this.address = accounts[0];
-    console.log(accounts)
   });
 
   provider.on("chainChanged", (chainId: string) => {

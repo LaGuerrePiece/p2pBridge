@@ -12,4 +12,5 @@ export type Web3State = {
 export const Web3Actions = {
     Connect: "Connect",
     SwitchChain: "SwitchChain",
+    CheckConnection: "CheckConnection"
 } as const;
