@@ -41,4 +41,4 @@ export const RequestActions = {
 export const RequestGetters = {
   MyRequests: "MyRequests",
   RequestChallenges: "RequestChallenges"
-}
+} as const

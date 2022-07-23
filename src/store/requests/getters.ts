@@ -12,6 +12,7 @@ export function myRequests(state: RequestState): Array<Request> {
   const response: Array<Request> = [];
 
   keys.forEach((key) => {
+    if(!Number(key)) return
     const request = state[key].request;
     const lock = state[key].lock;
 
