@@ -67,19 +67,13 @@
 </template>
 
 <script setup lang="ts">
-import PageFrame from "../PageFrame.vue";
+
 
 import { ref } from "vue";
 import {
-  avalanche,
-  bsc,
-  polygon,
-  ethereum,
-  usdc,
-  busd,
-  tether,
+avalanche,
+bsc, busd, ethereum, polygon, tether, usdc
 } from "../../../../asset/images/images";
-import SelectElementSpan from "../../BridgeTokens/BridgeRequest/SelectElementSpan.vue";
 import ModalFrame from "../../../Modals/ModalFrame.vue";
 import ChallengersList from "./ChallengersList.vue";
 import WithdrawConfirmation from "./WithdrawConfirmation.vue";
@@ -90,20 +84,6 @@ const props = defineProps<{
 
 const modalOpen = ref<boolean>(false);
 const withdrawOpen = ref<boolean>(false);
-const fromNetwork = ref<{ name: string; icon: any }>({
-  name: "Select",
-  icon: avalanche,
-});
-const toNetwork = ref<{ name: string; icon: any }>({
-  name: "Select",
-  icon: avalanche,
-});
-const token = ref<{ name: string; icon: any }>({
-  name: "Select",
-  icon: avalanche,
-});
-const amount = ref<number>();
-const maxFees = ref<number>();
 
 const data = [
   {
