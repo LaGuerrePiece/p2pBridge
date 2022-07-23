@@ -35,7 +35,7 @@
         <input
           v-model.number="amount"
           placeholder="Enter amount"
-          class="bg-zinc-500 text-center rounded-full px-2 py-0.5 text-xs appearance-none outline-none w-full outline outline-1 outline-offset-2 outline-yellow-500/70"
+          class="bg-zinc-500 text-center rounded-full px-2 py-0.5 text-xs appearance-none outline-none w-full ring-1 ring-offset-zinc-800 ring-offset-2 ring-yellow-500"
         />
       </div>
       <div class="text-left w-20">Max fees :</div>
@@ -43,7 +43,7 @@
         <input
           v-model.number="maxFees"
           placeholder="Enter amount"
-          class="bg-zinc-500 text-center rounded-full px-2 py-0.5 text-xs appearance-none outline-none w-full outline outline-1 outline-offset-2 outline-yellow-500/70"
+          class="bg-zinc-500 text-center rounded-full px-2 py-0.5 text-xs appearance-none outline-none w-full ring-1 ring-offset-zinc-800 ring-offset-2 ring-yellow-500"
         />
       </div>
       <div class="w-1/6 m-auto h-px bg-white/10 col-span-2"></div>

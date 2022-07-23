@@ -16,9 +16,8 @@
   </PageFrame>
 </template>
 <script setup lang="ts">
-import BridgeRequest from "./BridgeRequest/BridgeRequest.vue";
 import PageFrame from "../PageFrame.vue";
 import MyBridgeRequests from "./MyBridgeRequests/MyBridgeRequestsList.vue";
-import Documentation from "./Documentation.vue";
+import Documentation from "../../Buttons/Documentation.vue";
 import { RouterView } from "vue-router";
 </script>

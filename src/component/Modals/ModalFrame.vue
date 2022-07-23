@@ -4,7 +4,7 @@
     @click="$emit('close')"
   >
     <div
-      class="absolute lg:top-36 top-20 left-1/2 lg:w-2/3 w-5/6 max-w-5xl lg:h-2/3 h-3/4 bg-neutral-800 -translate-x-1/2 p-4 rounded-xl shadow-lg shadow-black/50 overflow-y-scroll"
+      class="absolute lg:top-36 top-20 left-1/2 lg:w-2/3 w-5/6 max-w-5xl lg:max-h-[67%] max-h-[75%] bg-neutral-800 -translate-x-1/2 p-4 rounded-xl shadow-lg shadow-black/50 overflow-y-scroll"
       @click.stop=""
     >
       <div
@@ -28,7 +28,7 @@
           </svg>
         </div>
       </div>
-      <div class="h-px w-1/4 bg-white/20 m-auto">
+      <div class="h-px w-1/4 bg-white/20 mx-auto mb-3">
 
       </div>
       <slot></slot>

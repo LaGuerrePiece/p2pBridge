@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex gap-3 cursor-pointer relative w-36"
+    class="flex gap-3 cursor-pointer relative w-36 items-center"
     @click="expandSpan = !expandSpan"
   >
     <svg

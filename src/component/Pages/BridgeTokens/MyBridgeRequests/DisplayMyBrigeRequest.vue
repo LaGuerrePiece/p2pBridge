@@ -44,12 +44,22 @@
       >
         Select Challengers
       </div>
+      <div
+        class="col-span-2 rounded-full px-2 py-1 animate-pulse bg-zinc-700 w-2/3 sm:w-1/2 lg:w-1/3 text-center text-md bg-gradient-to-br from-white/20 via-transparent to-black/50 shadow-lg hover:shadow-md active:to-transparent active:from-transparent shadow-black cursor-pointer transition-all"
+        @click="withdrawOpen = true"
+      >
+        Withdraw Funds
+      </div>
     </div>
     <teleport to="body">
       <transition name="fadeMod">
         <ModalFrame v-if="modalOpen" @close="modalOpen = false">
           <template #title>Challengers</template>
           <ChallengersList :id="props.id"></ChallengersList>
+        </ModalFrame>
+        <ModalFrame v-else-if="withdrawOpen" @close="withdrawOpen = false">
+          <template #title>Withdraw</template>
+          <WithdrawConfirmation :token="data[0].token" :to="data[0].to" :amount="data[0].amount" ></WithdrawConfirmation>
         </ModalFrame>
       </transition>
     </teleport>
@@ -72,12 +82,14 @@ import {
 import SelectElementSpan from "../../BridgeTokens/BridgeRequest/SelectElementSpan.vue";
 import ModalFrame from "../../../Modals/ModalFrame.vue";
 import ChallengersList from "./ChallengersList.vue";
+import WithdrawConfirmation from "./WithdrawConfirmation.vue";
 
 const props = defineProps<{
   id: string;
 }>();
 
 const modalOpen = ref<boolean>(false);
+const withdrawOpen = ref<boolean>(false);
 const fromNetwork = ref<{ name: string; icon: any }>({
   name: "Select",
   icon: avalanche,

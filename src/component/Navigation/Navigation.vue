@@ -6,7 +6,7 @@
       :to="{ name: RouteNames.BridgeTokensRequest }"
       class="rounded-full bg-sky-900/20 hover:bg-sky-600/20 transition-all group w-3/4 max-w-4xl flex items-center gap-5 bg-gradient-to-r from-transparent via-transparent to-black/20 shadow-lg shadow-black active:shadow-none cursor-pointer"
       :class="{
-        'outline outline-2 outline-offset-4 outline-amber-400': bridgeActive,
+        'ring-2 ring-offset-4 ring-offset-zinc-800 ring-amber-400': bridgeActive,
       }"
       @click="bridgeActive = true"
     >
@@ -23,7 +23,7 @@
       :to="{ name: RouteNames.ProvideBridge }"
       class="rounded-full bg-sky-900/20 hover:bg-sky-600/20 transition-all group w-3/4 max-w-4xl flex items-center gap-5 bg-gradient-to-r from-transparent via-transparent to-black/20 shadow-lg shadow-black active:shadow-none cursor-pointer"
       :class="{
-        'outline outline-2 outline-offset-4 outline-amber-400': !bridgeActive,
+        'ring-2 ring-offset-4 ring-offset-zinc-800 ring-amber-400': !bridgeActive,
       }"
       @click="bridgeActive = false"
     >

@@ -13,27 +13,27 @@
       class="grid gap-2 gap-y-4 grid-cols-5 text-center font-mono text-white xl:text-xs text-[10px]"
     >
       <div
-        class="rounded-full bg-zinc-800 xl:px-4 font-bold shadow-black shadow-md"
+        class="rounded-full bg-zinc-800 xl:px-4 font-bold shadow-black shadow-md py-0.5"
       >
         From
       </div>
       <div
-        class="rounded-full bg-zinc-800 xl:px-4 font-bold shadow-black shadow-md"
+        class="rounded-full bg-zinc-800 xl:px-4 font-bold shadow-black shadow-md py-0.5"
       >
         To
       </div>
       <div
-        class="rounded-full bg-zinc-800 xl:px-4 font-bold shadow-black shadow-md"
+        class="rounded-full bg-zinc-800 xl:px-4 font-bold shadow-black shadow-md py-0.5"
       >
         Token
       </div>
       <div
-        class="rounded-full bg-zinc-800 xl:px-4 font-bold shadow-black shadow-md"
+        class="rounded-full bg-zinc-800 xl:px-4 font-bold shadow-black shadow-md py-0.5"
       >
         Amount
       </div>
       <div
-        class="rounded-full bg-zinc-800 xl:px-4 font-bold shadow-black shadow-md"
+        class="rounded-full bg-zinc-800 xl:px-4 font-bold shadow-black shadow-md py-0.5"
       >
         Fee
       </div>
@@ -41,7 +41,7 @@
         <template v-for="(request, id) in data" :key="id" @click="alert(id)">
           <router-link
             :to="{name: RouteNames.BridgeTokensDisplayRequest, params: {id: id}}"
-            :class="Number($route.params.id) == id ? 'outline outline-2 outline-offset-2 outline-yellow-500': ''"
+            :class="Number($route.params.id) == id ? 'ring-2 ring-offset-zinc-800 ring-offset-2 ring-yellow-500': ''"
             class="col-span-full grid gap-2 grid-cols-5 text-center font-mono text-white text-sm justify-items-center items-center shadow-black shadow-md p-1 rounded-full cursor-pointer hover:bg-zinc-600 transition-all duration-75 active:bg-zinc-800"
           >
             <div class="relative w-full flex justify-center items-center">
