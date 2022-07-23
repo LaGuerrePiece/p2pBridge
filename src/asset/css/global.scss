@@ -9,6 +9,11 @@
 *::-webkit-scrollbar {
     display: none;
 }
+
+* {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
  @media (pointer: fine) {
      .custom-scroll::-webkit-scrollbar {
          display: block;
@@ -42,3 +47,19 @@
      }
  }
 
+/* style of the notifications (see https://github.com/kyvg/vue3-notification) */
+
+.my-notification {
+    margin: 0 5px 5px;
+    padding: 10px;
+    font-size: 12px;
+    color: rgb(255 255 255);
+
+    border-left: 5px solid rgb(35 35 37);
+
+    &.warn {
+        background: rgb(24 24 27);
+        border-left-color: rgb(35 35 37);
+    }
+}
+  

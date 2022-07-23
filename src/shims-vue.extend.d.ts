@@ -1,4 +1,4 @@
-import { DefineComponent } from "vue"
+import { DefineComponent } from "vue";
 declare module "vue" {
-  function withAsyncContext(...args: any): any
+  function withAsyncContext(...args: any): any;
 }
