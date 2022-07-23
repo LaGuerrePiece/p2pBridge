@@ -13,3 +13,5 @@ export {default as usdc} from "./usdc.png";
 export {default as unknown} from "./unknown.png";
 export {default as documentation} from "./documentation.png";
 export {default as tick} from "./tick.png";
+export {default as monkey} from "./monkey.png";
+export {default as nuclear} from "./nuclear.png";
