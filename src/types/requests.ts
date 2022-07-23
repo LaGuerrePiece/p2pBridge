@@ -37,3 +37,7 @@ export const RequestActions = {
     AddRequest: "AddRequest",
     AddLock: "AddLock"
 } as const  
+
+export const RequestGetters = {
+  MyRequests: "MyRequests"
+}

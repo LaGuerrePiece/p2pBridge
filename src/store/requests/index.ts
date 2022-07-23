@@ -1,11 +1,14 @@
 import { defineStore } from "pinia";
 import { BridgeDexInstance } from "../../../types/truffle-contracts";
-import { RequestActions, RequestState } from "../../types/requests";
+import { RequestActions, RequestGetters, RequestState } from "../../types/requests";
+import { myRequests } from "./getters";
 import { state } from "./state";
 
 export const useRequestStore = defineStore("requests", {
   state: (): RequestState => state,
-  getters: {},
+  getters: {
+    [RequestGetters.MyRequests]: myRequests
+  },
   actions: {
     [RequestActions.AddRequest](
       request: Awaited<ReturnType<BridgeDexInstance["idToRequest"]>>,
