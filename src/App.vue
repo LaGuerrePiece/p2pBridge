@@ -5,7 +5,7 @@
     <Metamask/>
   </div>
   <Navigation />
-  <div class="relative">
+  <div class="relative flex justify-center">
     <router-view v-slot="{ Component }: { Component: Object }">
         <transition name="fadeNav">
           <component :is="Component" />

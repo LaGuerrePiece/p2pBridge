@@ -1,6 +1,24 @@
 <template>
- <div class="bg-red-500 w-32 h-32">
-    aaaa
- </div>
+  <PageFrame>
+    <div
+      class="grid grid-cols-1 lg:grid-cols-5 lg:gap-4 gap-8 justify-items-center"
+    >
+    <div class="lg:col-span-3 w-full relative">
+      <router-view v-slot="{ Component }: { Component: Object }">
+        <transition name="fadeNest">
+          <component :is="Component" />
+        </transition>
+      </router-view>
+    </div>
+      <MyBridgeRequests />
+      <Documentation />
+    </div>
+  </PageFrame>
 </template>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import BridgeRequest from "./BridgeRequest/BridgeRequest.vue";
+import PageFrame from "../PageFrame.vue";
+import MyBridgeRequests from "./MyBridgeRequests/MyBridgeRequestsList.vue";
+import Documentation from "./Documentation.vue";
+import { RouterView } from "vue-router";
+</script>

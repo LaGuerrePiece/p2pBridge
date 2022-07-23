@@ -1,6 +1,10 @@
 <template>
- <div class="bg-cyan-500 w-32 h-32">
-    bbbbbbbbb
- </div>
+  <PageFrame>
+    <div>b</div>
+    <div>b</div>
+    <div>b</div>
+  </PageFrame>
 </template>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import PageFrame from "../PageFrame.vue";
+</script>

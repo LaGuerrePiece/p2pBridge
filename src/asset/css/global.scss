@@ -6,3 +6,39 @@
 @import "./animations/animations.scss";
 //@import "./variables/variables.scss";
 
+*::-webkit-scrollbar {
+    display: none;
+}
+ @media (pointer: fine) {
+     .custom-scroll::-webkit-scrollbar {
+         display: block;
+         height: 6px;
+         opacity: 0;
+     }
+     
+     .custom-scroll:hover::-webkit-scrollbar {
+         visibility: visible;
+         background-color: rgba(255, 255, 255, 0);
+         width: 16px;
+         height: 6px;
+     }
+     
+     .custom-scroll::-webkit-scrollbar-track {
+         background-color: rgba(46, 8, 8, 0);
+     }
+     
+     .custom-scroll:hover::-webkit-scrollbar-thumb {
+         background-color: #747475;
+     
+     }
+     
+     .custom-scroll::-webkit-scrollbar-thumb {
+         background-color: #74747500;
+         border-radius: 16px;
+     }
+     
+     .custom-scroll::-webkit-scrollbar-button {
+         display:none;
+     }
+ }
+

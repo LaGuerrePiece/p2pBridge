@@ -5,6 +5,34 @@
 }
 
 .fadeNav-enter-from,
-.fadeNav-leave-to {
+.fadeNav-leave-to,
+.fadeNest-enter-from,
+.fadeNest-leave-to,
+.fadeMod-enter-from,
+.fadeMod-leave-to  {
   opacity: 0;
 }
+
+.fadeNest-enter-active {
+  transition: opacity 0.5s ease;
+}
+
+.fadeNest-leave-active {
+  transition: opacity 0.5s ease;
+  position: absolute;
+}
+
+.fadeMod-enter-active,
+.fadeMod-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
