@@ -39,5 +39,6 @@ export const RequestActions = {
 } as const  
 
 export const RequestGetters = {
-  MyRequests: "MyRequests"
+  MyRequests: "MyRequests",
+  RequestChallenges: "RequestChallenges"
 }
