@@ -58,7 +58,7 @@
         <div class="w-1/2 self-start">From:</div>
         <div>{{ element.from }}</div>
         <div class="w-1/2 self-start">Points:</div>
-        <div>{{ 245 }}</div>
+        <div>{{ element.points }}</div>
       </div>
     </template>
     <div
@@ -83,7 +83,14 @@ const data = [
     {
       amount: 1000,
       fee: 3,
-      from: "0xed12...47bfe"
+      from: "0xed12...47bfe",
+      points: 24
+    },
+    {
+      amount: 1000,
+      fee: 4,
+      from: "0x3521...ae452",
+      points:35
     },
   ],
 ];

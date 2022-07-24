@@ -17,3 +17,4 @@ export {default as monkey} from "./monkey.png";
 export {default as nuclear} from "./nuclear.png";
 export {default as cronos} from "./cronos.png";
 export {default as gnosis} from "./gnosis.png";
+export {default as celo} from "./celo.png";

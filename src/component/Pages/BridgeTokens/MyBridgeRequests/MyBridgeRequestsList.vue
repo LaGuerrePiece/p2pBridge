@@ -56,11 +56,7 @@
             class="col-span-full grid gap-2 grid-cols-5 text-center font-mono text-white text-sm justify-items-center items-center shadow-black shadow-md p-1 rounded-full cursor-pointer hover:bg-zinc-600 transition-all duration-75 active:bg-zinc-800"
           >
             <div class="relative w-full flex justify-center items-center">
-              <img
-                :src="chainDetails[77].icon"
-                alt=""
-                class="w-7 h-7"
-              />
+              <img :src="request.from" alt="" class="w-7 h-7" />
               <div
                 class="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2"
               >
@@ -72,24 +68,10 @@
                 </svg>
               </div>
             </div>
-            <div>
-              <img
-                :src="chainDetails[338].icon"
-                alt=""
-                class="w-7 h-7"
-              />
-            </div>
-            <div>
-              <img
-                :src="
-                  chainDetails[338].token[request.tokenAcontract].icon
-                "
-                alt=""
-                class="w-7 h-7"
-              />
-            </div>
+            <div><img :src="request.to" alt="" class="w-7 h-7" /></div>
+            <div><img :src="request.token" alt="" class="w-7 h-7" /></div>
             <div class="text-xs">{{ request.amount }}</div>
-            <div class="text-xs">{{ request.fees }}</div>
+            <div class="text-xs">{{ request.maxFee }}</div>
           </router-link>
         </template>
       </div>
@@ -98,11 +80,42 @@
 </template>
 <script setup lang="ts">
 import { RouteNames } from "../../../../router";
-import { RouterLink } from "vue-router";
-import { useRequestStore } from "../../../../store/requests";
-import { RequestGetters } from "../../../../types/requests";
-import { chainDetails } from "../../../../composition/constants";
+import { RouterLink, useRoute } from "vue-router";
+import {
+  avalanche,
+  bsc,
+  busd,
+  cronos,
+  ethereum,
+  gnosis,
+  polygon,
+  tether,
+  usdc,
+  celo
+} from "../../../../asset/images/images";
 
-const requestStore = useRequestStore();
-const data = requestStore[RequestGetters.MyRequests];
+const data = [
+  {
+    from: cronos,
+    fromName: "Cronos",
+    to: gnosis,
+    toName: "Gnosis",
+    token: usdc,
+    tokenName: "USDC",
+    amount: 27895,
+    maxFee: 134,
+    date: Math.floor(Date.now() / 1000),
+  },
+  {
+    from: polygon,
+    fromName: "Polygon",
+    to: celo,
+    toName: "Celo",
+    token: tether,
+    tokenName: "USDT",
+    amount: 398505,
+    maxFee: 24,
+    date: Math.floor(Date.now() / 1000),
+  },
+];
 </script>

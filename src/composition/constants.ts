@@ -17,7 +17,7 @@ export const chainDetails = {
     token: {
       USDT: { name: "USDT", icon: tether },
       BUSD: { name: "BUSD", icon: busd },
-      USDC: { name: "USDC", icon: busd },
+      USDC: { name: "USDC", icon: usdc },
     },
   },
   "56": {
@@ -26,7 +26,7 @@ export const chainDetails = {
     token: {
       USDT: { name: "USDT", icon: tether },
       BUSD: { name: "BUSD", icon: busd },
-      USDC: { name: "USDC", icon: busd },
+      USDC: { name: "USDC", icon: usdc },
     },
   },
   "338": {
@@ -37,8 +37,9 @@ export const chainDetails = {
         name: "USDT",
         icon: tether,
       },
+      USDT: { name: "USDT", icon: tether },
       BUSD: { name: "BUSD", icon: busd },
-      USDC: { name: "USDC", icon: busd },
+      USDC: { name: "USDC", icon: usdc },
     },
   },
   "77": {
@@ -50,7 +51,7 @@ export const chainDetails = {
         icon: tether,
       },
       BUSD: { name: "BUSD", icon: busd },
-      USDC: { name: "USDC", icon: busd },
+      USDC: { name: "USDC", icon: usdc },
     },
   },
   "43114": {
@@ -59,7 +60,7 @@ export const chainDetails = {
     token: {
       USDT: { name: "USDT", icon: tether },
       BUSD: { name: "BUSD", icon: busd },
-      USDC: { name: "USDC", icon: busd },
+      USDC: { name: "USDC", icon: usdc },
     },
   },
   "137": {
@@ -68,7 +69,7 @@ export const chainDetails = {
     token: {
       USDT: { name: "USDT", icon: tether },
       BUSD: { name: "BUSD", icon: busd },
-      USDC: { name: "USDC", icon: busd },
+      USDC: { name: "USDC", icon: usdc },
     },
   },
 } as {
