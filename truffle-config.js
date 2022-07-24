@@ -25,10 +25,10 @@ require("ts-node").register({
  *
  */
 
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
-//
-// const fs = require('fs');
-// const mnemonic = fs.readFileSync(".secret").toString().trim();
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+
+const fs = require("fs");
+const mnemonic = fs.readFileSync("mnemonic.txt").toString().trim();
 
 module.exports = {
   /**
@@ -68,6 +68,33 @@ module.exports = {
     celo: {
       host: "https://forno.celo.org",
       network_id: 42220,
+    },
+    GnosisTestnet: {
+      provider: () =>
+        new HDWalletProvider({
+          mnemonic: mnemonic,
+          providerOrUrl: `https://sokol.poa.network/`,
+          pollingInterval: 30000,
+        }),
+      network_id: 77, // Ropsten's id
+      confirmations: 2, // # of confs to wait between deployments. (default: 0)
+      timeoutBlocks: 200, // # of blocks before a deployment times out  (minimum/default: 50)
+      skipDryRun: true, // Skip dry run before migrations? (default: false for public nets )
+      gasPrice: 20000000000, // 20 gwei (in wei) (default: 100 gwei)
+      disableConfirmationListener: true,
+    },
+    CronosTestnet: {
+      provider: () =>
+        new HDWalletProvider({
+          mnemonic: mnemonic,
+          providerOrUrl: `https://cronos-testnet-3.crypto.org:8545`,
+          pollingInterval: 30000,
+        }),
+      network_id: 338, // Ropsten's id
+      confirmations: 2, // # of confs to wait between deployments. (default: 0)
+      timeoutBlocks: 200, // # of blocks before a deployment times out  (minimum/default: 50)
+      skipDryRun: true, // Skip dry run before migrations? (default: false for public nets )
+      disableConfirmationListener: true,
     },
     // Another network with more advanced options...
     // advanced: {

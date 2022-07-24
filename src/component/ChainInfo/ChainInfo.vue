@@ -8,9 +8,7 @@
       <img
         :src="
           web3Store.chainId in web3Store.config.chains
-            ? icons[
-                web3Store.config.chains[web3Store.chainId].chainName
-              ]
+            ? icons[web3Store.config.chains[web3Store.chainId].chainName]
             : icons.Unknown
         "
         alt=""
@@ -60,6 +58,8 @@ import {
   polygon,
   ganache,
   unknown,
+  cronos,
+  gnosis,
 } from "../../asset/images/images";
 import { useWeb3Store } from "../../store/web3";
 import { Web3Actions, Web3State } from "../../types/web3";
@@ -72,6 +72,8 @@ const icons: any = {
   Polygon: polygon,
   Ganache: ganache,
   Unknown: unknown,
+  "Cronos Test": cronos,
+  "Gnosis Test": gnosis,
 };
 const web3Store = useWeb3Store();
 console.log("web3Store.connected", web3Store.connected);

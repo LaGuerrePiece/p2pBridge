@@ -32,7 +32,10 @@ export const chainDetails = {
     name: "Cronos Test",
     icon: cronos,
     token: {
-      USDT: { name: "USDT", icon: tether },
+      "0x1719DED8e908d7b1fe54ba6c6fD280A605e977ee": {
+        name: "USDT",
+        icon: tether,
+      },
       BUSD: { name: "BUSD", icon: busd },
       USDC: { name: "USDC", icon: busd },
     },
@@ -41,7 +44,10 @@ export const chainDetails = {
     name: "Gnosis Test",
     icon: ethereum,
     token: {
-      USDT: { name: "USDT", icon: tether },
+      "0x1719DED8e908d7b1fe54ba6c6fD280A605e977ee": {
+        name: "USDT",
+        icon: tether,
+      },
       BUSD: { name: "BUSD", icon: busd },
       USDC: { name: "USDC", icon: busd },
     },
