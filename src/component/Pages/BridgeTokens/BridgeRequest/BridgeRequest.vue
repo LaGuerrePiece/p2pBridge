@@ -60,31 +60,56 @@
 </template>
 
 <script setup lang="ts">
-
 import { ref } from "vue";
 import {
-avalanche,
-bsc, busd, ethereum, polygon, tether, usdc
+  avalanche,
+  bsc,
+  busd,
+  cronos,
+  ethereum,
+  ganache,
+  gnosis,
+  polygon,
+  tether,
+  usdc,
 } from "../../../../asset/images/images";
 import SelectElementSpan from "./SelectElementSpan.vue";
 
-const fromNetwork = ref<{ name: string; icon: any }>({
+const fromNetwork = ref<{ name: string; icon: any; id: number }>({
   name: "Select",
   icon: avalanche,
+  id: 0,
 });
-const toNetwork = ref<{ name: string; icon: any }>({
+const toNetwork = ref<{ name: string; icon: any; id: number }>({
   name: "Select",
   icon: avalanche,
+  id: 0,
 });
-const token = ref<{ name: string; icon: any }>({
+const token = ref<{ name: string; icon: any; id: number }>({
   name: "Select",
   icon: avalanche,
+  id: 0,
 });
 const amount = ref<number>();
 const maxFees = ref<number>();
 
 const data = {
   networks: [
+    {
+      name: "Ganache",
+      icon: ganache,
+      id: 1337,
+    },
+    {
+      name: "Cronos",
+      icon: cronos,
+      id: 338,
+    },
+    {
+      name: "Gnosis",
+      icon: gnosis,
+      id: 77,
+    },
     {
       name: "Avalanche",
       icon: avalanche,
@@ -118,4 +143,3 @@ const data = {
   ],
 };
 </script>
-

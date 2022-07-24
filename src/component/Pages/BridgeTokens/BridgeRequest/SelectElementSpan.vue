@@ -42,8 +42,8 @@
 import { ref } from "vue";
 
 const props = defineProps<{
-  actualValue: { name: string; icon: any };
-  data: Array<{ name: string; icon: any }>;
+  actualValue: { name: string; icon: any, id?: number };
+  data: Array<{ name: string; icon: any, id?: number }>;
 }>();
 
 const emits = defineEmits<{

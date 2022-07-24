@@ -2,6 +2,7 @@ import {
   avalanche,
   bsc,
   busd,
+  cronos,
   ethereum,
   polygon,
   tether,
@@ -21,6 +22,24 @@ export const chainDetails = {
   "56": {
     name: "BSC",
     icon: bsc,
+    token: {
+      USDT: { name: "USDT", icon: tether },
+      BUSD: { name: "BUSD", icon: busd },
+      USDC: { name: "USDC", icon: busd },
+    },
+  },
+  "338": {
+    name: "Cronos Test",
+    icon: cronos,
+    token: {
+      USDT: { name: "USDT", icon: tether },
+      BUSD: { name: "BUSD", icon: busd },
+      USDC: { name: "USDC", icon: busd },
+    },
+  },
+  "77": {
+    name: "Gnosis Test",
+    icon: ethereum,
     token: {
       USDT: { name: "USDT", icon: tether },
       BUSD: { name: "BUSD", icon: busd },
