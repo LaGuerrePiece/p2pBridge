@@ -6,20 +6,19 @@ const chains = {
   338: {
     chainName: "Cronos Test",
     rpcUrls: ["https://evm-t3.cronos.org/", "wss://evm-t3.cronos.org/"],
-    bridgeAddress: "0x0E492C37FDe1b467559f498014A344e5Fb8dC4F7",
+    bridgeAddress: "0xe822b5A438634d6A172480d6E7493A353a8da1dC",
     tokensAddress: {
-      USDT: "0x1234",
-      BUSD: "0x1234",
-      DAI: "0x1234",
+      USDT: "0x1719DED8e908d7b1fe54ba6c6fD280A605e977ee",
+      BUSD: "0x1719DED8e908d7b1fe54ba6c6fD280A605e977ee",
     },
   },
   77: {
     chainName: "Gnosis Test",
     rpcUrls: ["https://sokol.poa.network/", "wss://sokol.poa.network/"],
-    bridgeAddress: "0x0E492C37FDe1b467559f498014A344e5Fb8dC4F7",
+    bridgeAddress: "0xe822b5A438634d6A172480d6E7493A353a8da1dC",
     tokensAddress: {
-      USDT: "0x1234",
-      BUSD: "0x1234",
+      USDT: "0x1719DED8e908d7b1fe54ba6c6fD280A605e977ee",
+      BUSD: "0x1719DED8e908d7b1fe54ba6c6fD280A605e977ee",
     },
   },
 };
