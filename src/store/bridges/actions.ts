@@ -19,6 +19,7 @@ export async function connectContract(
   const promises: Array<Promise<any>> = [];
 
   for (const chainId in CONFIG["chains"]) {
+    if (!(chainId == "77" || chainId == "338")) return
     this.$state[chainId] = {
       contract: new new Web3(CONFIG["chains"][chainId].rpcUrls[0]).eth.Contract(
         CONFIG.abi.BridgeAbi,
