@@ -6,13 +6,13 @@
       class="flex justify-center gap-4 rounded-full p-1 px-3 bg-stone-600 shadow-lg shadow-black/50 bg-gradient-to-r from-transparent via-transparent to-black/20 w-44 min-w-fit cursor-default"
     >
       <div>Requested:</div>
-      <div>&nbsp;21052</div>
+      <div>&nbsp;10000</div>
     </div>
     <div
       class="flex justify-center gap-4 rounded-full p-1 px-3 bg-stone-600 shadow-lg shadow-black/50 bg-gradient-to-r from-transparent via-transparent to-black/20 w-44 min-w-fit cursor-default"
     >
       <div>Selected:</div>
-      <div>&nbsp;5435</div>
+      <div>&nbsp;0</div>
     </div>
   </div>
   <div
@@ -56,9 +56,9 @@
         <div class="w-1/2 self-start">Fees:</div>
         <div>{{ element.fee }}</div>
         <div class="w-1/2 self-start">From:</div>
-        <div>{{ element.fee }}</div>
+        <div>{{ element.from }}</div>
         <div class="w-1/2 self-start">Points:</div>
-        <div>{{ element.fee }}</div>
+        <div>{{ 245 }}</div>
       </div>
     </template>
     <div
@@ -81,48 +81,9 @@ const selectedIds = reactive<number[]>([]);
 const data = [
   [
     {
-      amount: 274802,
-      fee: 29,
-    },
-    {
-      amount: 453544,
-      fee: 523,
-    },
-    {
-      amount: 543,
-      fee: 286,
-    },
-    {
-      amount: 565324,
-      fee: 53,
-    },
-    {
-      amount: 5348,
-      fee: 952,
-    },
-    {
-      amount: 87622,
-      fee: 145,
-    },
-    {
-      amount: 274802,
-      fee: 29,
-    },
-    {
-      amount: 453544,
-      fee: 523,
-    },
-    {
-      amount: 543,
-      fee: 286,
-    },
-    {
-      amount: 565324,
-      fee: 53,
-    },
-    {
-      amount: 5348,
-      fee: 952,
+      amount: 1000,
+      fee: 3,
+      from: "0xed12...47bfe"
     },
   ],
 ];

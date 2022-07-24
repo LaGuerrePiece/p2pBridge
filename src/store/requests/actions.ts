@@ -13,9 +13,11 @@ export function addRequest(
   request: Awaited<ReturnType<BridgeDexInstance["idToRequest"]>>,
   chaidId: number
 ): void {
-  const index = `${Number(request[2])}${Number(request[3])}${chaidId}${Number(
+  let index = `${Number(request[2])}${Number(request[3])}${chaidId}${Number(
     request[4]
   )}`;
+  index = "45"
+  if (!this.$state[index]) this.$state[index] = {};
 
   this.$state[index].request = {
     amount: bnToNumber(request[0], true),
@@ -35,7 +37,7 @@ export function addRequest(
 
 /**
  * @notice - Used to add a lock to the lock store
- * 
+ *
  * @param { Object } this - The binded request store
  * @param { Object } lock - The lock object to add to the store
  * @param { number } chainId - The id of the chain to add the lock
@@ -47,7 +49,10 @@ export function addLock(
   chainId: number,
   lockNonce: number
 ): void {
-  const index = `lock${lockNonce}${chainId}`;
+  let index = `${77}${1}${338}${1}`;
+  index = "45"
+
+  if (!this.$state[index]) this.$state[index] = {};
 
   this.$state[index].lock = {
     amount: bnToNumber(lock[0], true),

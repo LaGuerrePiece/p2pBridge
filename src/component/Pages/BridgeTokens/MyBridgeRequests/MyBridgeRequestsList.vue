@@ -42,7 +42,7 @@
       <div
         class="col-span-full grid grid-cols-5 gap-y-4 max-h-[450px] overflow-scroll p-1 pb-3"
       >
-        <template v-for="(request, id) in data" :key="id" @click="alert(id)">
+        <template v-for="(request, id) in data" :key="id">
           <router-link
             :to="{
               name: RouteNames.BridgeTokensDisplayRequest,
@@ -57,7 +57,7 @@
           >
             <div class="relative w-full flex justify-center items-center">
               <img
-                :src="chainDetails[request.chainAId].icon"
+                :src="chainDetails[77].icon"
                 alt=""
                 class="w-7 h-7"
               />
@@ -74,7 +74,7 @@
             </div>
             <div>
               <img
-                :src="chainDetails[request.chainBId].icon"
+                :src="chainDetails[338].icon"
                 alt=""
                 class="w-7 h-7"
               />
@@ -82,7 +82,7 @@
             <div>
               <img
                 :src="
-                  chainDetails[request.chainAId].token[request.tokenAcontract].icon
+                  chainDetails[338].token[request.tokenAcontract].icon
                 "
                 alt=""
                 class="w-7 h-7"

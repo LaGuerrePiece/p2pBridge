@@ -30,7 +30,7 @@ export function trimAddress(address: string): string {
  */
 export function bnToNumber(n: BN | string, d1e18?: boolean): number {
   const number = new BigNumber(n.toString());
-  return d1e18
+  return !d1e18
     ? Number(number.toFixed())
     : Number(number.dividedToIntegerBy("1e18").toFixed());
 }

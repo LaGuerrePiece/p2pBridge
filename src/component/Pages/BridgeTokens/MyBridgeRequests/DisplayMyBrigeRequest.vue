@@ -14,27 +14,27 @@
       <div class="text-left w-20">From :</div>
       <div class="flex w-24 items-center gap-3">
         <img
-          :src="chainDetails[data[Number(props.id)].chainAId].icon"
+          :src="chainDetails[77].icon"
           alt=""
           class="w-6 h-6"
         />
-        <div>{{ chainDetails[data[Number(props.id)].chainAId].name }}</div>
+        <div class="whitespace-nowrap">{{ chainDetails[77].name }}</div>
       </div>
       <div class="text-left w-20">To :</div>
       <div class="flex w-24 items-center gap-3">
         <img
-          :src="chainDetails[data[Number(props.id)].chainBId].icon"
+          :src="chainDetails[338].icon"
           alt=""
           class="w-6 h-6"
         />
-        <div>{{ chainDetails[data[Number(props.id)].chainBId].name }}</div>
+        <div class="whitespace-nowrap">{{ chainDetails[338].name }}</div>
       </div>
 
       <div class="text-left w-20">Token :</div>
       <div class="flex w-24 justify-start items-center gap-3">
         <img
           :src="
-            chainDetails[data[Number(props.id)].chainAId].token[
+            chainDetails[77].token[
               data[Number(props.id)].tokenAcontract
             ].icon
           "
@@ -43,7 +43,7 @@
         />
         <div>
           {{
-            chainDetails[data[Number(props.id)].chainAId].token[
+            chainDetails[77].token[
               data[Number(props.id)].tokenAcontract
             ].name
           }}

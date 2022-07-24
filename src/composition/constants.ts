@@ -4,6 +4,7 @@ import {
   busd,
   cronos,
   ethereum,
+  gnosis,
   polygon,
   tether,
   usdc,
@@ -42,7 +43,7 @@ export const chainDetails = {
   },
   "77": {
     name: "Gnosis Test",
-    icon: ethereum,
+    icon: gnosis,
     token: {
       "0x1719DED8e908d7b1fe54ba6c6fD280A605e977ee": {
         name: "USDT",

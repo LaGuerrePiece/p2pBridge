@@ -15,7 +15,6 @@ export function myRequests(state: RequestState): Array<Request> {
     if(!Number(key)) return
     const request = state[key].request;
     const lock = state[key].lock;
-
     if (!lock || !request) return;
 
     if (lock && request) {
