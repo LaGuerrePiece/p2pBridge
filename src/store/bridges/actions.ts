@@ -19,18 +19,21 @@ export async function connectContract(
   const promises: Array<Promise<any>> = [];
 
   for (const chainId in CONFIG["chains"]) {
-    this.$state[chainId].contract = new new Web3(
-      new Web3.providers.WebsocketProvider(CONFIG["chains"][chainId].rpcUrls[1])
-    ).eth.Contract(
-      CONFIG.abi.BridgeAbi,
-      CONFIG["chains"][chainId].bridgeAddress
-    );
+    this.$state[chainId] = {
+      contract: new new Web3(CONFIG["chains"][chainId].rpcUrls[0]).eth.Contract(
+        CONFIG.abi.BridgeAbi,
+        CONFIG["chains"][chainId].bridgeAddress
+      ),
+    };
     promises.push(this[BridgesActions.PopulateMyChallenges](Number(chainId)));
     promises.push(this[BridgesActions.PopulateMyRequests](Number(chainId)));
   }
 
-  //Connect to the event before waiting for the promise to resolve
-  await Promise.all(promises);
+  try {
+    await Promise.all(promises);
+  } catch (e: any) {
+    console.log("An error occurend during the contract connection ", e);
+  }
 }
 
 /**
@@ -107,7 +110,11 @@ export async function populateMyChallenges(
       if (!nonce) return;
 
       const index = `${chainAid}${lockId}${chainBId}${nonce}`;
-      challengeStore[ChallengeActions.AddChainAChallenge](index, chainAid, value);
+      challengeStore[ChallengeActions.AddChainAChallenge](
+        index,
+        chainAid,
+        value
+      );
     });
   }
 }

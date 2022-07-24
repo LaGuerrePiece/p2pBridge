@@ -15,3 +15,5 @@ export {default as documentation} from "./documentation.png";
 export {default as tick} from "./tick.png";
 export {default as monkey} from "./monkey.png";
 export {default as nuclear} from "./nuclear.png";
+export {default as cronos} from "./cronos.png";
+export {default as gnosis} from "./gnosis.png";
