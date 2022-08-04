@@ -19,20 +19,20 @@ export function addRequest(
   index = "45"
   if (!this.$state[index]) this.$state[index] = {};
 
-  this.$state[index].request = {
-    amount: bnToNumber(request[0], true),
-    minBidAmount: bnToNumber(request[1], true),
-    chainAId: bnToNumber(request[2]),
-    chainANonce: bnToNumber(request[3]),
-    chainBNonce: bnToNumber(request[4]),
-    chainBId: chaidId,
-    initialSignature: request[5],
-    tokenAcontract: request[6],
-    tokenBContract: request[7],
-    sender: request[8],
-    date: bnToNumber(request[9]),
-    fees: bnToNumber(request[10]),
-  };
+  // this.$state[index].request = {
+  //   amount: bnToNumber(request[0], true),
+  //   minBidAmount: bnToNumber(request[1], true),
+  //   chainAId: bnToNumber(request[2]),
+  //   chainANonce: bnToNumber(request[3]),
+  //   chainBNonce: bnToNumber(request[4]),
+  //   chainBId: chaidId,
+  //   initialSignature: request[5],
+  //   tokenAcontract: request[6],
+  //   tokenBContract: request[7],
+  //   sender: request[8],
+  //   date: bnToNumber(request[9]),
+  //   fees: bnToNumber(request[10]),
+  // };
 }
 
 /**
@@ -54,16 +54,16 @@ export function addLock(
 
   if (!this.$state[index]) this.$state[index] = {};
 
-  this.$state[index].lock = {
-    amount: bnToNumber(lock[0], true),
-    bridged: bnToNumber(lock[1], true),
-    accepted: bnToNumber(lock[2], true),
-    nonce: lockNonce,
-    chainAid: chainId,
-    token: lock[3],
-    owner: lock[4],
-    date: bnToNumber(lock[5]),
-    locked: lock[6],
-    challenged: lock[7],
-  };
+  // this.$state[index].lock = {
+  //   amount: bnToNumber(lock[0], true),
+  //   bridged: bnToNumber(lock[1], true),
+  //   accepted: bnToNumber(lock[2], true),
+  //   nonce: lockNonce,
+  //   chainAid: chainId,
+  //   token: lock[3],
+  //   owner: lock[4],
+  //   date: bnToNumber(lock[5]),
+  //   locked: lock[6],
+  //   challenged: lock[7],
+  // };
 }

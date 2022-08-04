@@ -6,7 +6,8 @@ export type Web3State = {
     provider: WalletConnectProvider | null;
     connected : boolean;
     chainId: number | null;
-    config: typeof CONFIG
+    ens: string | null;
+    config: typeof CONFIG;
 };
 
 export const Web3Actions = {

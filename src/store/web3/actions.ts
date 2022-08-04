@@ -3,6 +3,7 @@ import Web3Modal from "web3modal";
 import Web3 from "web3";
 import { BridgesActions } from "../../types/bridges";
 import { useBridgesStore } from "../bridges";
+import { ethers } from "ethers";
 
 /**
  * @notice Function used to check if the user has granted the access
@@ -29,6 +30,15 @@ export async function connect(
   this: ReturnType<typeof useWeb3Store>
 ): Promise<void> {
 
+  if (this.connected) {
+    this.connected = false
+    this.provider = null;
+    this.web3 = null
+    this.chainId = null;
+    this.ens = null;
+    return
+  }
+
   const web3Modal = new Web3Modal({
     network: "mainnet",
     cacheProvider: true,
@@ -43,6 +53,8 @@ export async function connect(
   this.address = (await this.web3.eth.getAccounts())[0];
   this.chainId = await this.web3.eth.getChainId();
 
+  this.ens = await getEns(this.address)
+
   if (!(this.chainId in this.config.chains)) {
     await switchChain(1337); //On unknown chain switch to ganache for user safety
   }
@@ -50,8 +62,9 @@ export async function connect(
   const bridgesStore = useBridgesStore();
   await bridgesStore[BridgesActions.ConnectContract]();
 
-  provider.on("accountsChanged", (accounts: string[]) => {
+  provider.on("accountsChanged", async (accounts: string[]) => {
     this.address = accounts[0];
+    this.ens = await getEns(this.address)
   });
 
   provider.on("chainChanged", (chainId: string) => {
@@ -96,4 +109,9 @@ export async function switchChain(chainId: number): Promise<void> {
     await addNewChain(chainId);
     await _switchChain(chainId);
   }
+}
+
+async function getEns(address: string) {
+  const provider = new ethers.providers.Web3Provider(window.ethereum)
+  return await provider.lookupAddress(address)
 }

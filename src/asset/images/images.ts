@@ -1,6 +1,8 @@
 export {default as metamask} from "./metamask.png";
 export {default as bridge1} from "./bridge1.png";
 export {default as bridge2} from "./bridge2.png";
+export {default as bridge3} from "./bridge3.png";
+export {default as bridge4} from "./bridge4.png";
 export {default as dollars} from "./dollars.png";
 export {default as avalanche} from "./avalanche.png";
 export {default as ganache} from "./ganache.png";

@@ -2,10 +2,11 @@
   <div
     class="grid gap-3 items-center bg-zinc-900 rounded-lg w-full max-w-2xl shadow-lg shadow-zinc-900/50 p-2 bg-gradient-to-tl from-transparent via-transparent to-black h-96"
   >
+
     <div
       class="justify-self-center rounded-full text-sm font-mono font-bold text-white px-5"
     >
-      Bridge
+      Bridge Token
     </div>
     <div class="w-1/2 m-auto h-px bg-white/10"></div>
     <div
@@ -80,6 +81,7 @@ import {
   polygon,
   tether,
   usdc,
+  bridge2
 } from "../../../../asset/images/images";
 import { useBridgesStore } from "../../../../store/bridges";
 import { useWeb3Store } from "../../../../store/web3";
@@ -211,18 +213,18 @@ async function send() {
       ""
     );
   
-    await bridgeB.methods.publishRequest(
-      amount,
-      amount,
-      date,
-      chainAId,
-      chainANonce,
-      signature,
-      "0x1719DED8e908d7b1fe54ba6c6fD280A605e977ee",
-      "0x1719DED8e908d7b1fe54ba6c6fD280A605e977ee",
-      chainBnonce,
-      fees
-    ).send();
+    // await bridgeB.methods.publishRequest(
+    //   amount,
+    //   amount,
+    //   date,
+    //   chainAId,
+    //   chainANonce,
+    //   signature,
+    //   "0x1719DED8e908d7b1fe54ba6c6fD280A605e977ee",
+    //   "0x1719DED8e908d7b1fe54ba6c6fD280A605e977ee",
+    //   chainBnonce,
+    //   fees
+    // ).send();
   });
 
 }

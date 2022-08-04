@@ -1,9 +1,9 @@
 <template>
   <div
     @click="web3Store[Web3Actions.Connect]()"
-    class="flex items-center rounded-full bg-slate-400 shadow-md shadow-white/20 p-0.5 lg:p-2 cursor-pointer hover:shadow-xl hover:shadow-black transition-all active:shadow-none bg-gradient-to-r from-transparent via-transparent to-black/30"
+    class="flex h-10 items-center p-0.5 lg:p-1 border border-white cursor-pointer"
   >
-    <div class="rounded-full">
+    <div class="rounded-full pl-1">
       <img :src="metamask" alt="" />
     </div>
     <div
@@ -11,7 +11,7 @@
     >
       {{
         web3Store.connected === true
-          ? trimAddress(web3Store.address)
+          ? web3Store.ens || trimAddress(web3Store.address)
           : "Connect"
       }}
     </div>

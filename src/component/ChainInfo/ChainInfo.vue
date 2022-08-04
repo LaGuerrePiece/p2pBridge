@@ -1,10 +1,10 @@
 <template>
   <div
     @click="expandSpan = !expandSpan"
-    class="flex items-center rounded-full bg-slate-400 shadow-md shadow-white/20 p-0.5 lg:p-2 cursor-pointer hover:shadow-xl hover:shadow-black transition-all active:shadow-none bg-gradient-to-r from-transparent via-transparent to-black/30 mr-3"
+    class="flex h-10 w-36 items-center p-0.5 lg:p-2 border border-white cursor-pointer"
     v-if="web3Store.chainId"
   >
-    <div class="rounded-full w-5">
+    <div class="rounded-full w-7 pl-1">
       <img
         :src="
           web3Store.chainId in web3Store.config.chains
@@ -31,9 +31,9 @@
     :key="index"
   >
     <div
-      class="absolute w-36 flex items-center grow rounded-full bg-slate-400 shadow-md shadow-white/20 p-0.5 lg:p-2 cursor-pointer hover:shadow-xl hover:shadow-black transition-all active:shadow-none bg-gradient-to-r from-transparent via-transparent to-black/30 mr-3"
+      class="absolute h-7 w-36 flex items-center border border-white cursor-pointer bg-black"
       :class="expandSpan ? 'opacity-1 z-20' : 'opacity-0 top-0 z-10'"
-      :style="{ top: expandSpan ? (index + 1) * 45 + 30 + 'px' : '' }"
+      :style="{ top: expandSpan ? (index + 1) * 28 + 28 + 'px' : '' }"
       @click.capture="
         web3Store[Web3Actions.SwitchChain](Number(key));
         expandSpan = !expandSpan;

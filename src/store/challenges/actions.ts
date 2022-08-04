@@ -15,16 +15,16 @@ export function addChainAChallenge(
   chaidId: number,
   challenge: Awaited<ReturnType<BridgeDexInstance["getLockChallenges"]>>[0]
 ): void {
-  this.$state[index].chainAChallenges.push({
-    accepted: challenge.accepted,
-    chainId: chaidId,
-    bidAmount: bnToNumber(challenge.bidAmount, true),
-    challenger: challenge.challenger,
-    challengerSignature: challenge.challengerSignature,
-    nonce: bnToNumber(challenge.nonce),
-    otherChain: bnToNumber(challenge.otherChain),
-    token: challenge.token,
-  });
+  // this.$state[index].chainAChallenges.push({
+  //   accepted: challenge.accepted,
+  //   chainId: chaidId,
+  //   bidAmount: bnToNumber(challenge.bidAmount, true),
+  //   challenger: challenge.challenger,
+  //   challengerSignature: challenge.challengerSignature,
+  //   nonce: bnToNumber(challenge.nonce),
+  //   otherChain: bnToNumber(challenge.otherChain),
+  //   token: challenge.token,
+  // });
 }
 
 /**
@@ -39,9 +39,9 @@ export function addChainBChallenge(
   index: string,
   challenge: Awaited<ReturnType<BridgeDexInstance["getDepositDetails"]>>
 ): void {
-  this.$state[index].chainBChallenge = {
-    bidAmount: bnToNumber(challenge.bidAmount, true),
-    fee: bnToNumber(challenge.fees),
-    bridgerSignature: challenge.bridgerSignature,
-  };
+  // this.$state[index].chainBChallenge = {
+  //   bidAmount: bnToNumber(challenge.bidAmount, true),
+  //   fee: bnToNumber(challenge.fees),
+  //   bridgerSignature: challenge.bridgerSignature,
+  // };
 }

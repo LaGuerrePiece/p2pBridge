@@ -7,4 +7,5 @@ export const state: Web3State = {
     connected: false,
     config: CONFIG,
     chainId: null,
+    ens: null,
 };
