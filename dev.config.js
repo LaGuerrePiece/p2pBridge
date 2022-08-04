@@ -94,10 +94,10 @@ const chains = {
 // };
 
 const abi = {
-  BridgeAbi: JSON.parse(fs.readFileSync("./build/contracts/BridgeDex.json"))[
+  BridgeAbi: JSON.parse(fs.readFileSync("./build/contracts/LpFirstHtlc.json"))[
     "abi"
   ],
-  ERC20Abi: JSON.parse(fs.readFileSync("./build/contracts/ERC20.json"))["abi"],
+  ERC20Abi: JSON.parse(fs.readFileSync("./build/contracts/DummyERC20.json"))["abi"],
 };
 
 const providerOptions = {
