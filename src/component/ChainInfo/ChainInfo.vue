@@ -1,7 +1,7 @@
 <template>
   <div
     @click="expandSpan = !expandSpan"
-    class="flex h-10 w-36 items-center p-0.5 lg:p-2 border border-white cursor-pointer"
+    class="flex h-10 w-36 items-center p-0.5 lg:p-2 border border-white rounded-lg ursor-pointer"
     v-if="web3Store.chainId"
   >
     <div class="rounded-full w-7 pl-1">

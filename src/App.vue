@@ -4,7 +4,7 @@
       <NavBar />
     </div>
     <div class="relative flex justify-center">
-      <BridgeTokens />
+      <BridgeRequest />
     </div>
   </div>
   <notifications position="bottom right" classes="my-notification" />
@@ -14,7 +14,7 @@ import { Suspense as suspense_, SuspenseProps, VNodeProps } from "vue";
 import NavBar from "./component/NavBar/NavBar.vue";
 import { useWeb3Store } from "./store/web3";
 import { Web3Actions } from "./types/web3";
-import BridgeTokens from "./component/Pages/BridgeTokens/BridgeTokens.vue";
+import BridgeRequest from "./component/BridgeRequest/BridgeRequest.vue";
 const web3Store = useWeb3Store();
 web3Store[Web3Actions.CheckConnection]();
 

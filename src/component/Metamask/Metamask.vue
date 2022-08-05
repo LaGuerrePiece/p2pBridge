@@ -1,7 +1,7 @@
 <template>
   <div
     @click="web3Store[Web3Actions.Connect]()"
-    class="flex h-10 items-center p-0.5 lg:p-1 border border-white cursor-pointer"
+    class="flex h-10 items-center p-0.5 lg:p-1 border border-white rounded-lg cursor-pointer"
   >
     <div class="rounded-full pl-1">
       <img :src="metamask" alt="" />

@@ -1,38 +1,40 @@
 <template>
   <div
-    class="grid gap-3 items-center bg-zinc-900 rounded-lg w-full max-w-2xl shadow-lg shadow-zinc-900/50 p-2 bg-gradient-to-tl from-transparent via-transparent to-black h-96"
+    class="grid gap-3 items-center bg-zinc-800 rounded-lg w-1/2 max-w-xl p-2 border-2 border-white text-white h-96"
   >
-
     <div
-      class="justify-self-center rounded-full text-sm font-mono font-bold text-white px-5"
+      class="justify-self-center text-sm font-mono font-bold text-white px-5"
     >
-      Bridge Token
+      go nuclear
     </div>
-    <div class="w-1/2 m-auto h-px bg-white/10"></div>
+    <div class="flex flex-row justify-self-left justify-items-left w-3/4 h-10">
+      <div class="flex justify-items-center pl-2 pr-3 py-1">
+        From
+      </div>
+      <SelectElementSpan
+        class="rounded-lg bg-black h-7"
+        v-model:actualNetwork="fromNetwork"
+      ></SelectElementSpan>
+    </div>
+    <div class="flex flex-row justify-self-center justify-items-center w-3/4 h-10">
+      <div class="flex justify-items-center w-20">
+        To
+      </div>
+      <SelectElementSpan
+        class="flex w-36"
+        v-model:actualNetwork="toNetwork"
+      ></SelectElementSpan>
+    </div>
+
     <div
       class="grid justify-self-center w-full grid-cols-2 gap-y-5 justify-items-center items-center font-mono text-white text-xs"
     >
-      <div class="text-left w-20">From :</div>
-
-      <SelectElementSpan
-        class="w-36"
-        :data="data.networks"
-        v-model:actualValue="fromNetwork"
-      ></SelectElementSpan>
-      <div class="text-left w-20">To :</div>
-
-      <SelectElementSpan
-        class="w-36"
-        :data="data.networks"
-        v-model:actualValue="toNetwork"
-      ></SelectElementSpan>
       <div class="text-left w-20">Token :</div>
 
-      <SelectElementSpan
+      <!-- <SelectElementSpan
         class="w-36"
-        :data="data.tokens"
         v-model:actualValue="token"
-      ></SelectElementSpan>
+      ></SelectElementSpan> -->
       <div class="w-1/6 m-auto h-px bg-white/10 col-span-2"></div>
       <div class="text-left w-20">Amount :</div>
       <div>
@@ -67,102 +69,22 @@ import { ref } from "vue";
 import {
   BridgeDexInstance,
   ERC20Instance,
-} from "../../../../../types/truffle-contracts";
-import { AllEvents } from "../../../../../types/truffle-contracts/ERC20";
-import {
-  avalanche,
-  bsc,
-  busd,
-  celo,
-  cronos,
-  ethereum,
-  ganache,
-  gnosis,
-  polygon,
-  tether,
-  usdc,
-  bridge2
-} from "../../../../asset/images/images";
-import { useBridgesStore } from "../../../../store/bridges";
-import { useWeb3Store } from "../../../../store/web3";
-import { Contractify, Web3ify } from "../../../../types/commons";
-import { Web3Actions } from "../../../../types/web3";
+} from "../../../types/truffle-contracts";
+import { AllEvents } from "../../../types/truffle-contracts/ERC20";
+import { useBridgesStore } from "../../store/bridges";
+import { useWeb3Store } from "../../store/web3";
+import { Contractify, Web3ify } from "../../types/commons";
+import { Web3Actions } from "../../types/web3";
 import SelectElementSpan from "./SelectElementSpan.vue";
 
 const bridgeStore = useBridgesStore();
 const web3Store = useWeb3Store();
 
-const fromNetwork = ref<{ name: string; icon: any; id: number }>({
-  name: "Select",
-  icon: avalanche,
-  id: 0,
-});
-const toNetwork = ref<{ name: string; icon: any; id: number }>({
-  name: "Select",
-  icon: avalanche,
-  id: 0,
-});
-const token = ref<{ name: string; icon: any; id: number }>({
-  name: "Select",
-  icon: avalanche,
-  id: 0,
-});
+const fromNetwork = ref<number>(1)
+const toNetwork = ref<number>(137)
+const token = ref<string>("USDC");
 const amount = ref<number>();
 const maxFees = ref<number>();
-
-const data = {
-  networks: [
-    {
-      name: "Ganache",
-      icon: ganache,
-      id: 1337,
-    },
-    {
-      name: "Cronos",
-      icon: cronos,
-      id: 338,
-    },
-    {
-      name: "Gnosis",
-      icon: gnosis,
-      id: 77,
-    },
-    {
-      name: "Celo",
-      icon: celo,
-    },
-    {
-      name: "Avalanche",
-      icon: avalanche,
-    },
-    {
-      name: "BSC",
-      icon: bsc,
-    },
-    {
-      name: "Polygon",
-      icon: polygon,
-    },
-    {
-      name: "Ethereum",
-      icon: ethereum,
-    },
-  ],
-  tokens: [
-    {
-      name: "USDT",
-      icon: tether,
-    },
-    {
-      name: "BUSD",
-      icon: busd,
-    },
-    {
-      name: "USDC",
-      icon: usdc,
-    },
-  ],
-};
 
 async function send() {
   const amount = new BigNumber("1000e18").toFixed();

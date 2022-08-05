@@ -1,6 +1,6 @@
 <template>
     <div class="py-1 flex pl-3 pr-1 text-3xl font-sans font-bold text-white">
-        <span class="py-3">Welcome to&nbsp;</span>
+        <!-- <span class="py-3">Welcome to&nbsp;</span> -->
         <img class="h-14 pr-1" :src="nuclear" alt="" />
         <img class="h-16" :src="bridge4" alt="" />
     </div>
