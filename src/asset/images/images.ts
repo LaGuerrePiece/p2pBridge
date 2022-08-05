@@ -21,3 +21,8 @@ export {default as cronos} from "./cronos.png";
 export {default as gnosis} from "./gnosis.png";
 export {default as celo} from "./celo.png";
 export {default as arrowupdown} from "./arrowupdown.svg";
+export {default as rocket} from "./rocket.png";
+export {default as rocket2} from "./rocket2.png";
+export {default as flag} from "./flag.png";
+export {default as flag2} from "./flag2.png";
+export {default as moneybag} from "./moneybag.png";

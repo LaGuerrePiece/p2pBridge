@@ -1,7 +1,7 @@
 <template>
   <div
     @click="expandSpan = !expandSpan"
-    class="flex w-36 items-center p-0.5 lg:p-2 border border-white cursor-pointer"
+    class="flex w-28 items-center p-0.5 lg:p-2 border border-white cursor-pointer"
   > 
     <div class="rounded-full w-6 pl-1">
       <img

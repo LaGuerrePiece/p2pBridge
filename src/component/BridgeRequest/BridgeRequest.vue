@@ -1,21 +1,45 @@
 <template>
   <div
-    class="grid gap-1 items-center bg-zinc-800 rounded-lg w-96 max-w-xl p-2 border-2 border-white text-white h-96"
+    class="grid gap-1 items-center bg-zinc-800 rounded-lg max-w-xl p-2 border-2 border-white text-white h-72 w-[28rem]"
   >
     <div
       class="justify-self-center text-sm font-mono font-bold text-white px-5"
     >
       go nuclear
     </div>
-    <div class="flex flex-row justify-self-left justify-items-left w-3/4 h-8">
-      <div class="flex justify-items-center pl-2 pr-3 py-1">
-        From
+    <div class="flex flex-row justify-evenly">
+      <div class="flex items-center flex-row h-7">
+        <div class="flex h-10 pr-2">
+          <img
+            :src="rocket2"
+            alt=""
+          />
+        </div>
+        <SelectElementSpan
+          class="rounded-lg bg-black h-7"
+          v-model:actualNetwork="fromNetwork"
+        ></SelectElementSpan>
       </div>
-      <SelectElementSpan
-        class="rounded-lg bg-black h-7"
-        v-model:actualNetwork="fromNetwork"
-      ></SelectElementSpan>
+      <div class="flex w-6">
+        <img
+          :src="arrowupdown"
+          alt=""
+        />
+      </div>
+      <div class="flex items-center flex-row h-7">
+        <div class="flex h-10 pr-2">
+          <img
+            :src="flag2"
+            alt=""
+          />
+        </div>
+        <SelectElementSpan
+          class="rounded-lg bg-black h-7"
+          v-model:actualNetwork="toNetwork"
+        ></SelectElementSpan>
+      </div>
     </div>
+    
     <div class="flex justify-between w-full h-16 border border-white rounded-lg bg-black">
       <div class="flex flex-col pl-2 pt-2">
         <div class="text-xs">
@@ -38,40 +62,23 @@
         />
       </div>
     </div>
-    <div class="justify-self-center w-6">
-      <img
-        :src="arrowupdown"
-        alt=""
-      />
-    </div>
-    
-    <div class="flex flex-row justify-self-left justify-items-left w-3/4 h-6">
-      <div class="flex justify-items-center pl-2 pr-7 py-1">
-        To
-      </div>
-      <SelectElementSpan
-        class="rounded-lg bg-black h-7"
-        v-model:actualNetwork="toNetwork"
-      ></SelectElementSpan>
-    </div>
-
     <div
-      class="grid justify-self-center w-full grid-cols-2 gap-y-5 justify-items-center items-center font-mono text-white text-xs"
+      class="grid justify-items-center"
     >
-      <div class="text-left w-20">Max fees :</div>
-      <div>
-        <input
-          v-model.number="maxFees"
-          placeholder="Enter amount"
-          class="bg-zinc-500 text-center rounded-full px-2 py-0.5 text-xs appearance-none outline-none w-full ring-1 ring-offset-zinc-800 ring-offset-2 ring-yellow-500"
-        />
-      </div>
-      <div class="w-1/6 m-auto h-px bg-white/10 col-span-2"></div>
       <div
         @click="send"
-        class="col-span-2 rounded-full px-2 py-1 bg-zinc-700 w-2/3 sm:w-1/2 lg:w-1/3 text-center text-md bg-gradient-to-br from-white/20 via-transparent to-black/50 shadow-lg hover:shadow-md active:to-transparent active:from-transparent shadow-black cursor-pointer transition-all"
+        class="flex w-36 h-10 items-center text-center text-md rounded-lg bg-black border border-white cursor-pointer"
       >
-        Send
+        <div class="flex grow justify-center font-mono font-bold text-lg text-white">
+          Choose
+        </div>
+        <div class="rounded-full pr-3">
+          <img
+            class="h-8"
+            :src="moneybag"
+            alt=""
+           />
+          </div>
       </div>
     </div>
   </div>
@@ -95,7 +102,10 @@ import {
   busd,
   tether,
   usdc,
-  arrowupdown
+  arrowupdown,
+  rocket2,
+  flag2,
+  moneybag
 } from "../../asset/images/images";
 
 const bridgeStore = useBridgesStore();
