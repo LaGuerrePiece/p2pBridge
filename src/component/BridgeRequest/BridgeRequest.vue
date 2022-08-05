@@ -1,6 +1,6 @@
 <template>
   <div
-    class="grid gap-1 items-center bg-zinc-800 rounded-lg w-1/2 max-w-xl p-2 border-2 border-white text-white h-96"
+    class="grid gap-1 items-center bg-zinc-800 rounded-lg w-96 max-w-xl p-2 border-2 border-white text-white h-96"
   >
     <div
       class="justify-self-center text-sm font-mono font-bold text-white px-5"
