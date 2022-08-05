@@ -1,13 +1,13 @@
 <template>
   <div
-    class="grid gap-3 items-center bg-zinc-800 rounded-lg w-1/2 max-w-xl p-2 border-2 border-white text-white h-96"
+    class="grid gap-1 items-center bg-zinc-800 rounded-lg w-1/2 max-w-xl p-2 border-2 border-white text-white h-96"
   >
     <div
       class="justify-self-center text-sm font-mono font-bold text-white px-5"
     >
       go nuclear
     </div>
-    <div class="flex flex-row justify-self-left justify-items-left w-3/4 h-10">
+    <div class="flex flex-row justify-self-left justify-items-left w-3/4 h-8">
       <div class="flex justify-items-center pl-2 pr-3 py-1">
         From
       </div>
@@ -16,12 +16,41 @@
         v-model:actualNetwork="fromNetwork"
       ></SelectElementSpan>
     </div>
-    <div class="flex flex-row justify-self-center justify-items-center w-3/4 h-10">
-      <div class="flex justify-items-center w-20">
+    <div class="flex justify-between w-full h-16 border border-white rounded-lg bg-black">
+      <div class="flex flex-col pl-2 pt-2">
+        <div class="text-xs">
+          Send
+        </div>
+        <input
+            v-model.number="amount"
+            type="number"
+            placeholder="0.0"
+            class="f bg-black text-lg w-40 outline-none"
+          />
+      </div>
+      <div class="flex flex-col pr-2 pt-1 items-end">
+        <div class="text-[10px] text-gray-400 pl-1 pt-1 pb-2">
+          Balance : azeazeazeaze
+        </div>
+        <SelectTokenButton
+        class="rounded-lg bg-black h-7"
+        v-model:actualToken="token"
+        />
+      </div>
+    </div>
+    <div class="justify-self-center w-6">
+      <img
+        :src="arrowupdown"
+        alt=""
+      />
+    </div>
+    
+    <div class="flex flex-row justify-self-left justify-items-left w-3/4 h-6">
+      <div class="flex justify-items-center pl-2 pr-7 py-1">
         To
       </div>
       <SelectElementSpan
-        class="flex w-36"
+        class="rounded-lg bg-black h-7"
         v-model:actualNetwork="toNetwork"
       ></SelectElementSpan>
     </div>
@@ -29,21 +58,6 @@
     <div
       class="grid justify-self-center w-full grid-cols-2 gap-y-5 justify-items-center items-center font-mono text-white text-xs"
     >
-      <div class="text-left w-20">Token :</div>
-
-      <!-- <SelectElementSpan
-        class="w-36"
-        v-model:actualValue="token"
-      ></SelectElementSpan> -->
-      <div class="w-1/6 m-auto h-px bg-white/10 col-span-2"></div>
-      <div class="text-left w-20">Amount :</div>
-      <div>
-        <input
-          v-model.number="amount"
-          placeholder="Enter amount"
-          class="bg-zinc-500 text-center rounded-full px-2 py-0.5 text-xs appearance-none outline-none w-full ring-1 ring-offset-zinc-800 ring-offset-2 ring-yellow-500"
-        />
-      </div>
       <div class="text-left w-20">Max fees :</div>
       <div>
         <input
@@ -76,6 +90,13 @@ import { useWeb3Store } from "../../store/web3";
 import { Contractify, Web3ify } from "../../types/commons";
 import { Web3Actions } from "../../types/web3";
 import SelectElementSpan from "./SelectElementSpan.vue";
+import SelectTokenButton from "./SelectTokenButton.vue";
+import {
+  busd,
+  tether,
+  usdc,
+  arrowupdown
+} from "../../asset/images/images";
 
 const bridgeStore = useBridgesStore();
 const web3Store = useWeb3Store();
@@ -85,6 +106,12 @@ const toNetwork = ref<number>(137)
 const token = ref<string>("USDC");
 const amount = ref<number>();
 const maxFees = ref<number>();
+
+const tokens: {[index: string]: any} = {
+  "USDT": tether,
+  "BUSD": busd,
+  "USDC": usdc,
+}
 
 async function send() {
   const amount = new BigNumber("1000e18").toFixed();

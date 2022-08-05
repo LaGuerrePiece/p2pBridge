@@ -20,3 +20,4 @@ export {default as nuclear} from "./nuclear.png";
 export {default as cronos} from "./cronos.png";
 export {default as gnosis} from "./gnosis.png";
 export {default as celo} from "./celo.png";
+export {default as arrowupdown} from "./arrowupdown.svg";

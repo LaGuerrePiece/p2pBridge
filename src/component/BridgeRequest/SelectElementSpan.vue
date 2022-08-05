@@ -1,7 +1,7 @@
 <template>
   <div
     @click="expandSpan = !expandSpan"
-    class="flex h-10 w-36 items-center p-0.5 lg:p-2 border border-white cursor-pointer"
+    class="flex w-36 items-center p-0.5 lg:p-2 border border-white cursor-pointer"
   > 
     <div class="rounded-full w-6 pl-1">
       <img
@@ -17,7 +17,7 @@
     </div>
     <div
     class="absolute flex flex-col w-36 rounded-lg border items-center bg-black border-white cursor-pointer"
-    :class="expandSpan ? 'opacity-1 z-20 top-[80px]' : 'opacity-0 invisible z-10'">
+    :class="expandSpan ? 'opacity-1 z-20 top-[90px]' : 'opacity-0 invisible z-10'">
       <template v-for="(chain, key, index) in removeActualChainFromList(
         web3Store.config.chains, actualNetwork
       )" :key="index">
