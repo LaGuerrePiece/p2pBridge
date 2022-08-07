@@ -1,6 +1,6 @@
 <template>
   <div
-    class="grid gap-1 items-center bg-zinc-800 rounded-lg max-w-xl p-2 border-2 border-white text-white h-72 w-[28rem]"
+    class="grid gap-1 items-center rounded-lg max-w-xl p-2 border-2  border-yellow-400 text-white h-72 w-[28rem]"
   >
     <div
       class="justify-self-center text-sm font-mono font-bold text-white px-5"
@@ -20,10 +20,10 @@
           v-model:actualNetwork="fromNetwork"
         ></SelectElementSpan>
       </div>
-      <div class="flex w-6 cursor-pointer">
+      <div class="flex h-6 cursor-pointer">
         <img
           @click="rotateNetworks"
-          :src="arrowupdown"
+          :src="arrow"
           alt=""
         />
       </div>
@@ -41,7 +41,7 @@
       </div>
     </div>
     
-    <div class="flex justify-between justify-self-center w-full h-16 border border-white rounded-lg bg-black">
+    <div class="flex justify-between justify-self-center w-full h-16 border  border-yellow-400 rounded-lg bg-black">
       <div class="flex flex-col pl-2 pt-2">
         <div class="text-xs">
           Send
@@ -66,7 +66,7 @@
 
     <div 
     v-if="providerChosen"
-    class="flex justify-between w-full h-16 border border-white rounded-lg bg-black">
+    class="flex justify-between w-full h-16 border  border-yellow-400 rounded-lg bg-black">
       <div class="flex flex-col pl-2 pt-2">
         <div class="text-xs">
           Receive
@@ -91,7 +91,7 @@
       <div
         v-if="!providerChosen"
         @click="modalOpen = true"
-        class="flex w-36 h-10 items-center rounded-lg bg-black border border-white cursor-pointer"
+        class="flex w-36 h-10 items-center rounded-lg bg-black border  border-yellow-400 cursor-pointer"
       >
         <div class="flex grow justify-end font-mono font-bold text-lg text-white pr-2">
           Choose
@@ -103,7 +103,7 @@
       <div
         v-else
         @click="approve"
-        class="flex w-48 h-10 items-center rounded-lg bg-black border border-white cursor-pointer"
+        class="flex w-48 h-10 items-center rounded-lg bg-black border  border-yellow-400 cursor-pointer"
       >
         <div class="flex grow justify-end font-mono font-bold text-lg text-white pr-2">
           Approve
@@ -151,7 +151,7 @@ import { Contractify, Web3ify } from "../../types/commons";
 
 import erc20Abi from "../../abis/erc20Abi.json"
 import {
-  arrowupdown,
+  arrow,
   rocket2,
   flag2
 } from "../../asset/images/images";

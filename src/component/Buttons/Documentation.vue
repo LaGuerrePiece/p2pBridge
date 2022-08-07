@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex h-10 items-center p-0.5 lg:p-1 border border-white rounded-lg cursor-pointer"
+    class="flex h-10 items-center p-0.5 lg:p-1 border  border-yellow-400 rounded-lg cursor-pointer"
   >
     <div class="rounded-full pl-1">
       <img :src="documentation" alt="" class="w-7 h-7"/>

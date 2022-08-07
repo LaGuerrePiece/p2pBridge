@@ -4,7 +4,7 @@
     @click="$emit('close')"
   >
     <div
-      class="absolute top-20 left-1/2 w-3/4 max-w-5xl max-h-[75%] bg-black border-2 border-white text-white -translate-x-1/2 p-4 rounded-xl overflow-y-scroll"
+      class="absolute top-20 left-1/2 w-3/4 max-w-5xl max-h-[75%] bg-black border-2  border-yellow-400 text-white -translate-x-1/2 p-4 rounded-xl overflow-y-scroll"
       @click.stop=""
     >
       <div
