@@ -10,7 +10,7 @@
         $emit('close')"
       >
         <div
-          class="col-span-2 px-5 p-1 bg-black rounded-full border  border-teal-300 text-white mb-2"
+          class="col-span-2 px-5 p-1 bg-black rounded-full border  border-primary text-white mb-2"
         >
           {{ provider.address }}
         </div>

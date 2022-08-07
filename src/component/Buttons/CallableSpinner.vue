@@ -23,9 +23,9 @@ const connecting = ref(false);
 
 const props = defineProps<{
   function: Function;
-  primary: string;
+ primary: string;
   spinnerClass: string;
-  secondary: string;
+ secondary: string;
   disabled?: boolean;
 }>();
 

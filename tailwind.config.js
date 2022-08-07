@@ -10,8 +10,24 @@ module.exports = {
   },
   variants: {},
   plugins: [
-    require('flowbite/plugin'),
     require("daisyui")
-  ]
+  ],
+  daisyui: {
+    themes: [
+      {
+        mytheme: {
+          "primary": "#2E98C6",
+          "secondary": "#1D5F7C",
+          "accent": "#F471B5",
+          "neutral": "#1D283A",
+          "base-100": "#0F1729",
+          "info": "#0CA6E9",
+          "success": "#2BD4BD",
+          "warning": "#F4C152",
+          "error": "#FB6F84",
+        },
+      },
+    ],
+  },
 }
 

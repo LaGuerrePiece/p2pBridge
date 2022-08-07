@@ -1,6 +1,6 @@
 <template>
   <div
-    class="grid gap-1 items-center rounded-lg max-w-xl p-2 border-2 border-teal-300 text-white h-96 w-[28rem]"
+    class="grid gap-1 items-center rounded-lg max-w-xl p-2 border-2 border-primary text-white h-96 w-[28rem]"
   >
     <div
       class="justify-self-center text-sm font-mono font-bold text-white px-5"
@@ -23,12 +23,12 @@
         </div>
         <label for="default-toggle" class="inline-flex relative items-center cursor-pointer">
           <input type="checkbox" id="default-toggle" class="sr-only peer">
-          <div class="w-11 h-6 rounded-full peer bg-teal-700 peer-checked:after:translate-x-full after:absolute after:top-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-300"></div>
+          <div class="w-11 h-6 rounded-full peer bg-secondary peer-checked:after:translate-x-full after:absolute after:top-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
         </label>
       </div>
     </div>
     
-    <div class="flex justify-between w-full h-16 border border-teal-300 rounded-lg bg-black">
+    <div class="flex justify-between w-full h-16 border border-primary rounded-lg bg-black">
       <div class="flex flex-col pl-2 pt-2">
         <div class="text-xs">
           Send
@@ -70,7 +70,7 @@
     </div>
 
     <div
-      class="flex justify-between w-full h-16 border border-teal-300 rounded-lg bg-black">
+      class="flex justify-between w-full h-16 border border-primary rounded-lg bg-black">
       <div class="flex flex-col pl-2 pt-2">
         <div class="text-xs">
           Receive
@@ -95,7 +95,7 @@
       <div
         v-if="!providerChosen"
         @click="modalOpen = true"
-        class="flex w-36 h-10 items-center rounded-lg bg-black border  border-teal-300 cursor-pointer"
+        class="flex w-36 h-10 items-center rounded-lg bg-black border  border-primary cursor-pointer"
       >
         <div class="flex grow justify-end font-mono font-bold text-lg text-white pr-2">
           Choose
@@ -107,7 +107,7 @@
       <div
         v-else
         @click="approve"
-        class="flex w-48 h-10 items-center rounded-lg bg-black border  border-teal-300 cursor-pointer"
+        class="flex w-48 h-10 items-center rounded-lg bg-black border  border-primary cursor-pointer"
       >
         <div class="flex grow justify-end font-mono font-bold text-lg text-white pr-2">
           Approve

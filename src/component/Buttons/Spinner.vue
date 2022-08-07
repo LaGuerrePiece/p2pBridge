@@ -25,7 +25,7 @@
 </template>
 <script setup lang="ts">
 const props = defineProps<{
-  primaryClass: string;
-  secondaryClass: string;
+ primaryClass: string;
+ secondaryClass: string;
 }>();
 </script>
