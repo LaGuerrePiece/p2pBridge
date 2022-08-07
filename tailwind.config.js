@@ -1,7 +1,7 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
 
 module.exports = {
-  content: ['./src/**/*.vue', './public/index.html',],
+  content: ['./src/**/*.vue', './public/index.html', "./node_modules/flowbite/**/*.js"],
   theme: {
     screens: {
     xs: '475px',
@@ -9,6 +9,9 @@ module.exports = {
       },
   },
   variants: {},
-  plugins: [],
+  plugins: [
+    require('flowbite/plugin'),
+    require("daisyui")
+  ]
 }
 
