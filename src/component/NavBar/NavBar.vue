@@ -1,12 +1,14 @@
 <template>
-    <div class="py-1 flex pl-1 pr-1 text-3xl font-sans font-bold text-white">
+<div class="flex object-right w-screen h-24 ">
+    <div class="py-1 flex pl-1 pr-1 text-3xl font-sans font-bold text-white cursor-pointer" @click="">
         <!-- <span class="py-3">Welcome to&nbsp;</span> -->
-        <img class="h-20 pr-1" :src="radioactive" alt="" />
+        <img class="h-16 pr-1" :src="radioactive" alt="" />
         <!-- <img class="h-16" :src="bridge4" alt="" /> -->
+        <div class="mt-2.5 text-5xl">Nuclear</div>
     </div>
-    <div class="py-1 flex flex-row-reverse pl-3 pr-1 text-3xl font-sans font-bold text-white grow">
+    <div class="py-1 flex flex-row-reverse pl-3 pr-1 text-3xl font-sans font-bold text-white grow items-center justify-right">
         <div class="shrink-0">
-            <div class="p-1 flex items-center">
+            <div class="p-1 flex items-center mr-5">
                 <Metamask />
             </div>
         </div>
@@ -21,6 +23,7 @@
             </div>
         </div>
     </div>
+</div>
 </template>
 
 

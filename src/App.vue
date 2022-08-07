@@ -1,5 +1,5 @@
 <template>
-  <div class="m-2 grid gap-6">
+  <div class="m-2 grid gap-6 h-screen w-screen">
     <div class="flex">
       <NavBar />
     </div>

@@ -19,10 +19,10 @@
       </div>
       <div class="flex flex-row justify-end">
         <div class="flex items-center text-xs pl-2 pr-3">
-          expert mode
+          Easy mode
         </div>
         <label for="default-toggle" class="inline-flex relative items-center cursor-pointer">
-          <input type="checkbox" id="default-toggle" class="sr-only peer">
+          <input type="checkbox" id="ezmode" v-model="ezmode" checked="true" class="sr-only peer">
           <div class="w-11 h-6 rounded-full peer bg-secondary peer-checked:after:translate-x-full after:absolute after:top-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
         </label>
       </div>
@@ -42,7 +42,7 @@
       </div>
       <div class="flex flex-col pr-2 pt-1 items-end">
         <div class="text-[10px] text-gray-400 pl-1 pt-1 pb-2">
-          Balance : azeazeazeaze
+          Balance : 100
         </div>
         <SelectTokenButton
         class="rounded-lg bg-black h-7"
@@ -93,7 +93,19 @@
       class="grid justify-items-center"
     >
       <div
-        v-if="!providerChosen"
+        v-if="ezmode"
+        @click="modalOpen = true"
+        class="flex w-36 h-10 items-center rounded-lg bg-black border  border-teal-300 cursor-pointer"
+      >
+        <div class="flex grow justify-end font-mono font-bold text-lg text-white pr-2">
+          Bridge
+        </div>
+        <div class="flex grow font-mono font-bold text-3xl text-white">
+          💰
+        </div>
+      </div>
+      <div
+        v-else-if="!providerChosen"
         @click="modalOpen = true"
         class="flex w-36 h-10 items-center rounded-lg bg-black border  border-primary cursor-pointer"
       >
@@ -170,6 +182,8 @@ const providerChosen = ref<string>();
 
 const modalOpen = ref<boolean>(false);
 const checked = ref<boolean>(false);
+
+const ezmode= ref<boolean>(true);
 
 function rotateNetworks() {
     const from = fromNetwork.value
