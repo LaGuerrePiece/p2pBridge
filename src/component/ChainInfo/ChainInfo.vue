@@ -7,9 +7,9 @@
     <div class="rounded-full w-7 pl-1">
       <img
         :src="
-          web3Store.chainId in web3Store.config.chains
-            ? icons[web3Store.config.chains[web3Store.chainId].chainName]
-            : icons.Unknown
+          web3Store.chainId in chainDetails
+            ? chainDetails[web3Store.chainId].icon
+            : unknownChainIcon
         "
         alt=""
       />
@@ -18,15 +18,15 @@
       class="px-3 flex grow justify-center font-mono font-bold text-xs text-white w-28"
     >
       {{
-        web3Store.chainId in web3Store.config.chains
-          ? web3Store.config.chains[web3Store.chainId].chainName
+        web3Store.chainId in chainDetails
+          ? chainDetails[web3Store.chainId].name
           : "Unknown chain"
       }}
     </div>
   </div>
   <template
     v-for="(chain, key, index) in removeCurrentChainFromList(
-      web3Store.config.chains
+      chainDetails
     )"
     :key="index"
   >
@@ -40,51 +40,34 @@
       "
     >
       <div class="rounded-full w-5">
-        <img :src="icons[chain.chainName]" alt="" class="w-5" />
+        <img :src="chain.icon" alt="" class="w-5" />
       </div>
       <div
         class="px-3 flex grow justify-center font-mono font-bold text-xs text-white"
       >
-        {{ chain.chainName }}
+        {{ chain.name }}
       </div>
     </div>
   </template>
 </template>
 <script setup lang="ts">
-import {
-  ethereum,
-  avalanche,
-  bsc,
-  polygon,
-  ganache,
-  unknown,
-  cronos,
-  gnosis,
-} from "../../asset/images/images";
+import { unknownChainIcon } from "../../asset/images/images";
 import { useWeb3Store } from "../../store/web3";
 import { Web3Actions, Web3State } from "../../types/web3";
+import { ChainDetails } from "../../types/constants";
 import { ref } from "vue";
+import { chainDetails } from "../../composition/constants"
 
-const icons: any = {
-  Ethereum: ethereum,
-  Avalanche: avalanche,
-  BSC: bsc,
-  Polygon: polygon,
-  Ganache: ganache,
-  Unknown: unknown,
-  "Cronos Test": cronos,
-  "Gnosis Test": gnosis,
-};
 const web3Store = useWeb3Store();
 console.log("web3Store.connected", web3Store.connected);
 
 const expandSpan = ref<Boolean>(false);
 
 function removeCurrentChainFromList(
-  supportedList: Web3State["config"]["chains"]
+  chainDetails: ChainDetails
 ) {
-  if (!web3Store.chainId) return supportedList;
-  let newList = Object.assign({}, supportedList);
+  if (!web3Store.chainId) return chainDetails;
+  let newList = Object.assign({}, chainDetails);
   delete newList[web3Store.chainId];
   return newList;
 }

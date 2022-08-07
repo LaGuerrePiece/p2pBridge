@@ -158,6 +158,8 @@ contract LpFirstHtlc {
         delete idToLpLock[_lockId];
     }
 
+    // Add or remove liquidity from lp lock
+
     function addLiquidity(uint256 _lockId, uint256 _amount) external {
         LpLock storage lpLock = idToLpLock[_lockId];
         require(lpLock.owner == msg.sender, "not the lp");
@@ -165,6 +167,24 @@ contract LpFirstHtlc {
         lpLock.amount += _amount;
 
         ERC20(lpLock.token).transferFrom(msg.sender, address(this), _amount);
+    }
+
+    function removeLiquidity(uint256 _lockId, uint256 _amount) external {
+        LpLock storage lpLock = idToLpLock[_lockId];
+        require(lpLock.owner == msg.sender, "not the lp");
+
+        Auth[] memory auth = lpLock.auths;
+
+        uint256 amountEngagedInAuth = 0;
+
+        for (uint256 i = 0; i < auth.length; i++) {
+            if (auth[i].deadline < block.timestamp){
+                amountEngagedInAuth += auth[i].amount;
+            }
+        }
+        require(lpLock.amount - amountEngagedInAuth > _amount, "cant remove that much");
+
+        ERC20(lpLock.token).transfer(msg.sender, _amount);
     }
 
     function _verify(

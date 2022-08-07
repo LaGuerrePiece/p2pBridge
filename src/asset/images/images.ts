@@ -12,7 +12,7 @@ export {default as ethereum} from "./ethereum.png";
 export {default as tether} from "./tether.png";
 export {default as busd} from "./busd.png";
 export {default as usdc} from "./usdc.png";
-export {default as unknown} from "./unknown.png";
+export {default as unknownChainIcon} from "./unknown.png";
 export {default as documentation} from "./documentation.png";
 export {default as tick} from "./tick.png";
 export {default as monkey} from "./monkey.png";

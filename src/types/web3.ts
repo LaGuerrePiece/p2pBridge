@@ -7,7 +7,6 @@ export type Web3State = {
     connected : boolean;
     chainId: number | null;
     ens: string | null;
-    config: typeof CONFIG;
 };
 
 export const Web3Actions = {

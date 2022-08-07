@@ -5,7 +5,6 @@ export const state: Web3State = {
     web3: null,
     provider: null,
     connected: false,
-    config: CONFIG,
     chainId: null,
     ens: null,
 };

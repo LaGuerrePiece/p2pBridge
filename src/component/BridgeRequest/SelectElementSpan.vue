@@ -5,21 +5,21 @@
   > 
     <div class="rounded-full w-6 pl-1">
       <img
-        :src="icons[actualNetwork]"
+        :src="chainDetails[actualNetwork].icon"
         alt=""
       />
     </div>
     <div
       class="px-3 flex grow justify-center font-mono font-bold text-xs text-white w-28"
     >
-      {{web3Store.config.chains[actualNetwork].chainName}}
+      {{chainDetails[actualNetwork].name}}
 
     </div>
     <div
     class="absolute flex flex-col w-36 rounded-lg border items-center bg-black border-white cursor-pointer"
     :class="expandSpan ? 'opacity-1 z-20 top-[90px]' : 'opacity-0 invisible z-10'">
       <template v-for="(chain, key, index) in removeActualChainFromList(
-        web3Store.config.chains, actualNetwork
+        chainDetails, actualNetwork
       )" :key="index">
       <div class="flex flex-col">
         <div
@@ -27,10 +27,10 @@
           @click.capture="updateActiveElement(key)"
         >
         <div class="rounded-full w-5">
-          <img :src="icons[key]" alt="" class="w-5" />
+          <img :src="chain.icon" alt="" class="w-5" />
         </div>
         <div class="px-3 flex grow justify-center font-mono font-bold text-xs text-white">
-          {{ chain.chainName }}
+          {{ chain.name }}
           </div>
         </div>
       </div>
@@ -55,6 +55,8 @@ import {
   tether,
   usdc,
 } from "../../asset/images/images";
+import { chainDetails } from "../../composition/constants"
+import { ChainDetails } from "../../types/constants";
 
 const icons: {[index: number]: any} = {
   1: ethereum,
@@ -69,13 +71,13 @@ const icons: {[index: number]: any} = {
   // "USDC": usdc,
 }
 const props = defineProps<{
-  actualNetwork: number;
+  actualNetwork: string;
 }>();
 
 const web3Store = useWeb3Store();
 
 function removeActualChainFromList(
-  supportedList: Web3State["config"]["chains"], actualNetwork: number
+  supportedList: ChainDetails, actualNetwork: string
 ) {
   let newList = Object.assign({}, supportedList);
   delete newList[actualNetwork];
@@ -83,12 +85,12 @@ function removeActualChainFromList(
 }
 
 const emits = defineEmits<{
-  (e: "update:actualNetwork", element: number): void;
+  (e: "update:actualNetwork", element: string): void;
 }>();
 
 const expandSpan = ref<Boolean>(false);
 
-function updateActiveElement(element: number) {
+function updateActiveElement(element: string) {
   if (!expandSpan.value) return;
   emits("update:actualNetwork", element);
 }

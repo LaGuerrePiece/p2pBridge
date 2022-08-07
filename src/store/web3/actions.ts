@@ -4,6 +4,7 @@ import Web3 from "web3";
 import { BridgesActions } from "../../types/bridges";
 import { useBridgesStore } from "../bridges";
 import { ethers } from "ethers";
+import { chainDetails } from "../../composition/constants"
 
 /**
  * @notice Function used to check if the user has granted the access
@@ -55,7 +56,7 @@ export async function connect(
 
   this.ens = await getEns(this.address)
 
-  if (!(this.chainId in this.config.chains)) {
+  if (!(this.chainId in chainDetails)) {
     await switchChain(1337); //On unknown chain switch to ganache for user safety
   }
 
@@ -81,8 +82,8 @@ async function addNewChain(chainId: number): Promise<void> {
     params: [
       {
         chainId: `0x${chainId.toString(16)}`,
-        chainName: web3Store.config.chains[chainId].chainName,
-        rpcUrls: [web3Store.config.chains[chainId].rpcUrls[0]],
+        chainName: chainDetails[chainId].name,
+        rpcUrls: [chainDetails[chainId].rpcUrls[0]],
       },
     ],
   });
