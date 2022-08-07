@@ -1,7 +1,7 @@
 <template>
   <div
     @click="displayModal = !displayModal"
-    class="flex w-20 items-center p-0.5 border  border-yellow-400 cursor-pointer"
+    class="flex w-20 items-center p-0.5 border  border-teal-300 cursor-pointer"
   > 
     <div class="rounded-full w-6 pl-0.5">
       <img

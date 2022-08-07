@@ -1,56 +1,43 @@
 <template>
   <div
-    class="grid gap-1 items-center rounded-lg max-w-xl p-2 border-2  border-yellow-400 text-white h-72 w-[28rem]"
+    class="grid gap-1 items-center rounded-lg max-w-xl p-2 border-2 border-teal-300 text-white h-96 w-[28rem]"
   >
     <div
       class="justify-self-center text-sm font-mono font-bold text-white px-5"
     >
       go nuclear
     </div>
-    <div class="flex flex-row justify-evenly">
-      <div class="flex items-center flex-row h-7">
-        <div class="flex h-10 pr-2">
-          <img
-            :src="rocket2"
-            alt=""
-          />
+    <div class="flex flex-row justify-between">
+      <div class="flex flex-row">
+        <div class="flex items-center pl-2 pr-3">
+          From
         </div>
         <SelectElementSpan
           class="rounded-lg bg-black h-7"
           v-model:actualNetwork="fromNetwork"
         ></SelectElementSpan>
       </div>
-      <div class="flex h-6 cursor-pointer">
-        <img
-          @click="rotateNetworks"
-          :src="arrow"
-          alt=""
-        />
-      </div>
-      <div class="flex items-center flex-row h-7">
-        <div class="flex h-10 pr-2">
-          <img
-            :src="flag2"
-            alt=""
-          />
+      <div class="flex flex-row justify-end">
+        <div class="flex items-center text-xs pl-2 pr-3">
+          expert mode
         </div>
-        <SelectElementSpan
-          class="rounded-lg bg-black h-7"
-          v-model:actualNetwork="toNetwork"
-        ></SelectElementSpan>
+        <label for="default-toggle" class="inline-flex relative items-center cursor-pointer">
+          <input type="checkbox" id="default-toggle" class="sr-only peer">
+          <div class="w-11 h-6 rounded-full peer bg-teal-700 peer-checked:after:translate-x-full after:absolute after:top-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-300"></div>
+        </label>
       </div>
     </div>
     
-    <div class="flex justify-between justify-self-center w-full h-16 border  border-yellow-400 rounded-lg bg-black">
+    <div class="flex justify-between w-full h-16 border border-teal-300 rounded-lg bg-black">
       <div class="flex flex-col pl-2 pt-2">
         <div class="text-xs">
           Send
         </div>
         <input
+            class="bg-black border-0 focus:ring-0 text-lg w-52 p-0"
             v-model.number="amount"
             type="number"
             placeholder="0.0"
-            class="f bg-black text-lg w-52 outline-none"
           />
       </div>
       <div class="flex flex-col pr-2 pt-1 items-end">
@@ -64,18 +51,35 @@
       </div>
     </div>
 
-    <div 
-    v-if="providerChosen"
-    class="flex justify-between w-full h-16 border  border-yellow-400 rounded-lg bg-black">
+    <div class="flex h-6 justify-self-center cursor-pointer">
+      <img
+        @click="rotateNetworks"
+        :src="arrow"
+        alt=""
+      />
+    </div>
+
+    <div class="flex items-center flex-row h-7">
+      <div class="flex justify-items-center pl-2 pr-3 py-1">
+        To
+      </div>
+      <SelectElementSpan
+        class="rounded-lg bg-black h-7"
+        v-model:actualNetwork="toNetwork"
+      ></SelectElementSpan>
+    </div>
+
+    <div
+      class="flex justify-between w-full h-16 border border-teal-300 rounded-lg bg-black">
       <div class="flex flex-col pl-2 pt-2">
         <div class="text-xs">
           Receive
         </div>
         <input
+            class="bg-black border-0 focus:ring-0 text-lg w-52 p-0"
             v-model.number="amount"
             type="number"
             placeholder="0.0"
-            class="f bg-black text-lg w-40 outline-none"
           />
       </div>
       <div class="flex flex-col pr-2 pt-1 items-end">
@@ -91,7 +95,7 @@
       <div
         v-if="!providerChosen"
         @click="modalOpen = true"
-        class="flex w-36 h-10 items-center rounded-lg bg-black border  border-yellow-400 cursor-pointer"
+        class="flex w-36 h-10 items-center rounded-lg bg-black border  border-teal-300 cursor-pointer"
       >
         <div class="flex grow justify-end font-mono font-bold text-lg text-white pr-2">
           Choose
@@ -103,7 +107,7 @@
       <div
         v-else
         @click="approve"
-        class="flex w-48 h-10 items-center rounded-lg bg-black border  border-yellow-400 cursor-pointer"
+        class="flex w-48 h-10 items-center rounded-lg bg-black border  border-teal-300 cursor-pointer"
       >
         <div class="flex grow justify-end font-mono font-bold text-lg text-white pr-2">
           Approve
@@ -165,6 +169,7 @@ const amount = ref<number>();
 const providerChosen = ref<string>();
 
 const modalOpen = ref<boolean>(false);
+const checked = ref<boolean>(false);
 
 function rotateNetworks() {
     const from = fromNetwork.value
@@ -191,3 +196,9 @@ function lock() {
 }
 
 </script>
+
+<!-- #01FDFC
+#02D8D9
+#02C0C0
+#009D9D
+#017F80 -->

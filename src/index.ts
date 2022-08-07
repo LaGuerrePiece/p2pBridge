@@ -3,6 +3,8 @@ import { createApp } from "vue"
 import "./asset/css/global.scss"
 import App from "./App.vue"
 import { createPinia } from 'pinia'
+import 'flowbite';
+
 import Notifications from '@kyvg/vue3-notification'
 
 const app = createApp(App)

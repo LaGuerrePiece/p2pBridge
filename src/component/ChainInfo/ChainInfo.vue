@@ -1,7 +1,7 @@
 <template>
   <div
     @click="expandSpan = !expandSpan"
-    class="flex h-10 w-36 items-center p-0.5 lg:p-2 border  border-yellow-400 rounded-lg ursor-pointer"
+    class="flex h-10 hover:bg-teal-700 w-36 items-center p-0.5 lg:p-2 border  border-teal-300 rounded-lg ursor-pointer"
     v-if="web3Store.chainId"
   >
     <div class="rounded-full w-7 pl-1">
@@ -31,7 +31,7 @@
     :key="index"
   >
     <div
-      class="absolute h-7 w-36 flex items-center border  border-yellow-400 cursor-pointer bg-black"
+      class="absolute h-7 w-36 flex items-center border  border-teal-300 cursor-pointer bg-black"
       :class="expandSpan ? 'opacity-1 z-20' : 'opacity-0 top-0 z-10'"
       :style="{ top: expandSpan ? (index + 1) * 28 + 28 + 'px' : '' }"
       @click.capture="
