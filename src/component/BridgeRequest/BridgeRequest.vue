@@ -1,6 +1,6 @@
 <template>
   <div
-    class="grid gap-1 items-center rounded-lg max-w-xl p-2 border-2 border-primary text-white h-96 w-[28rem]"
+    class="grid gap-1 items-center rounded-lg max-w-xl p-2 bg-secondary border-2 border-primary text-white h-96 w-[28rem]"
   >
     <div
       class="justify-self-center text-sm font-mono font-bold text-white px-5"
@@ -21,10 +21,8 @@
         <div class="flex items-center text-xs pl-2 pr-3">
           Easy mode
         </div>
-        <label for="default-toggle" class="inline-flex relative items-center cursor-pointer">
-          <input type="checkbox" id="ezmode" v-model="ezmode" checked="true" class="sr-only peer">
-          <div class="w-11 h-6 rounded-full peer bg-secondary peer-checked:after:translate-x-full after:absolute after:top-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-        </label>
+        <input type="checkbox" v-model="ezmode" class="toggle cursor-pointer" checked />
+
       </div>
     </div>
     
@@ -34,7 +32,7 @@
           Send
         </div>
         <input
-            class="bg-black border-0 focus:ring-0 text-lg w-52 p-0"
+            class="bg-black border-0 focus:ring-0 outline:none text-lg w-52 p-0"
             v-model.number="amount"
             type="number"
             placeholder="0.0"
@@ -76,7 +74,7 @@
           Receive
         </div>
         <input
-            class="bg-black border-0 focus:ring-0 text-lg w-52 p-0"
+            class="bg-black border-0 focus:ring-0 focus:outline:none text-lg w-52 p-0"
             v-model.number="amount"
             type="number"
             placeholder="0.0"
@@ -88,7 +86,6 @@
         </div>
       </div>
     </div>
-
     <div
       class="grid justify-items-center"
     >
@@ -210,9 +207,3 @@ function lock() {
 }
 
 </script>
-
-<!-- #01FDFC
-#02D8D9
-#02C0C0
-#009D9D
-#017F80 -->

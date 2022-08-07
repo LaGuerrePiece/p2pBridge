@@ -1,8 +1,8 @@
 import { createApp } from "vue"
 // import router from "./router"
-import "./asset/css/global.scss"
 import App from "./App.vue"
 import { createPinia } from 'pinia'
+import "./asset/css/global.scss"
 
 import Notifications from '@kyvg/vue3-notification'
 
