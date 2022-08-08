@@ -91,6 +91,7 @@ import { Contractify, Web3ify } from "../../types/commons";
 import { RequestInfo } from "../../types/bridgeRequests";
 import erc20Abi from "../../abis/erc20Abi.json"
 import bridgeAbi from "../../abis/bridgeAbi.json"
+import { Web3Actions } from "../../types/web3";
 
 const props = defineProps<{
   requestInfo: RequestInfo
@@ -112,6 +113,8 @@ async function checkApproval() {
     const allowance = await erc20Contract.methods.allowance(web3Store.address,
         chainDetails[web3Store.chainId].bridgeAddress).call()
     console.log("allowance", allowance, typeof allowance)
+    // step.value = "lock"
+    step.value = "withdraw"
 }
 
 function approve() {
@@ -142,18 +145,20 @@ function lock() {
 
     const { lpLockId, lpAddress }: {lpLockId: number, lpAddress: string} = getAutoLpLockIdAndAddress()
 
+    const amountToSend = "500000000000000"
+    //props.requestInfo.amount!
     bridgeContract.methods.createBridgerLock(
-        props.requestInfo.amount!,
+        amountToSend,
         props.requestInfo.toNetwork,
-        props.requestInfo.token,
+        chainDetails[web3Store.chainId].token[props.requestInfo.token].address,
         lpLockId,
         lpAddress
     ).send().on("transactionHash", async () => {
         step.value = 'wait'
         loading.value = false
 
-        const myLocks = bridgeContract.methods.getMyLockIds(web3Store.address).call()
-        const myBridgerLockId = myLocks[myLocks.length - 1]
+        //get lock id
+        const myBridgerLockId = bridgeContract.methods.nonce().call()
 
         const destinationBridgeContract = new web3Store.web3!.eth.Contract(
             bridgeAbi as AbiItem[],
@@ -161,26 +166,74 @@ function lock() {
             { from: web3Store.address }
             ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
 
-        destinationBridgeContract.events.BridgerAuth({
-            filter: {
-                bridgerLockId : myBridgerLockId
-            }
-        }).on('data', (e :any) => {
-            console.log(e)
-            //check if auth is correct
-        })
+        step.value = 'withdraw'
+        // destinationBridgeContract.events.BridgerAuth({
+        //     filter: {
+        //         bridgerLockId : myBridgerLockId
+        //     }
+        // }).on('data', (e :any) => {
+        //     console.log(e)
+        //     //check if auth is correct
+        // })
 
     })
 }
 
-function withdraw() {
-    step.value = 'final'
-    console.log('final')
+async function withdraw() {
+    loading.value = true
+
+    
+
+    const bridgeContract = new web3Store.web3!.eth.Contract(
+        bridgeAbi as AbiItem[],
+        chainDetails[web3Store.chainId].bridgeAddress,
+        { from: web3Store.address }
+        ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
+    
+    const bridgerLockId = await bridgeContract.methods.nonce().call()
+
+    await web3Store[Web3Actions.SwitchChain](parseInt(props.requestInfo.toNetwork));
+
+    const destinationBridgeContract = new web3Store.web3!.eth.Contract(
+        bridgeAbi as AbiItem[],
+        chainDetails[props.requestInfo.toNetwork].bridgeAddress,
+        { from: web3Store.address }
+        ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
+
+
+    const lpLockId = await destinationBridgeContract.methods.nonce().call()
+    const authIndex = "4"
+    // const lpLock = (await destinationBridgeContract.methods.idToLpLock(lpLockId).call())
+
+    const encodedParameters = web3Store.web3!.utils.encodePacked(
+        { type: "uint256", value: web3Store.chainId.toString() },
+        { type: "uint256", value: bridgerLockId.toString() },
+    )!;
+
+    const signature = await web3Store.web3!.eth.personal.sign(
+      encodedParameters,
+      web3Store.address,
+      ""
+    );
+
+    destinationBridgeContract.methods.bridgerUnlock(
+        lpLockId,
+        signature,
+        web3Store.chainId.toString(),
+        bridgerLockId,
+        authIndex
+    ).send().on("transactionHash", async (h: any) => {
+        step.value = 'final'
+        loading.value = false
+        console.log('final', h)
+    })
+
+
 }
 
 function getAutoLpLockIdAndAddress() {
 
-    return {lpLockId: 1, lpAddress: "lalala"}
+    return {lpLockId: 1, lpAddress: "0x9b862973b13222968Cc90200995392896e001bfE"}
 
 }
 

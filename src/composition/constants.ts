@@ -8,7 +8,8 @@ import {
   polygon,
   tether,
   usdc,
-  ganache
+  ganache,
+  weth
 } from "../asset/images/images";
 import { ChainDetails } from "../types/constants";
 
@@ -22,6 +23,36 @@ export const chainDetails: ChainDetails = {
     ],
     bridgeAddress: "0x0E492C37FDe1b467559f498014A344e5Fb8dC4F7",
     token: {
+      USDT: { name: "USDT", icon: tether, address: "0xdac17f958d2ee523a2206206994597c13d831ec7" },
+      BUSD: { name: "BUSD", icon: busd, address: "0x4Fabb145d64652a948d72533023f6E7A623C7C53" },
+      USDC: { name: "USDC", icon: usdc, address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" },
+    },
+  },
+  "4": {
+    name: "Rinkeby",
+    icon: ethereum,
+    rpcUrls: [
+      "https://rinkeby.infura.io/v3/49f373294ecd4358abd6a39d55521529",
+      "wss://rinkeby.infura.io/ws/v3/49f373294ecd4358abd6a39d55521529",
+    ],
+    bridgeAddress: "0x5Caf9CFaCeB3f73Fe911817DBd6410C820719DD4",
+    token: {
+      WETH: { name: "WETH", icon: weth, address: "0xc778417E063141139Fce010982780140Aa0cD5Ab" },
+      USDT: { name: "USDT", icon: tether, address: "0xdac17f958d2ee523a2206206994597c13d831ec7" },
+      BUSD: { name: "BUSD", icon: busd, address: "0x4Fabb145d64652a948d72533023f6E7A623C7C53" },
+      USDC: { name: "USDC", icon: usdc, address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" },
+    },
+  },
+  "42": {
+    name: "Kovan",
+    icon: ethereum,
+    rpcUrls: [
+      "https://kovan.infura.io/v3/49f373294ecd4358abd6a39d55521529",
+      "wss://kovan.infura.io/ws/v3/49f373294ecd4358abd6a39d55521529",
+    ],
+    bridgeAddress: "0x144adF65b3B260FE2Ec5a27F53972c651da04eca",
+    token: {
+      WETH: { name: "WETH", icon: weth, address: "0xd0A1E359811322d97991E03f863a0C30C2cF029C" },
       USDT: { name: "USDT", icon: tether, address: "0xdac17f958d2ee523a2206206994597c13d831ec7" },
       BUSD: { name: "BUSD", icon: busd, address: "0x4Fabb145d64652a948d72533023f6E7A623C7C53" },
       USDC: { name: "USDC", icon: usdc, address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" },

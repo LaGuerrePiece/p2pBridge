@@ -28,3 +28,4 @@ export {default as flag2} from "./flag2.png";
 export {default as moneybag} from "./moneybag.png";
 export {default as arrow} from "./arrow.png";
 export {default as radioactive} from "./radioactive.png";
+export {default as weth} from "./weth.png";

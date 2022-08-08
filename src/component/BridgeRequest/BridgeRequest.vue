@@ -168,7 +168,7 @@ const web3Store = useWeb3Store();
 const requestInfo = ref({
   fromNetwork: "1",
   toNetwork: "137",
-  token: "USDC",
+  token: "WETH",
   amount: null,
 })
 const providerChosen = ref<string>();
