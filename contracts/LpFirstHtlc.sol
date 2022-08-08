@@ -42,6 +42,11 @@ contract LpFirstHtlc {
     mapping(uint256 => LpLock) public idToLpLock;
     mapping(uint256 => BridgerLock) public idToBridgerLock;
 
+    // event fired when an user requests a bridge
+    event Request(uint256 amount, address bridger, uint256 deadline, uint256 chainId, uint256 indexed lpLockId, uint256 bridgerLockId);
+    // event fired when an user unlock the bridged funds 
+    event Unlock(uint256 lpLockId, bytes signature, uint256 chainId, uint256 bridgerLockId, uint256 authIndex);
+
     constructor(uint256 _chainId) {
         chainId = _chainId;
     }
@@ -75,6 +80,7 @@ contract LpFirstHtlc {
         });
 
         ERC20(_token).transferFrom(msg.sender, address(this), _amount);
+
     }
 
     function authBridger(uint256 _amount, address _bridger, uint256 _deadline, uint256 _chainId, uint256 _lpLockId, uint256 _bridgerLockId) external {
@@ -89,6 +95,8 @@ contract LpFirstHtlc {
             bridgerLockId: _bridgerLockId,
             bridgerSignature: empty
         }));
+
+        emit Request(_amount, _bridger, _deadline, _chainId, _lpLockId, _bridgerLockId);
     }
 
     function bridgerUnlock(uint256 _lpLockId, bytes memory _signature, uint256 _chainId, uint256 _bridgerLockId, uint256 _authIndex) external {
@@ -113,6 +121,9 @@ contract LpFirstHtlc {
         lpLock.amount -= auth.amount;
         auth.amount = 0;
         auth.bridgerSignature = _signature;
+
+        emit Unlock(_lpLockId, _signature, _chainId, _bridgerLockId, _authIndex);
+
     }
 
     function lpUnlock(uint256 _bridgerLockId, bytes memory _signature) external {
@@ -198,4 +209,4 @@ contract LpFirstHtlc {
             "Invalid signature"
         );
     }
-}
+} 
