@@ -35,10 +35,12 @@ export async function connect(
     this.connected = false
     this.provider = null;
     this.web3 = null
-    this.chainId = null;
+    this.chainId = 0;
     this.ens = null;
     return
   }
+
+  console.log('test')
 
   const web3Modal = new Web3Modal({
     network: "mainnet",

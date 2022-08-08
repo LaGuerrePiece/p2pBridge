@@ -4,20 +4,20 @@
   >
     <template v-for="provider in data[0]">
       <div
-        class="grid grid-cols-2 text-xs relative rounded-lg justify-items-center p-3 gap-y-1.5 bg-zinc-800 cursor-pointer"
+        class="grid grid-cols-2 text-xs relative rounded-lg justify-items-center p-3 gap-y-1.5 bg-secondary cursor-pointer"
         @click="
         $emit('providerChosen', provider.address);
         $emit('close')"
       >
         <div
-          class="col-span-2 px-5 p-1 bg-black rounded-full border  border-primary text-white mb-2"
+          class="col-span-2 px-5 p-1 bg-neutral rounded-full border border-primary text-white mb-2"
         >
           {{ provider.address }}
         </div>
         <div class="pl-3 w-full">
           <div class="grid grid-cols-2">
             <div class="">Total Locked:</div>
-            <div class="pl-2">{{ provider.totalLocked }} {{token}}</div>
+            <div class="pl-2">{{ provider.totalLocked }} {{requestInfo.token}}</div>
             <div class="">Fees:</div>
             <div class="pl-2">{{ provider.fee }}%</div>
           </div>
@@ -40,10 +40,12 @@ import { trimAddress } from "../../composition/functions"
 
 
 const props = defineProps<{
-  from: string;
-  to: string;
-  token: string;
-  amount: number;
+  requestInfo: {
+    fromNetwork: string,
+    toNetwork: string,
+    token: string,
+    amount: number | null
+  }
 }>();
 
 const data = [

@@ -39,8 +39,8 @@ contract LpFirstHtlc {
     uint256 public chainId;
     uint256 public nonce;
 
-    mapping(uint256 => LpLock) idToLpLock;
-    mapping(uint256 => BridgerLock) idToBridgerLock;
+    mapping(uint256 => LpLock) public idToLpLock;
+    mapping(uint256 => BridgerLock) public idToBridgerLock;
 
     constructor(uint256 _chainId) {
         chainId = _chainId;

@@ -4,6 +4,6 @@ export type ChainDetails = {
         icon: string;
         rpcUrls: string[];
         bridgeAddress: string;
-        token: { [key in string]: { name: string; icon: string } };
+        token: { [key in string]: { name: string; icon: string, address: string } };
     };
 } 

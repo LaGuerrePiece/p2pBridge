@@ -12,28 +12,27 @@
         <div class="flex items-center pl-2 pr-3">
           From
         </div>
-        <SelectElementSpan
-          class="rounded-lg bg-black h-7"
-          v-model:actualNetwork="fromNetwork"
-        ></SelectElementSpan>
+        <SelectChainSpan
+          class="rounded-lg bg-neutral h-7"
+          v-model:actualNetwork="requestInfo.fromNetwork"
+        ></SelectChainSpan>
       </div>
-      <div class="flex flex-row justify-end">
+      <div class="flex flex-row">
         <div class="flex items-center text-xs pl-2 pr-3">
           Easy mode
         </div>
         <input type="checkbox" v-model="ezmode" class="toggle cursor-pointer" checked />
-
       </div>
     </div>
     
-    <div class="flex justify-between w-full h-16 border border-primary rounded-lg bg-black">
+    <div class="flex justify-between w-full h-16 border border-primary rounded-lg bg-neutral">
       <div class="flex flex-col pl-2 pt-2">
         <div class="text-xs">
           Send
         </div>
         <input
-            class="bg-black border-0 focus:ring-0 outline:none text-lg w-52 p-0"
-            v-model.number="amount"
+            class="bg-neutral border-0 focus:ring-0 outline:none text-lg w-52 p-0"
+            v-model.number="requestInfo.amount"
             type="number"
             placeholder="0.0"
           />
@@ -43,8 +42,8 @@
           Balance : 100
         </div>
         <SelectTokenButton
-        class="rounded-lg bg-black h-7"
-        v-model:actualToken="token"
+        class="rounded-lg bg-neutral h-7"
+        v-model:actualToken="requestInfo.token"
         />
       </div>
     </div>
@@ -52,7 +51,7 @@
     <div class="flex h-6 justify-self-center cursor-pointer">
       <img
         @click="rotateNetworks"
-        :src="arrow"
+        :src="arrowupdown"
         alt=""
       />
     </div>
@@ -61,21 +60,21 @@
       <div class="flex justify-items-center pl-2 pr-3 py-1">
         To
       </div>
-      <SelectElementSpan
-        class="rounded-lg bg-black h-7"
-        v-model:actualNetwork="toNetwork"
-      ></SelectElementSpan>
+      <SelectChainSpan
+        class="rounded-lg bg-neutral h-7"
+        v-model:actualNetwork="requestInfo.toNetwork"
+      ></SelectChainSpan>
     </div>
 
     <div
-      class="flex justify-between w-full h-16 border border-primary rounded-lg bg-black">
+      class="flex justify-between w-full h-16 border border-primary rounded-lg bg-neutral">
       <div class="flex flex-col pl-2 pt-2">
         <div class="text-xs">
           Receive
         </div>
         <input
-            class="bg-black border-0 focus:ring-0 focus:outline:none text-lg w-52 p-0"
-            v-model.number="amount"
+            class="bg-neutral border-0 focus:ring-0 focus:outline:none text-lg w-52 p-0"
+            v-model.number="requestInfo.amount"
             type="number"
             placeholder="0.0"
           />
@@ -86,62 +85,54 @@
         </div>
       </div>
     </div>
+
     <div
       class="grid justify-items-center"
     >
-      <div
-        v-if="ezmode"
-        @click="modalOpen = true"
-        class="flex w-36 h-10 items-center rounded-lg bg-black border  border-teal-300 cursor-pointer"
-      >
-        <div class="flex grow justify-end font-mono font-bold text-lg text-white pr-2">
+      <button
+        v-if="web3Store.chainId == 0"
+        @click="web3Store[Web3Actions.Connect]()"
+        class="btn btn-neutral normal-case border border-primary ">
+          Connect
+      </button>
+      <button
+        v-else-if="ezmode || providerChosen"
+        @click="bridgingModalOpen = true"
+        class="btn btn-neutral normal-case border border-primary ">
           Bridge
-        </div>
-        <div class="flex grow font-mono font-bold text-3xl text-white">
-          💰
-        </div>
-      </div>
-      <div
-        v-else-if="!providerChosen"
-        @click="modalOpen = true"
-        class="flex w-36 h-10 items-center rounded-lg bg-black border  border-primary cursor-pointer"
-      >
-        <div class="flex grow justify-end font-mono font-bold text-lg text-white pr-2">
-          Choose
-        </div>
-        <div class="flex grow font-mono font-bold text-3xl text-white">
-          💰
-        </div>
-      </div>
-      <div
+      </button>
+      <button
         v-else
-        @click="approve"
-        class="flex w-48 h-10 items-center rounded-lg bg-black border  border-primary cursor-pointer"
-      >
-        <div class="flex grow justify-end font-mono font-bold text-lg text-white pr-2">
-          Approve
-        </div>
-        <div class="flex grow font-mono font-bold text-2xl text-white">
-          📜
-        </div>
-      </div>
+        @click="providerModalOpen = true"
+        class="btn btn-neutral normal-case border border-primary ">
+          Choose Provider
+      </button>
     </div>
-    <!-- 🤝 -->
     <teleport to="body">
       <transition name="fadeMod">
-        <ModalFrame v-if="modalOpen" @close="modalOpen = false">
+        <ModalFrame v-if="bridgingModalOpen" @close="bridgingModalOpen = false">
+          <template #title>Bridging</template>
+          <BridgingModal
+            :requestInfo="requestInfo"
+            @close="bridgingModalOpen = false">
+          </BridgingModal>
+        </ModalFrame>
+      </transition>
+      <transition name="fadeMod">
+        <ModalFrame v-if="providerModalOpen" @close="providerModalOpen = false">
           <template #title>Providers</template>
-          <ProviderList
-            :from="fromNetwork"
-            :to="toNetwork"
-            :token="token"
-            :amount="(amount as number)"
+          <ChooseProvider
+            :requestInfo="requestInfo"
             @provider-chosen="(n: string) => providerChosen = n"
-            @close="modalOpen = false">
-          </ProviderList>
+            @close="providerModalOpen = false">
+          </ChooseProvider>
         </ModalFrame>
       </transition>
     </teleport>
+
+
+
+
   </div>
 </template>
 
@@ -149,9 +140,12 @@
 import { ref } from "vue";
 import { useWeb3Store } from "../../store/web3";
 import ModalFrame from "../Modals/ModalFrame.vue";
-import SelectElementSpan from "./SelectElementSpan.vue";
+import SelectChainSpan from "./SelectChainSpan.vue";
 import SelectTokenButton from "./SelectTokenButton.vue";
-import ProviderList from "./ProviderList.vue";
+import ChooseProvider from "./ChooseProvider.vue";
+import BridgingModal from "./BridgingModal.vue";
+import { Web3Actions } from "../../types/web3";
+
 import BigNumber from "bignumber.js";
 import { chainDetails } from "../../composition/constants"
 import { AllEvents } from "../../../types/truffle-contracts/ERC20";
@@ -162,45 +156,35 @@ import {
 import { Contractify, Web3ify } from "../../types/commons";
 
 
-import erc20Abi from "../../abis/erc20Abi.json"
+import erc20Abi from "../../abis/erc20abi.json"
 import {
-  arrow,
+  arrowupdown,
   rocket2,
   flag2
 } from "../../asset/images/images";
 
 const web3Store = useWeb3Store();
 
-const fromNetwork = ref<string>("1");
-const toNetwork = ref<string>("137");
-const token = ref<string>("USDC");
-const amount = ref<number>();
+const requestInfo = ref({
+  fromNetwork: "1",
+  toNetwork: "137",
+  token: "USDC",
+  amount: null,
+})
 const providerChosen = ref<string>();
 
-const modalOpen = ref<boolean>(false);
-const checked = ref<boolean>(false);
+const providerModalOpen = ref<boolean>(false);
+const bridgingModalOpen = ref<boolean>(false);
 
 const ezmode= ref<boolean>(true);
 
 function rotateNetworks() {
-    const from = fromNetwork.value
-    fromNetwork.value = toNetwork.value
-    toNetwork.value = from
+    const from = requestInfo.value.fromNetwork
+    requestInfo.value.fromNetwork = requestInfo.value.toNetwork
+    requestInfo.value.toNetwork = from
 }
 
-function approve() {
-    const erc20Contract = new web3Store.web3!.eth.Contract(
-    erc20Abi as AbiItem[],
-    "0x1719DED8e908d7b1fe54ba6c6fD280A605e977ee",
-    { from: web3Store.address }
-  ) as unknown as Contractify<ERC20Instance, AllEvents>;
 
-  // erc20Contract.methods.approve(
-  //   "0x1719DED8e908d7b1fe54ba6c6fD280A605e977ee"
-  //   new BigNumber("1000e18").toFixed(),
-  // ).send().on("transactionHash", async () => {
-
-};
 
 function lock() {
   

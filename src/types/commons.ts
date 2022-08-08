@@ -1,5 +1,6 @@
 import { AllEvents as ERC20Events } from "../../types/truffle-contracts/ERC20";
 import { AllEvents as BridgeDexEvents } from "../../types/truffle-contracts/BridgeDex";
+import { AllEvents as LpFirstHtlcEvents } from "../../types/truffle-contracts/LpFirstHtlc";
 
 type ExractEventName<T extends { name: string }> = T["name"];
 type Objectify<T extends { name: string; args: any }> = {
@@ -12,7 +13,7 @@ export type Web3ify<T extends { args: any }> = {
   logIndex: number;
 };
 
-export type Contractify<T, U extends ERC20Events | BridgeDexEvents> = {
+export type Contractify<T, U extends ERC20Events | BridgeDexEvents | LpFirstHtlcEvents > = {
   methods: {
     [key in keyof T]: T[key] extends (...args: any) => any
       ? (...args: Parameters<T[key]>) => {
