@@ -16,7 +16,7 @@
 
     </div>
     <div
-    class="absolute flex flex-col w-36 rounded-lg border items-center bg-black  border-primary cursor-pointer"
+    class="absolute flex flex-col w-36 rounded-lg border items-center bg-neutral  border-primary cursor-pointer"
     :class="expandSpan ? 'opacity-1 z-20 top-[90px]' : 'opacity-0 invisible z-10'">
       <template v-for="(chain, key, index) in removeActualChainFromList(
         chainDetails, actualNetwork

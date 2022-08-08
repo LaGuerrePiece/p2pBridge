@@ -1,7 +1,7 @@
 require("ts-node").register({
   files: true,
   compilerOptions: {
-    module: "node12",
+    module: "esnext",
   },
 });
 

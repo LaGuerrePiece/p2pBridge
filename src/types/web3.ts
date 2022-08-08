@@ -5,7 +5,7 @@ export type Web3State = {
     web3: Web3 | null;
     provider: WalletConnectProvider | null;
     connected : boolean;
-    chainId: number | null;
+    chainId: number;
     ens: string | null;
 };
 

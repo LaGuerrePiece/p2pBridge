@@ -31,7 +31,7 @@
     :key="index"
   >
     <div
-      class="absolute h-7 w-36 flex items-center border  border-primary cursor-pointer bg-black"
+      class="absolute h-7 w-36 flex items-center border  border-primary cursor-pointer bg-neutral"
       :class="expandSpan ? 'opacity-1 z-20' : 'opacity-0 top-0 z-10'"
       :style="{ top: expandSpan ? (index + 1) * 28 + 28 + 'px' : '' }"
       @click.capture="
