@@ -98,8 +98,7 @@ contract LpFirstHtlc {
             bridgerLockId: _bridgerLockId,
             bridgerSignature: empty
         }));
-        
-        emit BridgerAuth(_amount, _bridger, _deadline, _chainId, _lpLockId, _bridgerLockId);        
+
     }
 
     function bridgerUnlock(uint256 _lpLockId, bytes memory _signature, uint256 _chainId, uint256 _bridgerLockId, uint256 _authIndex) external {
@@ -133,11 +132,6 @@ contract LpFirstHtlc {
         BridgerLock storage bridgerLock = idToBridgerLock[_bridgerLockId];
         require(bridgerLock.lp == msg.sender, "not the lp");
         require(bridgerLock.deadline < block.timestamp, "bridgerLock expired");
-        uint chainId;
-
-        assembly {
-            chainId := chainid()
-        }
 
         _verify(
             bridgerLock.owner,
