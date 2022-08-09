@@ -36,8 +36,6 @@ struct BridgerLock {
 
 contract LpFirstHtlc {
 
-    uint256 public chainId;
-
     uint256 public lpNonce;
     uint256 public bridgerNonce;
 
@@ -53,9 +51,7 @@ contract LpFirstHtlc {
     // event fired when a lp authorizes a bridger for some of his funds 
     event BridgerAuth(uint256 _amount, address _bridger, uint256 _deadline, uint256 _chainId, uint256 _lpLockId, uint256 _bridgerLockId);       
 
-    constructor(uint256 _chainId) {
-        chainId = _chainId;
-    }
+    constructor() {}
 
     function createLpLock(uint256 _amount, uint256[] memory _acceptedChains, address _token, uint256 _fees) external {
         uint256 lockId = ++lpNonce;
@@ -137,6 +133,11 @@ contract LpFirstHtlc {
         BridgerLock storage bridgerLock = idToBridgerLock[_bridgerLockId];
         require(bridgerLock.lp == msg.sender, "not the lp");
         require(bridgerLock.deadline < block.timestamp, "bridgerLock expired");
+
+        uint256 chainId;
+        assembly {
+            chainId := chainid()
+        }
 
         _verify(
             bridgerLock.owner,
