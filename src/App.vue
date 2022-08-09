@@ -5,7 +5,7 @@
       <BridgeRequest />
     </div>
   </div>
-  <notifications position="bottom right" classes="my-notification" />
+  <!-- <notifications position="bottom right" classes="my-notification" /> -->
 </template>
 <script setup lang="ts">
 import { Suspense as suspense_, SuspenseProps, VNodeProps } from "vue";

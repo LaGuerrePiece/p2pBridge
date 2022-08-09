@@ -55,6 +55,7 @@ module.exports = {
     filename: "[name].[contenthash].bundle.js",
     assetModuleFilename: "images/[hash][ext][query]",
   },
+  devtool: "source-map",
 
   module: {
     rules: [
@@ -133,6 +134,8 @@ module.exports = {
     }),
     new DefinePlugin({
       CONFIG: JSON.stringify(config),
+      __VUE_OPTIONS_API__: false,
+      __VUE_PROD_DEVTOOLS__: true,
     }),
     new NodePolyfillPlugin(),
     new WebpackPwaManifest({
@@ -153,7 +156,7 @@ module.exports = {
       ],
     }),
     new PreloadWebpackPlugin({
-      rel: "preload",
+      rel: "prefetch",
       include: "all",
     }),
     ...optimize,
