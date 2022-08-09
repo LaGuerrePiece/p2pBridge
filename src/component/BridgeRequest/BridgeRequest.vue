@@ -99,19 +99,19 @@
       <button
         v-if="web3Store.chainId == 0"
         @click="web3Store[Web3Actions.Connect]()"
-        class="btn btn-neutral normal-case border border-primary ">
+        class="btn normal-case border border-primary">
           Connect
       </button>
       <button
         v-else-if="ezmode || providerChosen"
-        @click="bridgingModalOpen = true"
-        class="btn btn-neutral normal-case border border-primary ">
+        @click="openBridgingModal"
+        class="btn normal-case border border-primary">
           Bridge
       </button>
       <button
         v-else
         @click="providerModalOpen = true"
-        class="btn btn-neutral normal-case border border-primary ">
+        class="btn normal-case border border-primary">
           Choose Provider
       </button>
     </div>
@@ -152,7 +152,7 @@ import { Web3Actions } from "../../types/web3";
 import BigNumber from "bignumber.js";
 import { chainDetails } from "../../composition/constants"
 import { AllEvents } from "../../../types/truffle-contracts/ERC20";
-import { BridgeDexInstance, ERC20Instance } from "../../../types/truffle-contracts";
+import { ERC20Instance } from "../../../types/truffle-contracts";
 import { Contractify, Web3ify } from "../../types/commons";
 import { RequestInfo } from "../../types/bridgeRequests";
 
@@ -160,6 +160,7 @@ import erc20Abi from "../../abis/erc20Abi.json"
 import { arrowupdown } from "../../asset/images/images";
 import { ethers } from "ethers";
 import { useBridgesStore } from "../../store/bridges";
+import { notify } from "@kyvg/vue3-notification";
 
 const web3Store = useWeb3Store();
 
@@ -169,6 +170,8 @@ const requestInfo = ref<RequestInfo>({
   token: "WETH",
   amount: null,
 })
+
+// TODO : check that number is not null before clicking on "bridge" button
 
 const providerChosen = ref<string>();
 
@@ -206,5 +209,19 @@ async function getUserBalance(chainid: string, tokenName: string) {
     balance.value = Number(ethers.utils.formatUnits(rawBalance, decimals))
     
     console.log("balance", balance.value, typeof balance.value)
+}
+
+function openBridgingModal() {
+  if (requestInfo.value.amount == null) {
+    notify({
+      title: "Important message",
+      text: "Amount input null",
+      type: "warn",
+    });
+
+    console.log('lalal')
+  } else {
+    bridgingModalOpen.value = true
+  }
 }
 </script>

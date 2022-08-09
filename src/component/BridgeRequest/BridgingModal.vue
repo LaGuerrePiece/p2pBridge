@@ -95,6 +95,7 @@ import {
 import { Contractify, Web3ify } from "../../types/commons";
 import { RequestInfo, RequestContracts } from "../../types/bridgeRequests";
 import { Web3Actions } from "../../types/web3";
+import { ethers } from "ethers"
 
 const web3Store = useWeb3Store();
 
@@ -107,7 +108,7 @@ const requestContracts = ref<RequestContracts>({
     originERC20: null,
     originBridge: null,
     destinationERC20: null,
-    destinationBridge: null
+    destinationBridge: null,
 })
 
 
@@ -136,7 +137,6 @@ function initOriginContracts() {
         chainDetails[web3Store.chainId].bridgeAddress,
         { from: web3Store.address }
         ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
-
     requestContracts.value.originERC20 = new web3Store.web3!.eth.Contract(
         abis.erc20Abi as AbiItem[],
         chainDetails[web3Store.chainId].token[props.requestInfo.token].address,
@@ -148,23 +148,8 @@ function initOriginContracts() {
         chainDetails[props.requestInfo.toNetwork].bridgeAddress,
         { from: web3Store.address }
         ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
-
+    
     checkApproval()
-}
-
-async function checkApproval() {
-    const allowance = await requestContracts.value.originERC20!
-        .methods.allowance(web3Store.address, chainDetails[web3Store.chainId].bridgeAddress).call()
-    console.log("allowance", allowance)
-    // check approval
-    // step.value = "lock"
-    step.value = "approve"
-}
-
-async function switchChain() {
-    loading.value = true
-    await web3Store[Web3Actions.SwitchChain](Number(props.requestInfo.fromNetwork))
-    loading.value = false
 }
 
 function approve() {
@@ -193,7 +178,7 @@ function lock() {
         chainDetails[web3Store.chainId].token[props.requestInfo.token].address,
         lpLockId,
         lpAddress
-    ).send().on("transactionHash", async () => {
+    ).send({ from : web3Store.address }).on("transactionHash", async () => {
         step.value = 'wait'
         loading.value = false
 
@@ -269,6 +254,27 @@ function getAutoLpLockIdAndAddress() {
 
     return {lpLockId: 1, lpAddress: "0x9b862973b13222968Cc90200995392896e001bfE"}
 
+}
+
+async function checkApproval() {
+    const rawAllowance = (await requestContracts.value.originERC20!
+        .methods.allowance(web3Store.address, chainDetails[web3Store.chainId].bridgeAddress).call()).toString()
+
+    const decimals = Number(await requestContracts.value.originERC20!.methods.decimals().call())
+    const allowance = Number(ethers.utils.formatUnits(rawAllowance, decimals))
+
+    console.log("allowance", allowance)
+    console.log("props.requestInfo.amount", props.requestInfo.amount)
+    if (allowance >= (props.requestInfo.amount as number)) {
+        console.log('skipping approve')
+        step.value = "lock"
+    }
+}
+
+async function switchChain() {
+    loading.value = true
+    await web3Store[Web3Actions.SwitchChain](Number(props.requestInfo.fromNetwork))
+    loading.value = false
 }
 
 </script>

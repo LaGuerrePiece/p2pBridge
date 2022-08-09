@@ -2,7 +2,7 @@
   "dependencies": {
     "@coinbase/wallet-sdk": "^3.3.0",
     "@fortawesome/fontawesome-free": "^6.0.0-beta3",
-    "@kyvg/vue3-notification": "^2.3.4",
+    "@kyvg/vue3-notification": "^2.3.6",
     "@metamask/detect-provider": "^1.2.0",
     "@metamask/onboarding": "^1.0.1",
     "@metamask/types": "^1.1.0",
