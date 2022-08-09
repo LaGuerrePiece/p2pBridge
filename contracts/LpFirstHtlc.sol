@@ -37,23 +37,28 @@ struct BridgerLock {
 contract LpFirstHtlc {
 
     uint256 public chainId;
-    uint256 public nonce;
+
+    uint256 public lpNonce;
+    uint256 public bridgerNonce;
 
     mapping(uint256 => LpLock) public idToLpLock;
     mapping(uint256 => BridgerLock) public idToBridgerLock;
 
-    // event fired when an user requests a bridge
+    // event fired when a user requests a bridge
     event Request(address bridger, uint256 amount, uint256 chainWanted, address token, uint256 bridgerLockId, uint256 lpLockId, address lp);
     
-    // event fired when an user unlock the bridged funds 
+    // event fired when a user unlock the bridged funds 
     event Unlock(uint256 lpLockId, bytes signature, uint256 chainId, uint256 bridgerLockId, uint256 authIndex);
+
+    // event fired when a lp authorizes a bridger for some of his funds 
+    event BridgerAuth(uint256 _amount, address _bridger, uint256 _deadline, uint256 _chainId, uint256 _lpLockId, uint256 _bridgerLockId);       
 
     constructor(uint256 _chainId) {
         chainId = _chainId;
     }
 
     function createLpLock(uint256 _amount, uint256[] memory _acceptedChains, address _token, uint256 _fees) external {
-        uint256 lockId = ++nonce;
+        uint256 lockId = ++lpNonce;
 
         LpLock storage lpLock = idToLpLock[lockId];
         lpLock.amount = _amount;
@@ -67,7 +72,7 @@ contract LpFirstHtlc {
     }
 
     function createBridgerLock(uint256 _amount, uint256 _chainWanted, address _token, uint256 _lpLockId, address _lp) external {
-        uint256 lockId = ++nonce;
+        uint256 lockId = ++bridgerNonce;
 
         idToBridgerLock[lockId] = BridgerLock({
             amount: _amount,
@@ -211,4 +216,33 @@ contract LpFirstHtlc {
             "Invalid signature"
         );
     }
+
+    // Getter functions
+
+    function getUserLpLocks(address _user) public view returns (uint256[] memory) {
+        uint256[] memory ids;
+        uint256 j;
+
+        for (uint i = 0; i < lpNonce; i++) {
+            if (idToLpLock[i].owner == _user) {
+                ids[j] = i;
+                j++;
+            }
+        }
+        return ids;
+    }
+
+    function getUserBridgerLocks(address _user) public view returns (uint256[] memory) {
+        uint256[] memory ids;
+        uint256 j;
+
+        for (uint i = 0; i < lpNonce; i++) {
+            if (idToBridgerLock[i].owner == _user) {
+                ids[j] = i;
+                j++;
+            }
+        }
+        return ids;
+    }
+
 } 
