@@ -31,7 +31,7 @@
           Send
         </div>
         <input
-            class="bg-neutral border-0 focus:ring-0 outline:none text-lg w-52 p-0"
+            class="bg-neutral border-0 focus:ring-0 outline:none text-lg w-52"
             v-model.number="requestInfo.amount"
             type="number"
             placeholder="0.0"
@@ -74,20 +74,20 @@
     </div>
 
     <div
-      class="flex justify-between w-full h-16 border border-primary rounded-lg bg-neutral">
-      <div class="flex flex-col">
+      class="flex justify-between w-full h-16 p-1 border border-primary rounded-lg bg-neutral">
+      <div class="flex flex-col justify-between p-1">
         <div class="text-xs">
           Receive
         </div>
         <input
-            class="bg-neutral border-0 focus:ring-0 focus:outline:none text-lg w-52 p-0"
+            class="bg-neutral border-0 focus:ring-0 focus:outline:none text-lg w-52"
             v-model.number="requestInfo.amount"
             type="number"
             placeholder="0.0"
           />
       </div>
-      <div class="flex flex-col pr-2 pt-1 items-end">
-        <div class="text-[10px] text-gray-400 pl-1 pt-1 pb-2">
+      <div class="flex flex-col p-1 items-end">
+        <div class="text-[10px] text-gray-400">
           184.095 (-3.12%)
         </div>
       </div>
