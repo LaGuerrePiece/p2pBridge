@@ -36,8 +36,6 @@ struct BridgerLock {
 
 contract LpFirstHtlc {
 
-    uint256 public chainId;
-
     uint256 public lpNonce;
     uint256 public bridgerNonce;
 
@@ -222,7 +220,7 @@ contract LpFirstHtlc {
         uint256[] memory ids;
         uint256 j;
 
-        for (uint i = 0; i < lpNonce; i++) {
+        for (uint i = 1; i <= lpNonce; i++) {
             if (idToLpLock[i].owner == _user) {
                 ids[j] = i;
                 j++;
@@ -235,7 +233,7 @@ contract LpFirstHtlc {
         uint256[] memory ids;
         uint256 j;
 
-        for (uint i = 0; i < lpNonce; i++) {
+        for (uint i = 1; i <= lpNonce; i++) {
             if (idToBridgerLock[i].owner == _user) {
                 ids[j] = i;
                 j++;
