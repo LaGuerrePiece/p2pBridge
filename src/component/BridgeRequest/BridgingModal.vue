@@ -158,7 +158,7 @@ function lock() {
         loading.value = false
 
         //get lock id
-        const myBridgerLockId = bridgeContract.methods.nonce().call()
+        const myBridgerLockId = bridgeContract.methods.bridgerNonce().call()
 
         const destinationBridgeContract = new web3Store.web3!.eth.Contract(
             bridgeAbi as AbiItem[],
@@ -190,7 +190,7 @@ async function withdraw() {
         { from: web3Store.address }
         ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
     
-    const bridgerLockId = await bridgeContract.methods.nonce().call()
+    const bridgerLockId = await bridgeContract.methods.bridgerNonce().call()
 
     await web3Store[Web3Actions.SwitchChain](parseInt(props.requestInfo.toNetwork));
 
@@ -201,7 +201,7 @@ async function withdraw() {
         ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
 
 
-    const lpLockId = await destinationBridgeContract.methods.nonce().call()
+    const lpLockId = await destinationBridgeContract.methods.lpNonce().call()
     const authIndex = "4"
     // const lpLock = (await destinationBridgeContract.methods.idToLpLock(lpLockId).call())
 
