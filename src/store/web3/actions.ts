@@ -40,8 +40,6 @@ export async function connect(
     return
   }
 
-  console.log('test')
-
   const web3Modal = new Web3Modal({
     network: "mainnet",
     cacheProvider: true,
@@ -56,22 +54,24 @@ export async function connect(
   this.address = (await this.web3.eth.getAccounts())[0];
   this.chainId = await this.web3.eth.getChainId();
 
-  this.ens = await getEns(this.address)
+  if (this.chainId === 1) this.ens = await getEns(this.address)
 
-  if (!(this.chainId in chainDetails)) {
-    await switchChain(1337); //On unknown chain switch to ganache for user safety
-  }
+  // if (!(this.chainId in chainDetails)) {
+  //   await switchChain(1337); //On unknown chain switch to ganache for user safety
+  // }
 
   const bridgesStore = useBridgesStore();
   await bridgesStore[BridgesActions.ConnectContract]();
 
   provider.on("accountsChanged", async (accounts: string[]) => {
     this.address = accounts[0];
-    this.ens = await getEns(this.address)
+    this.ens = null
+    if (this.chainId === 1) this.ens = await getEns(this.address)
   });
 
-  provider.on("chainChanged", (chainId: string) => {
+  provider.on("chainChanged", async (chainId: string) => {
     this.chainId = parseInt(chainId);
+    if (this.chainId === 1) this.ens = await getEns(this.address)
   });
   this.connected = true;
 }

@@ -37,15 +37,12 @@
 <script lang="ts" setup>
 import { reactive } from "vue";
 import { trimAddress } from "../../composition/functions"
+import { RequestInfo } from "../../types/bridgeRequests";
+
 
 
 const props = defineProps<{
-  requestInfo: {
-    fromNetwork: string,
-    toNetwork: string,
-    token: string,
-    amount: number | null
-  }
+  requestInfo: RequestInfo
 }>();
 
 const data = [

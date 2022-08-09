@@ -7,6 +7,7 @@ import { RequestActions, Request } from "../../types/requests";
 import { useChallengeStore } from "../challenges";
 import { useRequestStore } from "../requests";
 import { useWeb3Store } from "../web3";
+import { chainDetails, abis } from "../../composition/constants";
 
 /**
  * @notice - Used to connect and store the bridge contract on a given chain,
@@ -16,25 +17,34 @@ import { useWeb3Store } from "../web3";
 export async function connectContract(
   this: ReturnType<typeof useBridgesStore>
 ): Promise<void> {
-  const promises: Array<Promise<any>> = [];
+  // const promises: Array<Promise<any>> = [];
 
-  for (const chainId in CONFIG["chains"]) {
-    if (!(chainId == "77" || chainId == "338")) return
-    this.$state[chainId] = {
-      contract: new new Web3(CONFIG["chains"][chainId].rpcUrls[0]).eth.Contract(
-        CONFIG.abi.BridgeAbi,
-        CONFIG["chains"][chainId].bridgeAddress
-      ),
+  for (const chainId in chainDetails) {
+    if (!chainDetails[chainId].enable) return
+
+    const web3 = new Web3(chainDetails[chainId].rpcUrls[0])
+    const contract = new web3.eth.Contract(
+      abis.bridgeAbi as AbiItem[],
+      chainDetails[chainId].bridgeAddress
+    )
+
+    this[chainId] = {
+      web3: web3,
+      contract: contract,
     };
-    promises.push(this[BridgesActions.PopulateMyChallenges](Number(chainId)));
-    promises.push(this[BridgesActions.PopulateMyRequests](Number(chainId)));
+    console.log('chain :', chainId)
+    
+    // TODO : get and push the user data in the state
+    
+    // promises.push(this[BridgesActions.PopulateMyChallenges](Number(chainId)));
+    // promises.push(this[BridgesActions.PopulateMyRequests](Number(chainId)));
   }
 
-  try {
-    await Promise.all(promises);
-  } catch (e: any) {
-    console.log("An error occurend during the contract connection ", e);
-  }
+  // try {
+  //   await Promise.all(promises);
+  // } catch (e: any) {
+  //   console.log("An error occurend during the contract connection ", e);
+  // }
 }
 
 /**

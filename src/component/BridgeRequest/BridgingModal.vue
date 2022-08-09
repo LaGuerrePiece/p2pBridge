@@ -12,12 +12,12 @@
                 </div>
                 <div class="rounded-full w-8 px-1">
                     <img
-                        :src="chainDetails[requestInfo.fromNetwork].icon"
+                        :src="chainDetails[requestInfo.fromNetwork.toString()].icon"
                         alt=""
                     />
                 </div>
                 <div>
-                    {{chainDetails[requestInfo.fromNetwork].name}}
+                    {{chainDetails[requestInfo.fromNetwork.toString()].name}}
                 </div>
             </div>
             <div class="flex flex-row items-center">
@@ -26,12 +26,12 @@
                 </div>
                 <div class="rounded-full w-8 px-1">
                     <img
-                        :src="chainDetails[requestInfo.toNetwork].icon"
+                        :src="chainDetails[requestInfo.toNetwork.toString()].icon"
                         alt=""
                     />
                 </div>
                 <div>
-                    {{chainDetails[requestInfo.toNetwork].name}}
+                    {{chainDetails[requestInfo.toNetwork.toString()].name}}
                 </div>
             </div>
         </div>
@@ -48,6 +48,12 @@
                 v-if="loading"
                 class="btn btn-neutral loading normal-case border border-primary ">
                 Loading
+            </button>
+            <button
+                v-else-if="step === 'approve' && web3Store.chainId.toString() !== requestInfo.fromNetwork"
+                @click="switchChain"
+                class="btn btn-neutral normal-case border border-primary ">
+                Switch chain
             </button>
             <button
                 v-else-if="step === 'approve'"
@@ -80,51 +86,91 @@ import { ref, onMounted } from "vue";
 import { useWeb3Store } from "../../store/web3";
 import { trimAddress } from "../../composition/functions"
 import BigNumber from "bignumber.js";
-import { chainDetails } from "../../composition/constants"
+import { chainDetails, abis } from "../../composition/constants"
 import { AllEvents } from "../../../types/truffle-contracts/ERC20";
 import {
-  BridgeDexInstance,
   ERC20Instance,
   LpFirstHtlcInstance
 } from "../../../types/truffle-contracts";
 import { Contractify, Web3ify } from "../../types/commons";
-import { RequestInfo } from "../../types/bridgeRequests";
-import erc20Abi from "../../abis/erc20Abi.json"
-import bridgeAbi from "../../abis/bridgeAbi.json"
+import { RequestInfo, RequestContracts } from "../../types/bridgeRequests";
 import { Web3Actions } from "../../types/web3";
 
-const props = defineProps<{
-  requestInfo: RequestInfo
-}>();
-
 const web3Store = useWeb3Store();
+
+const props = defineProps<{
+    requestInfo: RequestInfo
+}>();
 const step = ref<"approve" | "lock" | "wait" | "withdraw" | "final">("approve");
 const loading = ref<boolean>(false);
+const requestContracts = ref<RequestContracts>({
+    originERC20: null,
+    originBridge: null,
+    destinationERC20: null,
+    destinationBridge: null
+})
 
 
-onMounted(checkApproval)
+// async function test() {
+//       const bridgeContract = new web3Store.web3!.eth.Contract(
+//         bridgeAbi as AbiItem[],
+//         chainDetails[web3Store.chainId].bridgeAddress,
+//         { from: web3Store.address }
+//         ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
 
-async function checkApproval() {
-    const erc20Contract = new web3Store.web3!.eth.Contract(
-        erc20Abi as AbiItem[],
+//     console.log(bridgeContract)
+
+//     const lpLockId = await bridgeContract.methods.nonce().call()
+//     console.log(lpLockId)
+//     const lpLock = (await bridgeContract.methods.idToLpLock(lpLockId).call())
+//     console.log('lpLock', lpLock)
+// }
+
+onMounted(initOriginContracts)
+// onMounted(test)
+
+function initOriginContracts() {
+
+    requestContracts.value.originBridge = new web3Store.web3!.eth.Contract(
+        abis.bridgeAbi as AbiItem[],
+        chainDetails[web3Store.chainId].bridgeAddress,
+        { from: web3Store.address }
+        ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
+
+    requestContracts.value.originERC20 = new web3Store.web3!.eth.Contract(
+        abis.erc20Abi as AbiItem[],
         chainDetails[web3Store.chainId].token[props.requestInfo.token].address,
         { from: web3Store.address }) as unknown as Contractify<ERC20Instance, AllEvents>;
-    
-    const allowance = await erc20Contract.methods.allowance(web3Store.address,
-        chainDetails[web3Store.chainId].bridgeAddress).call()
-    console.log("allowance", allowance, typeof allowance)
+
+    //test
+    requestContracts.value.destinationBridge = new web3Store.web3!.eth.Contract(
+        abis.bridgeAbi as AbiItem[],
+        chainDetails[props.requestInfo.toNetwork].bridgeAddress,
+        { from: web3Store.address }
+        ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
+
+    checkApproval()
+}
+
+async function checkApproval() {
+    const allowance = await requestContracts.value.originERC20!
+        .methods.allowance(web3Store.address, chainDetails[web3Store.chainId].bridgeAddress).call()
+    console.log("allowance", allowance)
+    // check approval
     // step.value = "lock"
-    step.value = "withdraw"
+    step.value = "approve"
+}
+
+async function switchChain() {
+    loading.value = true
+    await web3Store[Web3Actions.SwitchChain](Number(props.requestInfo.fromNetwork))
+    loading.value = false
 }
 
 function approve() {
     loading.value = true
-    const erc20Contract = new web3Store.web3!.eth.Contract(
-        erc20Abi as AbiItem[],
-        chainDetails[web3Store.chainId].token[props.requestInfo.token].address,
-        { from: web3Store.address }) as unknown as Contractify<ERC20Instance, AllEvents>;
 
-    erc20Contract.methods.approve(
+    requestContracts.value.originERC20!.methods.approve(
         chainDetails[web3Store.chainId].bridgeAddress,
         new BigNumber("1000e18").toFixed(),
         ).send().on("transactionHash", () => {
@@ -137,17 +183,11 @@ function approve() {
 function lock() {
     loading.value = true
 
-    const bridgeContract = new web3Store.web3!.eth.Contract(
-        bridgeAbi as AbiItem[],
-        chainDetails[web3Store.chainId].bridgeAddress,
-        { from: web3Store.address }
-        ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
-
     const { lpLockId, lpAddress }: {lpLockId: number, lpAddress: string} = getAutoLpLockIdAndAddress()
 
     const amountToSend = "500000000000000"
     //props.requestInfo.amount!
-    bridgeContract.methods.createBridgerLock(
+    requestContracts.value.originBridge!.methods.createBridgerLock(
         amountToSend,
         props.requestInfo.toNetwork,
         chainDetails[web3Store.chainId].token[props.requestInfo.token].address,
@@ -158,10 +198,11 @@ function lock() {
         loading.value = false
 
         //get lock id
-        const myBridgerLockId = bridgeContract.methods.nonce().call()
+        const myBridgerLockId = requestContracts.value.originBridge!.methods.bridgerNonce().call()
+
 
         const destinationBridgeContract = new web3Store.web3!.eth.Contract(
-            bridgeAbi as AbiItem[],
+            abis.bridgeAbi as AbiItem[],
             chainDetails[props.requestInfo.toNetwork].bridgeAddress,
             { from: web3Store.address }
             ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
@@ -182,27 +223,20 @@ function lock() {
 async function withdraw() {
     loading.value = true
 
-    
+    const bridgerLockId = await requestContracts.value.originBridge!.methods.bridgerNonce().call()
 
-    const bridgeContract = new web3Store.web3!.eth.Contract(
-        bridgeAbi as AbiItem[],
-        chainDetails[web3Store.chainId].bridgeAddress,
-        { from: web3Store.address }
-        ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
-    
-    const bridgerLockId = await bridgeContract.methods.nonce().call()
-
-    await web3Store[Web3Actions.SwitchChain](parseInt(props.requestInfo.toNetwork));
+    await web3Store[Web3Actions.SwitchChain](Number(props.requestInfo.toNetwork));
 
     const destinationBridgeContract = new web3Store.web3!.eth.Contract(
-        bridgeAbi as AbiItem[],
+        abis.bridgeAbi as AbiItem[],
         chainDetails[props.requestInfo.toNetwork].bridgeAddress,
         { from: web3Store.address }
         ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
 
 
-    const lpLockId = await destinationBridgeContract.methods.nonce().call()
+    const lpLockId = await destinationBridgeContract.methods.lpNonce().call()
     const authIndex = "4"
+    
     // const lpLock = (await destinationBridgeContract.methods.idToLpLock(lpLockId).call())
 
     const encodedParameters = web3Store.web3!.utils.encodePacked(

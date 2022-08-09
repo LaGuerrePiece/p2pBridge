@@ -4,7 +4,8 @@ import { AllEvents as BridgeDexEvents } from "../../types/truffle-contracts/Brid
 import { Contractify } from "./commons";
 
 export type BridgesState = {
-  [chain: number]: {
+  [chain: string]: {
+    web3: Web3,
     contract:  Contractify<BridgeDexInstance, BridgeDexEvents>;
   };
 };
