@@ -53,8 +53,7 @@ contract LpFirstHtlc {
     // event fired when a lp authorizes a bridger for some of his funds 
     event BridgerAuth(uint256 _amount, address _bridger, uint256 _deadline, uint256 _chainId, uint256 _lpLockId, uint256 _bridgerLockId);       
 
-    constructor(uint256 _chainId) {
-        chainId = _chainId;
+    constructor() {
     }
 
     function createLpLock(uint256 _amount, uint256[] memory _acceptedChains, address _token, uint256 _fees) external {
@@ -245,4 +244,49 @@ contract LpFirstHtlc {
         return ids;
     }
 
+    function getLpLockFromId(uint256 _id) public view returns (    
+        uint256 amount,
+        address owner,
+        uint256[] memory acceptedChains,
+        address token,
+        uint256 fees
+    ) 
+    {
+        return (
+            idToLpLock[_id].amount,
+            idToLpLock[_id].owner,
+            idToLpLock[_id].acceptedChains,
+            idToLpLock[_id].token,
+            idToLpLock[_id].fees
+        );
+    }
+
+    function getBridgerLockFromId(uint256 _id) public view returns (
+        uint256 amount,
+        address owner,
+        uint256 chainWanted,
+        address token,
+        uint256 lpLockId,
+        address lp,
+        uint256 deadline
+    ) 
+    {
+        return (     
+            idToBridgerLock[_id].amount,
+            idToBridgerLock[_id].owner,
+            idToBridgerLock[_id].chainWanted,
+            idToBridgerLock[_id].token,
+            idToBridgerLock[_id].lpLockId,
+            idToBridgerLock[_id].lp,
+            idToBridgerLock[_id].deadline
+        );
+    }
+
+    function getAuthsFromLpLockId(uint256 _id) public view returns (Auth[] memory auths)
+    {
+        for (uint i = 0; i < idToLpLock[_id].auths.length; i++) {
+                auths[i] = idToLpLock[_id].auths[i];
+            }
+        return auths;
+    }
 } 
