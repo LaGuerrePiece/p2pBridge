@@ -25,7 +25,7 @@
     </div>
   </div>
   <template
-    v-for="(chain, key, index) in removeCurrentChainFromList(
+    v-for="(chain, key, index) in removeDisabledChainsFromList(
       chainDetails
     )"
     :key="index"
@@ -39,9 +39,9 @@
         expandSpan = !expandSpan;
       "
     >
-      <div class="rounded-full w-5">
+      <!-- <div class="rounded-full w-5">
         <img :src="chain.icon" alt="" class="w-5" />
-      </div>
+      </div> -->
       <div
         class="px-3 flex grow justify-center font-mono font-bold text-xs text-white"
       >
@@ -59,16 +59,19 @@ import { ref } from "vue";
 import { chainDetails } from "../../composition/constants"
 
 const web3Store = useWeb3Store();
-console.log("web3Store.connected", web3Store.connected);
 
 const expandSpan = ref<Boolean>(false);
 
-function removeCurrentChainFromList(
+console.log("web3Store.chainId", web3Store.chainId, typeof web3Store.chainId)
+
+function removeDisabledChainsFromList(
   chainDetails: ChainDetails
 ) {
-  if (!web3Store.chainId) return chainDetails;
   let newList = Object.assign({}, chainDetails);
-  delete newList[web3Store.chainId];
+  for (const chainId in newList) {
+    if (!newList[chainId].enable) delete newList[chainId]
+  }
+  if (web3Store.chainId) delete newList[web3Store.chainId];
   return newList;
 }
 </script>

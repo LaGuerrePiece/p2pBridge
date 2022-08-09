@@ -6,6 +6,13 @@
 @import "./animations/animations.scss";
 //@import "./variables/variables.scss";
 
+
+
+.ptit-btn {
+    height: 1rem !important;
+    min-height: 1rem !important;
+}
+
 *::-webkit-scrollbar {
     display: none;
 }

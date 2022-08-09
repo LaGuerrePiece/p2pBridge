@@ -25,8 +25,8 @@
       </div>
     </div>
     
-    <div class="flex justify-between w-full h-16 border border-primary rounded-lg bg-neutral">
-      <div class="flex flex-col pl-2 pt-2">
+    <div class="flex justify-between w-full h-16 p-1 border border-primary rounded-lg bg-neutral">
+      <div class="flex flex-col justify-between p-1">
         <div class="text-xs">
           Send
         </div>
@@ -37,9 +37,16 @@
             placeholder="0.0"
           />
       </div>
-      <div class="flex flex-col pr-2 pt-1 items-end">
-        <div class="text-[10px] text-gray-400 pl-1 pt-1 pb-2">
-          Balance : 100
+      <div class="flex flex-col justify-between p-1 items-end">
+        <div class="flex flex-row items-center">
+          <button
+            @click="maximizeAmount"
+            class="btn ptit-btn btn-xs text-[10px] normal-case border border-primary">
+              MAX
+          </button>
+          <div class="text-[10px] pl-1.5 text-gray-400">
+            Balance : {{balance.toFixed(4)}}
+          </div>
         </div>
         <SelectTokenButton
         class="rounded-lg bg-neutral h-7"
@@ -68,7 +75,7 @@
 
     <div
       class="flex justify-between w-full h-16 border border-primary rounded-lg bg-neutral">
-      <div class="flex flex-col pl-2 pt-2">
+      <div class="flex flex-col">
         <div class="text-xs">
           Receive
         </div>
@@ -129,15 +136,11 @@
         </ModalFrame>
       </transition>
     </teleport>
-
-
-
-
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useWeb3Store } from "../../store/web3";
 import ModalFrame from "../Modals/ModalFrame.vue";
 import SelectChainSpan from "./SelectChainSpan.vue";
@@ -149,28 +152,24 @@ import { Web3Actions } from "../../types/web3";
 import BigNumber from "bignumber.js";
 import { chainDetails } from "../../composition/constants"
 import { AllEvents } from "../../../types/truffle-contracts/ERC20";
-import {
-  BridgeDexInstance,
-  ERC20Instance,
-} from "../../../types/truffle-contracts";
+import { BridgeDexInstance, ERC20Instance } from "../../../types/truffle-contracts";
 import { Contractify, Web3ify } from "../../types/commons";
+import { RequestInfo } from "../../types/bridgeRequests";
 
-
-import erc20Abi from "../../abis/erc20abi.json"
-import {
-  arrowupdown,
-  rocket2,
-  flag2
-} from "../../asset/images/images";
+import erc20Abi from "../../abis/erc20Abi.json"
+import { arrowupdown } from "../../asset/images/images";
+import { ethers } from "ethers";
+import { useBridgesStore } from "../../store/bridges";
 
 const web3Store = useWeb3Store();
 
-const requestInfo = ref({
-  fromNetwork: "1",
-  toNetwork: "137",
+const requestInfo = ref<RequestInfo>({
+  fromNetwork: "4",
+  toNetwork: "42",
   token: "WETH",
   amount: null,
 })
+
 const providerChosen = ref<string>();
 
 const providerModalOpen = ref<boolean>(false);
@@ -178,16 +177,34 @@ const bridgingModalOpen = ref<boolean>(false);
 
 const ezmode= ref<boolean>(true);
 
+const balance = ref<number>(0);
+
 function rotateNetworks() {
     const from = requestInfo.value.fromNetwork
     requestInfo.value.fromNetwork = requestInfo.value.toNetwork
     requestInfo.value.toNetwork = from
 }
 
+watch([() => requestInfo.value.fromNetwork,
+  () => requestInfo.value.token], () => {
+  getUserBalance(requestInfo.value.fromNetwork, requestInfo.value.token)
+})
 
-
-function lock() {
-  
+function maximizeAmount() {
+  requestInfo.value.amount = balance.value
 }
 
+async function getUserBalance(chainid: string, tokenName: string) {
+  const bridgeStore = useBridgesStore()
+    const erc20Contract = new bridgeStore[chainid].web3.eth.Contract(
+      erc20Abi as AbiItem[],
+      chainDetails[chainid].token[tokenName].address,
+      { from: web3Store.address }) as unknown as Contractify<ERC20Instance, AllEvents>;
+    
+    const rawBalance = (await erc20Contract.methods.balanceOf(web3Store.address).call()).toString()
+    const decimals = Number(await erc20Contract.methods.decimals().call())
+    balance.value = Number(ethers.utils.formatUnits(rawBalance, decimals))
+    
+    console.log("balance", balance.value, typeof balance.value)
+}
 </script>

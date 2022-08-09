@@ -18,7 +18,7 @@
     <div
     class="absolute flex flex-col w-36 rounded-lg border items-center bg-neutral  border-primary cursor-pointer"
     :class="expandSpan ? 'opacity-1 z-20 top-[90px]' : 'opacity-0 invisible z-10'">
-      <template v-for="(chain, key, index) in removeActualChainFromList(
+      <template v-for="(chain, key, index) in removeDisabledChainsFromList(
         chainDetails, actualNetwork
       )" :key="index">
       <div class="flex flex-col">
@@ -58,28 +58,19 @@ import {
 import { chainDetails } from "../../composition/constants"
 import { ChainDetails } from "../../types/constants";
 
-const icons: {[index: number]: any} = {
-  1: ethereum,
-  56: bsc,
-  77: gnosis,
-  137: polygon,
-  338: cronos,
-  1337: ganache,
-  43114: avalanche
-  // "USDT": tether,
-  // "BUSD": busd,
-  // "USDC": usdc,
-}
 const props = defineProps<{
   actualNetwork: string;
 }>();
 
 const web3Store = useWeb3Store();
 
-function removeActualChainFromList(
+function removeDisabledChainsFromList(
   supportedList: ChainDetails, actualNetwork: string
 ) {
   let newList = Object.assign({}, supportedList);
+  for (const chainId in newList) {
+    if (!newList[chainId].enable) delete newList[chainId]
+  }
   delete newList[actualNetwork];
   return newList;
 }
