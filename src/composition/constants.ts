@@ -40,7 +40,7 @@ export const chainDetails: ChainDetails = {
       "https://rinkeby.infura.io/v3/49f373294ecd4358abd6a39d55521529",
       "wss://rinkeby.infura.io/ws/v3/49f373294ecd4358abd6a39d55521529",
     ],
-    bridgeAddress: "0xA8D8CC706839E73250AAb620cD25C741397D14aB",
+    bridgeAddress: "0x815d7a07aB3C2B55ceC5d676A4706f7ADcD9fB74",
     token: {
       WETH: { name: "WETH", icon: weth, address: "0xc778417E063141139Fce010982780140Aa0cD5Ab" },
       USDT: { name: "USDT", icon: tether, address: "0xdac17f958d2ee523a2206206994597c13d831ec7" },
@@ -56,7 +56,7 @@ export const chainDetails: ChainDetails = {
       "https://kovan.infura.io/v3/49f373294ecd4358abd6a39d55521529",
       "wss://kovan.infura.io/ws/v3/49f373294ecd4358abd6a39d55521529",
     ],
-    bridgeAddress: "0xdba524c94573517c5de5606b48e8bca8828ba85b",
+    bridgeAddress: "0xb1C4564D0848C8402Af4EF83F8be5Fe1861210b0",
     token: {
       WETH: { name: "WETH", icon: weth, address: "0xd0A1E359811322d97991E03f863a0C30C2cF029C" },
       USDT: { name: "USDT", icon: tether, address: "0xdac17f958d2ee523a2206206994597c13d831ec7" },

@@ -285,11 +285,12 @@ contract LpFirstHtlc {
         );
     }
 
-    function getAuthsFromLpLockId(uint256 _id) public view returns (Auth[] memory auths)
+    function getAuthsFromLpLockId(uint256 _id) public view returns (Auth[] memory)
     {
+        Auth[] memory auths = new Auth[](idToLpLock[_id].auths.length);
         for (uint i = 0; i < idToLpLock[_id].auths.length; i++) {
-                auths[i] = idToLpLock[_id].auths[i];
-            }
+            auths[i] = idToLpLock[_id].auths[i];
+        }   
         return auths;
     }
 } 
