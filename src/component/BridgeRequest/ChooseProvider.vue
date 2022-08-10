@@ -17,7 +17,7 @@
         <div class="pl-3 w-full">
           <div class="grid grid-cols-2">
             <div class="">Total Locked:</div>
-            <div class="pl-2">{{ provider.totalLocked }} {{requestInfo.token}}</div>
+            <div class="pl-2">{{ provider.totalLocked }} {{request.token}}</div>
             <div class="">Fees:</div>
             <div class="pl-2">{{ provider.fee }}%</div>
           </div>
@@ -42,7 +42,7 @@ import { RequestInfo } from "../../types/bridgeRequests";
 
 
 const props = defineProps<{
-  requestInfo: RequestInfo
+  request: RequestInfo
 }>();
 
 const data = [

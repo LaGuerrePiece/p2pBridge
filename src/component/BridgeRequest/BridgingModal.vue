@@ -3,7 +3,7 @@
         class="flex flex-col"
     >
         <div class="text-center">
-            {{requestInfo.amount}} {{requestInfo.token}}
+            {{request.amount}} {{request.token}}
         </div>
         <div class="grid grid-cols-2 justify-items-center py-4">
             <div class="flex flex-row items-center">
@@ -12,12 +12,12 @@
                 </div>
                 <div class="rounded-full w-8 px-1">
                     <img
-                        :src="chainDetails[requestInfo.fromNetwork.toString()].icon"
+                        :src="chainDetails[request.fromNetwork.toString()].icon"
                         alt=""
                     />
                 </div>
                 <div>
-                    {{chainDetails[requestInfo.fromNetwork.toString()].name}}
+                    {{chainDetails[request.fromNetwork.toString()].name}}
                 </div>
             </div>
             <div class="flex flex-row items-center">
@@ -26,12 +26,12 @@
                 </div>
                 <div class="rounded-full w-8 px-1">
                     <img
-                        :src="chainDetails[requestInfo.toNetwork.toString()].icon"
+                        :src="chainDetails[request.toNetwork.toString()].icon"
                         alt=""
                     />
                 </div>
                 <div>
-                    {{chainDetails[requestInfo.toNetwork.toString()].name}}
+                    {{chainDetails[request.toNetwork.toString()].name}}
                 </div>
             </div>
         </div>
@@ -50,7 +50,7 @@
                 Loading
             </button>
             <button
-                v-else-if="step === 'approve' && web3Store.chainId.toString() !== requestInfo.fromNetwork"
+                v-else-if="step === 'approve' && web3Store.chainId.toString() !== request.fromNetwork"
                 @click="switchChain"
                 class="btn btn-neutral normal-case border border-primary ">
                 Switch chain
@@ -95,11 +95,12 @@ import {
 import { Contractify, Web3ify } from "../../types/commons";
 import { RequestInfo, RequestContracts } from "../../types/bridgeRequests";
 import { Web3Actions } from "../../types/web3";
+import { ethers } from "ethers"
 
 const web3Store = useWeb3Store();
 
 const props = defineProps<{
-    requestInfo: RequestInfo
+    request: RequestInfo
 }>();
 const step = ref<"approve" | "lock" | "wait" | "withdraw" | "final">("approve");
 const loading = ref<boolean>(false);
@@ -107,7 +108,7 @@ const requestContracts = ref<RequestContracts>({
     originERC20: null,
     originBridge: null,
     destinationERC20: null,
-    destinationBridge: null
+    destinationBridge: null,
 })
 
 
@@ -136,35 +137,19 @@ function initOriginContracts() {
         chainDetails[web3Store.chainId].bridgeAddress,
         { from: web3Store.address }
         ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
-
     requestContracts.value.originERC20 = new web3Store.web3!.eth.Contract(
         abis.erc20Abi as AbiItem[],
-        chainDetails[web3Store.chainId].token[props.requestInfo.token].address,
+        chainDetails[web3Store.chainId].token[props.request.token].address,
         { from: web3Store.address }) as unknown as Contractify<ERC20Instance, AllEvents>;
 
     //test
     requestContracts.value.destinationBridge = new web3Store.web3!.eth.Contract(
         abis.bridgeAbi as AbiItem[],
-        chainDetails[props.requestInfo.toNetwork].bridgeAddress,
+        chainDetails[props.request.toNetwork].bridgeAddress,
         { from: web3Store.address }
         ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
-
+    
     checkApproval()
-}
-
-async function checkApproval() {
-    const allowance = await requestContracts.value.originERC20!
-        .methods.allowance(web3Store.address, chainDetails[web3Store.chainId].bridgeAddress).call()
-    console.log("allowance", allowance)
-    // check approval
-    // step.value = "lock"
-    step.value = "approve"
-}
-
-async function switchChain() {
-    loading.value = true
-    await web3Store[Web3Actions.SwitchChain](Number(props.requestInfo.fromNetwork))
-    loading.value = false
 }
 
 function approve() {
@@ -186,14 +171,14 @@ function lock() {
     const { lpLockId, lpAddress }: {lpLockId: number, lpAddress: string} = getAutoLpLockIdAndAddress()
 
     const amountToSend = "500000000000000"
-    //props.requestInfo.amount!
+    //props.request.amount!
     requestContracts.value.originBridge!.methods.createBridgerLock(
         amountToSend,
-        props.requestInfo.toNetwork,
-        chainDetails[web3Store.chainId].token[props.requestInfo.token].address,
+        props.request.toNetwork,
+        chainDetails[web3Store.chainId].token[props.request.token].address,
         lpLockId,
         lpAddress
-    ).send().on("transactionHash", async () => {
+    ).send({ from : web3Store.address }).on("transactionHash", async () => {
         step.value = 'wait'
         loading.value = false
 
@@ -203,7 +188,7 @@ function lock() {
 
         const destinationBridgeContract = new web3Store.web3!.eth.Contract(
             abis.bridgeAbi as AbiItem[],
-            chainDetails[props.requestInfo.toNetwork].bridgeAddress,
+            chainDetails[props.request.toNetwork].bridgeAddress,
             { from: web3Store.address }
             ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
 
@@ -225,11 +210,11 @@ async function withdraw() {
 
     const bridgerLockId = await requestContracts.value.originBridge!.methods.bridgerNonce().call()
 
-    await web3Store[Web3Actions.SwitchChain](Number(props.requestInfo.toNetwork));
+    await web3Store[Web3Actions.SwitchChain](Number(props.request.toNetwork));
 
     const destinationBridgeContract = new web3Store.web3!.eth.Contract(
         abis.bridgeAbi as AbiItem[],
-        chainDetails[props.requestInfo.toNetwork].bridgeAddress,
+        chainDetails[props.request.toNetwork].bridgeAddress,
         { from: web3Store.address }
         ) as unknown as Contractify<LpFirstHtlcInstance, AllEvents>;
 
@@ -269,6 +254,27 @@ function getAutoLpLockIdAndAddress() {
 
     return {lpLockId: 1, lpAddress: "0x9b862973b13222968Cc90200995392896e001bfE"}
 
+}
+
+async function checkApproval() {
+    const rawAllowance = (await requestContracts.value.originERC20!
+        .methods.allowance(web3Store.address, chainDetails[web3Store.chainId].bridgeAddress).call()).toString()
+
+    const decimals = Number(await requestContracts.value.originERC20!.methods.decimals().call())
+    const allowance = Number(ethers.utils.formatUnits(rawAllowance, decimals))
+
+    console.log("allowance", allowance)
+    console.log("props.request.amount", props.request.amount)
+    if (allowance >= (props.request.amount as number)) {
+        console.log('skipping approve')
+        step.value = "lock"
+    }
+}
+
+async function switchChain() {
+    loading.value = true
+    await web3Store[Web3Actions.SwitchChain](Number(props.request.fromNetwork))
+    loading.value = false
 }
 
 </script>

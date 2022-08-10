@@ -1,12 +1,12 @@
 import { Contract } from "web3-eth-contract";
-import { BridgeDexInstance } from "../../types/truffle-contracts";
-import { AllEvents as BridgeDexEvents } from "../../types/truffle-contracts/BridgeDex";
+import { LpFirstHtlcInstance } from "../../types/truffle-contracts";
+import { AllEvents as LpFirstHtlcEvents } from "../../types/truffle-contracts/LpFirstHtlc";
 import { Contractify } from "./commons";
 
 export type BridgesState = {
   [chain: string]: {
     web3: Web3,
-    contract:  Contractify<BridgeDexInstance, BridgeDexEvents>;
+    contract:  Contractify<LpFirstHtlcInstance, LpFirstHtlcEvents>;
   };
 };
 

@@ -14,7 +14,7 @@
         </div>
         <SelectChainSpan
           class="rounded-lg bg-neutral h-7"
-          v-model:actualNetwork="requestInfo.fromNetwork"
+          v-model:actualNetwork="request.fromNetwork"
         ></SelectChainSpan>
       </div>
       <div class="flex flex-row">
@@ -32,7 +32,7 @@
         </div>
         <input
             class="bg-neutral border-0 focus:ring-0 outline:none text-lg w-52"
-            v-model.number="requestInfo.amount"
+            v-model.number="request.amount"
             type="number"
             placeholder="0.0"
           />
@@ -50,7 +50,7 @@
         </div>
         <SelectTokenButton
         class="rounded-lg bg-neutral h-7"
-        v-model:actualToken="requestInfo.token"
+        v-model:actualToken="request.token"
         />
       </div>
     </div>
@@ -69,7 +69,7 @@
       </div>
       <SelectChainSpan
         class="rounded-lg bg-neutral h-7"
-        v-model:actualNetwork="requestInfo.toNetwork"
+        v-model:actualNetwork="request.toNetwork"
       ></SelectChainSpan>
     </div>
 
@@ -81,7 +81,7 @@
         </div>
         <input
             class="bg-neutral border-0 focus:ring-0 focus:outline:none text-lg w-52"
-            v-model.number="requestInfo.amount"
+            v-model.number="request.amountReceivedEst"
             type="number"
             placeholder="0.0"
           />
@@ -99,19 +99,19 @@
       <button
         v-if="web3Store.chainId == 0"
         @click="web3Store[Web3Actions.Connect]()"
-        class="btn-primary btn-outline btn-wide btn-sm normal-case border border-primary rounded-lg">
+        class="btn normal-case border border-primary">
           Connect
       </button>
       <button
-        v-else-if="ezmode || providerChosen"
-        @click="bridgingModalOpen = true"
-        class="btn-primary btn-wide btn-sm normal-case border border-primary rounded-lg">
+        v-else-if="ezmode || request.provider"
+        @click="openBridgingModal"
+        class="btn normal-case border border-primary">
           Bridge
       </button>
       <button
         v-else
         @click="providerModalOpen = true"
-        class="btn-primary btn-outline btn-wide btn-sm normal-case border border-primary rounded-lg">
+        class="btn normal-case border border-primary">
           Choose Provider
       </button>
     </div>
@@ -120,7 +120,7 @@
         <ModalFrame v-if="bridgingModalOpen" @close="bridgingModalOpen = false">
           <template #title>Bridging</template>
           <BridgingModal
-            :requestInfo="requestInfo"
+            :request="request"
             @close="bridgingModalOpen = false">
           </BridgingModal>
         </ModalFrame>
@@ -129,8 +129,8 @@
         <ModalFrame v-if="providerModalOpen" @close="providerModalOpen = false">
           <template #title>Providers</template>
           <ChooseProvider
-            :requestInfo="requestInfo"
-            @provider-chosen="(n: string) => providerChosen = n"
+            :request="request"
+            @provider-chosen="(n: string) => request.provider = n"
             @close="providerModalOpen = false">
           </ChooseProvider>
         </ModalFrame>
@@ -152,7 +152,7 @@ import { Web3Actions } from "../../types/web3";
 import BigNumber from "bignumber.js";
 import { chainDetails } from "../../composition/constants"
 import { AllEvents } from "../../../types/truffle-contracts/ERC20";
-import { BridgeDexInstance, ERC20Instance } from "../../../types/truffle-contracts";
+import { ERC20Instance } from "../../../types/truffle-contracts";
 import { Contractify, Web3ify } from "../../types/commons";
 import { RequestInfo } from "../../types/bridgeRequests";
 
@@ -160,17 +160,18 @@ import erc20Abi from "../../abis/erc20Abi.json"
 import { arrowupdown } from "../../asset/images/images";
 import { ethers } from "ethers";
 import { useBridgesStore } from "../../store/bridges";
+import { notify } from "@kyvg/vue3-notification";
 
 const web3Store = useWeb3Store();
 
-const requestInfo = ref<RequestInfo>({
+const request = ref<RequestInfo>({
   fromNetwork: "4",
   toNetwork: "42",
   token: "WETH",
   amount: null,
+  provider: null,
+  amountReceivedEst: null,
 })
-
-const providerChosen = ref<string>();
 
 const providerModalOpen = ref<boolean>(false);
 const bridgingModalOpen = ref<boolean>(false);
@@ -179,20 +180,17 @@ const ezmode= ref<boolean>(true);
 
 const balance = ref<number>(0);
 
-function rotateNetworks() {
-    const from = requestInfo.value.fromNetwork
-    requestInfo.value.fromNetwork = requestInfo.value.toNetwork
-    requestInfo.value.toNetwork = from
-}
-
-watch([() => requestInfo.value.fromNetwork,
-  () => requestInfo.value.token], () => {
-  getUserBalance(requestInfo.value.fromNetwork, requestInfo.value.token)
+watch([() => request.value.fromNetwork,
+  () => request.value.token], () => {
+  getUserBalance(request.value.fromNetwork, request.value.token)
 })
 
-function maximizeAmount() {
-  requestInfo.value.amount = balance.value
-}
+watch([() => request.value.amount,
+  () => request.value.toNetwork,
+  () => request.value.fromNetwork,
+  () => request.value.token],
+  computeBestProvider
+)
 
 async function getUserBalance(chainid: string, tokenName: string) {
   const bridgeStore = useBridgesStore()
@@ -207,4 +205,41 @@ async function getUserBalance(chainid: string, tokenName: string) {
     
     console.log("balance", balance.value, typeof balance.value)
 }
+
+function openBridgingModal() {
+  if (request.value.amount == null) {
+    notify({
+      title: "Important message",
+      text: "Amount input null",
+      type: "warn",
+    });
+    console.log('lalal')
+  } else {
+    computeBestProvider()
+    bridgingModalOpen.value = true
+  }
+}
+
+function computeBestProvider() {
+  // get providers that accept this trade
+
+  // To do : compute reputation
+
+  // select the best one
+  
+
+
+  return 'lalala'
+}
+
+function rotateNetworks() {
+    const from = request.value.fromNetwork
+    request.value.fromNetwork = request.value.toNetwork
+    request.value.toNetwork = from
+}
+
+function maximizeAmount() {
+  request.value.amount = balance.value
+}
+
 </script>
