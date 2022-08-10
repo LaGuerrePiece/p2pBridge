@@ -19,7 +19,7 @@ export const chainDetails: ChainDetails = {
   "1": {
     name: "Ethereum",
     icon: ethereum,
-    enable: false,
+    enable: true,
     rpcUrls: [
       "https://mainnet.infura.io/v3/fd5dad2d869c4b20a703ea9f100333f7",
       "wss://mainnet.infura.io/v3/fd5dad2d869c4b20a703ea9f100333f7",
@@ -40,7 +40,7 @@ export const chainDetails: ChainDetails = {
       "https://rinkeby.infura.io/v3/49f373294ecd4358abd6a39d55521529",
       "wss://rinkeby.infura.io/ws/v3/49f373294ecd4358abd6a39d55521529",
     ],
-    bridgeAddress: "0x815d7a07aB3C2B55ceC5d676A4706f7ADcD9fB74",
+    bridgeAddress: "0x12e567f179c4fAa810f235fc73C9874B356c829E",
     token: {
       WETH: { name: "WETH", icon: weth, address: "0xc778417E063141139Fce010982780140Aa0cD5Ab" },
       USDT: { name: "USDT", icon: tether, address: "0xdac17f958d2ee523a2206206994597c13d831ec7" },
@@ -56,7 +56,7 @@ export const chainDetails: ChainDetails = {
       "https://kovan.infura.io/v3/49f373294ecd4358abd6a39d55521529",
       "wss://kovan.infura.io/ws/v3/49f373294ecd4358abd6a39d55521529",
     ],
-    bridgeAddress: "0xb1C4564D0848C8402Af4EF83F8be5Fe1861210b0",
+    bridgeAddress: "0x47bfCBfBFE9654248D5B55E85fAF9bFE00194E60",
     token: {
       WETH: { name: "WETH", icon: weth, address: "0xd0A1E359811322d97991E03f863a0C30C2cF029C" },
       USDT: { name: "USDT", icon: tether, address: "0xdac17f958d2ee523a2206206994597c13d831ec7" },
