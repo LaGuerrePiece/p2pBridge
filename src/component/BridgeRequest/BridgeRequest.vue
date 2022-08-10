@@ -41,7 +41,7 @@
         <div class="flex flex-row items-center">
           <button
             @click="maximizeAmount"
-            class="btn ptit-btn btn-xs text-[10px] normal-case border border-primary">
+            class="btn-primary ptit-btn btn-xs text-[10px] normal-case rounded-lg border border-primary">
               MAX
           </button>
           <div class="text-[10px] pl-1.5 text-gray-400">
@@ -99,19 +99,19 @@
       <button
         v-if="web3Store.chainId == 0"
         @click="web3Store[Web3Actions.Connect]()"
-        class="btn btn-neutral normal-case border border-primary ">
+        class="btn-primary btn-outline btn-wide btn-sm normal-case border border-primary rounded-lg">
           Connect
       </button>
       <button
         v-else-if="ezmode || providerChosen"
         @click="bridgingModalOpen = true"
-        class="btn btn-neutral normal-case border border-primary ">
+        class="btn-primary btn-wide btn-sm normal-case border border-primary rounded-lg">
           Bridge
       </button>
       <button
         v-else
         @click="providerModalOpen = true"
-        class="btn btn-neutral normal-case border border-primary ">
+        class="btn-primary btn-outline btn-wide btn-sm normal-case border border-primary rounded-lg">
           Choose Provider
       </button>
     </div>
