@@ -35,15 +35,22 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive } from "vue";
+import { onMounted, reactive } from "vue";
 import { trimAddress } from "../../composition/functions"
 import { RequestInfo } from "../../types/bridgeRequests";
-
-
 
 const props = defineProps<{
   request: RequestInfo
 }>();
+
+onMounted(loadProviderData)
+
+async function loadProviderData() {
+
+
+
+}
+
 
 const data = [
   [

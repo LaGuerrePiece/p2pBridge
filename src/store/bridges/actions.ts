@@ -18,20 +18,28 @@ export async function connectContract(
   this: ReturnType<typeof useBridgesStore>
 ): Promise<void> {
   // const promises: Array<Promise<any>> = [];
-
   for (const chainId in chainDetails) {
-    if (!chainDetails[chainId].enable) return
+    if (!chainDetails[chainId].enable) continue
 
     const web3 = new Web3(chainDetails[chainId].rpcUrls[0])
-    const contract = new web3.eth.Contract(
+    const bridge = new web3.eth.Contract(
       abis.bridgeAbi as AbiItem[],
       chainDetails[chainId].bridgeAddress
     )
 
     this[chainId] = {
       web3: web3,
-      contract: contract,
+      bridge: bridge,
+      token: {}
     };
+
+    for (const tokenName in chainDetails[chainId].token) {
+      this[chainId].token[tokenName] = new web3.eth.Contract(
+        abis.erc20Abi as AbiItem[],
+        chainDetails[chainId].token[tokenName].address
+      )
+    }
+    
     console.log('chain :', chainId)
     
     // TODO : get and push the user data in the state
