@@ -21,7 +21,7 @@ export async function connectContract(
   for (const chainId in chainDetails) {
     if (!chainDetails[chainId].enable) continue
 
-    const web3 = new Web3(chainDetails[chainId].rpcUrls[0])
+    const web3 = new Web3(chainDetails[chainId].rpcUrls[1])
     const bridge = new web3.eth.Contract(
       abis.bridgeAbi as AbiItem[],
       chainDetails[chainId].bridgeAddress

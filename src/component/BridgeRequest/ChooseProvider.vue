@@ -40,7 +40,8 @@ import { trimAddress } from "../../composition/functions"
 import { RequestInfo } from "../../types/bridgeRequests";
 
 const props = defineProps<{
-  request: RequestInfo
+  request: RequestInfo,
+  locks: any
 }>();
 
 onMounted(loadProviderData)

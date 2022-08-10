@@ -127,6 +127,7 @@
           <template #title>Bridging</template>
           <BridgingModal
             :request="request"
+            :locks="locks"
             @close="bridgingModalOpen = false">
           </BridgingModal>
         </ModalFrame>
@@ -136,6 +137,7 @@
           <template #title>Providers</template>
           <ChooseProvider
             :request="request"
+            :locks="locks"
             @provider-chosen="(n: string) => request.lp = n"
             @close="providerModalOpen = false">
           </ChooseProvider>
@@ -194,7 +196,9 @@ const locks = ref<{[chain: string]: any}>({
   "42": {}
 })
 
-onMounted(getLocks)
+watch(() => web3Store.connected,
+  getLocks
+)
 
 watch([() => request.value.fromNetwork,
   () => request.value.token], () => {
@@ -225,12 +229,12 @@ async function getUserBalance(chainid: string, tokenName: string) {
 
 function openBridgingModal() {
   if (request.value.amount == null) {
-    notify({
-      title: "Important message",
-      text: "Amount input null",
-      type: "warn",
-    });
-    console.log('lalal')
+    // notify({
+    //   title: "Important message",
+    //   text: "Amount input null",
+    //   type: "warn",
+    // });
+    console.log('no input amount')
   } else {
     bridgingModalOpen.value = true
   }
@@ -250,7 +254,7 @@ async function computeBestLp() {
 
   const lock = locks.value[request.value.toNetwork]
   
-  if (Number(ethers.utils.formatUnits(lock[0].toNumber(), decimals)) < request.value.amount) {
+  if (Number(ethers.utils.formatUnits(lock[0], decimals)) < request.value.amount) {
     console.log('No valid LP detected')
     request.value.lp = null
     request.value.lpLockId = null
@@ -264,16 +268,10 @@ async function computeBestLp() {
   //   //to-do check if auth amount in others is good
   //   //to-do check if it is the same token 
   // )
+  // to do : compute reputation
 
-  // select the best one
-  // const lockChosen = validLpLocks[validLpLocks.length - 1]
-
-  // To do : compute reputation
-
-  // console.log("fees", lockChosen.fees)
-
-  const estGasFees = 0.0001
-  const estAmountReceived = request.value.amount - (request.value.amount * lock[4].toNumber()/1e4) - estGasFees
+  const estGasFees = 0
+  const estAmountReceived = request.value.amount - (request.value.amount * lock[4]/1e6) - estGasFees
 
   request.value.amountReceivedEst = estAmountReceived
   request.value.lp = lock[1]
