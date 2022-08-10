@@ -12,10 +12,10 @@
         <div class="flex items-center pl-2 pr-3">
           From
         </div>
-        <SelectChainSpan
-          class="rounded-lg bg-neutral h-7"
-          v-model:actualNetwork="request.fromNetwork"
-        ></SelectChainSpan>
+      <button
+        class="btn btn-xs btn-outline normal-case rounded-lg h-7">
+        {{chainDetails[request.fromNetwork].name}}
+      </button>
       </div>
       <div class="flex flex-row">
         <div class="flex items-center text-xs pl-2 pr-3">
@@ -67,10 +67,10 @@
       <div class="flex justify-items-center pl-2 pr-3 py-1">
         To
       </div>
-      <SelectChainSpan
-        class="rounded-lg bg-neutral h-7"
-        v-model:actualNetwork="request.toNetwork"
-      ></SelectChainSpan>
+      <button
+        class=" btn btn-xs btn-outline normal-case rounded-lg h-7">
+        {{chainDetails[request.toNetwork].name}}
+      </button>
     </div>
 
     <div
@@ -99,19 +99,19 @@
       <button
         v-if="web3Store.chainId == 0"
         @click="web3Store[Web3Actions.Connect]()"
-        class="btn normal-case border border-primary">
+        class="btn normal-case btn-wide border border-primary">
           Connect
       </button>
       <button
         v-else-if="ezmode || request.provider"
         @click="openBridgingModal"
-        class="btn normal-case border border-primary">
+        class="btn normal-case btn-wide border border-primary">
           Bridge
       </button>
       <button
         v-else
         @click="providerModalOpen = true"
-        class="btn normal-case border border-primary">
+        class="btn normal-case border btn-wide border-primary">
           Choose Provider
       </button>
     </div>
@@ -165,8 +165,8 @@ import { notify } from "@kyvg/vue3-notification";
 const web3Store = useWeb3Store();
 
 const request = ref<RequestInfo>({
-  fromNetwork: "4",
-  toNetwork: "42",
+  fromNetwork: "42",
+  toNetwork: "4",
   token: "WETH",
   amount: null,
   provider: null,
