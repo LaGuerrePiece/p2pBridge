@@ -49,7 +49,7 @@ contract LpFirstHtlc {
     event Unlock(uint256 lpLockId, bytes signature, uint256 chainId, uint256 bridgerLockId, uint256 authIndex);
 
     // event fired when a lp authorizes a bridger for some of his funds 
-    event BridgerAuth(uint256 _amount, address _bridger, uint256 _deadline, uint256 _chainId, uint256 _lpLockId, uint256 _bridgerLockId);       
+    event BridgerAuth(uint256 amount, address bridger, uint256 deadline, uint256 chainId, uint256 lpLockId, uint256 bridgerLockId);       
 
     constructor() {
     }
@@ -100,6 +100,8 @@ contract LpFirstHtlc {
             bridgerLockId: _bridgerLockId,
             bridgerSignature: empty
         }));
+
+        emit BridgerAuth(_amount, _bridger, _deadline, _chainId, _lpLockId, _bridgerLockId);
 
     }
 
