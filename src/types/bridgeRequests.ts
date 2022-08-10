@@ -11,7 +11,8 @@ export type RequestInfo = {
     toNetwork: string,
     token: string,
     amount: number | null,
-    provider: string | null
+    lp: string | null
+    lpLockId: number | null
     amountReceivedEst: number | null
 }
 

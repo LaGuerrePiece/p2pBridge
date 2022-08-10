@@ -111,7 +111,6 @@ const requestContracts = ref<RequestContracts>({
     destinationBridge: null,
 })
 
-
 // async function test() {
 //       const bridgeContract = new web3Store.web3!.eth.Contract(
 //         bridgeAbi as AbiItem[],

@@ -19,7 +19,7 @@ export const chainDetails: ChainDetails = {
   "1": {
     name: "Ethereum",
     icon: ethereum,
-    enable: true,
+    enable: false,
     rpcUrls: [
       "https://mainnet.infura.io/v3/fd5dad2d869c4b20a703ea9f100333f7",
       "wss://mainnet.infura.io/v3/fd5dad2d869c4b20a703ea9f100333f7",

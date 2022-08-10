@@ -81,14 +81,20 @@
         </div>
         <input
             class="bg-neutral border-0 focus:ring-0 focus:outline:none text-lg w-52"
-            v-model.number="request.amountReceivedEst"
+            :value="(!request.amountReceivedEst || request.amountReceivedEst < 0)
+                      ? 0
+                      : request.amountReceivedEst.toFixed(6)"
             type="number"
             placeholder="0.0"
           />
       </div>
       <div class="flex flex-col p-1 items-end">
         <div class="text-[10px] text-gray-400">
-          184.095 (-3.12%)
+          {{request.amount === null
+          ? ""
+          : request.lp
+          ? `provider : ${trimAddress(request.lp)}`
+          : "No valid LP detected"}}
         </div>
       </div>
     </div>
@@ -103,7 +109,7 @@
           Connect
       </button>
       <button
-        v-else-if="ezmode || request.provider"
+        v-else-if="ezmode"
         @click="openBridgingModal"
         class="btn normal-case btn-wide border border-primary">
           Bridge
@@ -130,7 +136,7 @@
           <template #title>Providers</template>
           <ChooseProvider
             :request="request"
-            @provider-chosen="(n: string) => request.provider = n"
+            @provider-chosen="(n: string) => request.lp = n"
             @close="providerModalOpen = false">
           </ChooseProvider>
         </ModalFrame>
@@ -140,7 +146,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useWeb3Store } from "../../store/web3";
 import ModalFrame from "../Modals/ModalFrame.vue";
 import SelectChainSpan from "./SelectChainSpan.vue";
@@ -150,6 +156,7 @@ import BridgingModal from "./BridgingModal.vue";
 import { Web3Actions } from "../../types/web3";
 
 import BigNumber from "bignumber.js";
+import { trimAddress } from "../../composition/functions"
 import { chainDetails } from "../../composition/constants"
 import { AllEvents } from "../../../types/truffle-contracts/ERC20";
 import { ERC20Instance } from "../../../types/truffle-contracts";
@@ -163,13 +170,15 @@ import { useBridgesStore } from "../../store/bridges";
 import { notify } from "@kyvg/vue3-notification";
 
 const web3Store = useWeb3Store();
+const bridgeStore = useBridgesStore();
 
 const request = ref<RequestInfo>({
   fromNetwork: "42",
   toNetwork: "4",
   token: "WETH",
   amount: null,
-  provider: null,
+  lp: null,
+  lpLockId: null,
   amountReceivedEst: null,
 })
 
@@ -180,6 +189,13 @@ const ezmode= ref<boolean>(true);
 
 const balance = ref<number>(0);
 
+const locks = ref<{[chain: string]: any}>({
+  "4" : {},
+  "42": {}
+})
+
+onMounted(getLocks)
+
 watch([() => request.value.fromNetwork,
   () => request.value.token], () => {
   getUserBalance(request.value.fromNetwork, request.value.token)
@@ -189,11 +205,12 @@ watch([() => request.value.amount,
   () => request.value.toNetwork,
   () => request.value.fromNetwork,
   () => request.value.token],
-  computeBestProvider
+  computeBestLp
 )
 
 async function getUserBalance(chainid: string, tokenName: string) {
-  const bridgeStore = useBridgesStore()
+  if (!web3Store.connected) return
+    const bridgeStore = useBridgesStore()
     const erc20Contract = new bridgeStore[chainid].web3.eth.Contract(
       erc20Abi as AbiItem[],
       chainDetails[chainid].token[tokenName].address,
@@ -215,27 +232,85 @@ function openBridgingModal() {
     });
     console.log('lalal')
   } else {
-    computeBestProvider()
     bridgingModalOpen.value = true
   }
 }
 
-function computeBestProvider() {
+async function computeBestLp() {
+  if (!web3Store.connected || !request.value.amount) {
+    console.log('return cause not connected or no amount');
+    request.value.lp = null
+    request.value.lpLockId = null
+    request.value.amountReceivedEst = null
+    return
+  }
   // get providers that accept this trade
+
+  const decimals = Number(await bridgeStore[request.value.toNetwork].token[request.value.token].methods.decimals().call())
+
+  const lock = locks.value[request.value.toNetwork]
+  
+  if (Number(ethers.utils.formatUnits(lock[0].toNumber(), decimals)) < request.value.amount) {
+    console.log('No valid LP detected')
+    request.value.lp = null
+    request.value.lpLockId = null
+    request.value.amountReceivedEst = null
+    return
+  }
+
+  // const validLpLocks = locks.filter(lock => 
+  //   (Number(ethers.utils.formatUnits(lock.amount, decimals)) >= request.value.amount!)
+  //   // && (lock.acceptedChains.includes(request.value.fromNetwork))
+  //   //to-do check if auth amount in others is good
+  //   //to-do check if it is the same token 
+  // )
+
+  // select the best one
+  // const lockChosen = validLpLocks[validLpLocks.length - 1]
 
   // To do : compute reputation
 
-  // select the best one
-  
+  // console.log("fees", lockChosen.fees)
 
+  const estGasFees = 0.0001
+  const estAmountReceived = request.value.amount - (request.value.amount * lock[4].toNumber()/1e4) - estGasFees
 
-  return 'lalala'
+  request.value.amountReceivedEst = estAmountReceived
+  request.value.lp = lock[1]
+  request.value.lpLockId = 1
+}
+
+async function getLocks() {
+
+  // In demo, the only lock available if the one run by our bot
+  locks.value["4"] = await bridgeStore["4"].bridge.methods.getLpLockFromId(1).call()
+  locks.value["42"] = await bridgeStore["42"].bridge.methods.getLpLockFromId(1).call()
+
+  // const lpNonce = Number(await bridgeStore[request.value.toNetwork].bridge.methods.lpNonce().call())
+
+  // console.log('lpNonce', lpNonce)
+
+  // const promises: Array<Promise<any>> = [];
+  // for (let i = 1; i <= lpNonce; i++) {
+  //   promises.push(bridgeStore[request.value.toNetwork].bridge.methods.getLpLockFromId(i).call());
+  // }
+  // const lpLocks = await Promise.all(promises);
+
+  // const authPromises: Array<Promise<any>> = [];
+  // for (let i = 1; i <= lpNonce; i++) {
+  //   authPromises.push(bridgeStore[request.value.toNetwork].bridge.methods.getAuthsFromLpLockId(i).call());
+  // }
+  // const auth = await Promise.all(authPromises);
+  // console.log('auths', auth)
+  // for (let i = 0; i < lpLocks.length; i++) {
+  //   lpLocks[i].auths = auth[i]
+  // }
 }
 
 function rotateNetworks() {
-    const from = request.value.fromNetwork
-    request.value.fromNetwork = request.value.toNetwork
-    request.value.toNetwork = from
+  const from = request.value.fromNetwork
+  request.value.fromNetwork = request.value.toNetwork
+  request.value.toNetwork = from
 }
 
 function maximizeAmount() {
