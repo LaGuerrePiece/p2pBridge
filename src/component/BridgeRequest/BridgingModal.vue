@@ -208,12 +208,15 @@ async function withdraw() {
 
     const auth = await requestContracts.value.destinationBridge!.methods.getAuthsFromLpLockId(lpLockId).call()
     console.log("auth", auth)
-    const authIndex = auth.length
+    const authIndex = auth.length - 1
+    console.log("props.request.fromNetwork", props.request.fromNetwork, "bridgerLockId", bridgerLockId, )
 
     const encodedParameters = web3Store.web3!.utils.encodePacked(
-        { type: "uint256", value: web3Store.chainId.toString() },
+        { type: "uint256", value: props.request.fromNetwork },
         { type: "uint256", value: bridgerLockId.toString() },
     )!;
+
+    console.log("encodedParameters", encodedParameters)
 
     const signature = await web3Store.web3!.eth.personal.sign(
       encodedParameters,
@@ -224,7 +227,7 @@ async function withdraw() {
     requestContracts.value.destinationBridge!.methods.bridgerUnlock(
         lpLockId,
         signature,
-        web3Store.chainId.toString(),
+        props.request.fromNetwork,
         bridgerLockId,
         authIndex
     ).send().on("receipt", async () => {
@@ -261,6 +264,7 @@ async function switchChain() {
     loading.value = true
     await web3Store[Web3Actions.SwitchChain](Number(props.request.fromNetwork))
     loading.value = false
+    checkApproval()
 }
 
 </script>
