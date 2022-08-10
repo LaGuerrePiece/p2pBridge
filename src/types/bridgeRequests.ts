@@ -10,7 +10,8 @@ export type RequestInfo = {
     fromNetwork: string,
     toNetwork: string,
     token: string,
-    amount: number | null
+    amount: number | null,
+    provider: string | null
 }
 
 export type RequestContracts = {

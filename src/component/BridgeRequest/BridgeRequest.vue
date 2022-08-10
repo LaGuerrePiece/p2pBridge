@@ -103,7 +103,7 @@
           Connect
       </button>
       <button
-        v-else-if="ezmode || providerChosen"
+        v-else-if="ezmode || requestInfo.provider"
         @click="openBridgingModal"
         class="btn normal-case border border-primary">
           Bridge
@@ -130,7 +130,7 @@
           <template #title>Providers</template>
           <ChooseProvider
             :requestInfo="requestInfo"
-            @provider-chosen="(n: string) => providerChosen = n"
+            @provider-chosen="(n: string) => requestInfo.provider = n"
             @close="providerModalOpen = false">
           </ChooseProvider>
         </ModalFrame>
@@ -169,11 +169,10 @@ const requestInfo = ref<RequestInfo>({
   toNetwork: "42",
   token: "WETH",
   amount: null,
+  provider: null,
 })
 
 // TODO : check that number is not null before clicking on "bridge" button
-
-const providerChosen = ref<string>();
 
 const providerModalOpen = ref<boolean>(false);
 const bridgingModalOpen = ref<boolean>(false);
@@ -221,7 +220,13 @@ function openBridgingModal() {
 
     console.log('lalal')
   } else {
+    computeBestProvider()
     bridgingModalOpen.value = true
   }
 }
+
+function computeBestProvider() {
+  
+}
+
 </script>
