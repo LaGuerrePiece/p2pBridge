@@ -12,6 +12,7 @@ export type RequestInfo = {
     token: string,
     amount: number | null,
     provider: string | null
+    amountReceivedEst: number | null
 }
 
 export type RequestContracts = {
