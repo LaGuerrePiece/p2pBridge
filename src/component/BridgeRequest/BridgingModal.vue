@@ -35,18 +35,16 @@
                 </div>
             </div>
         </div>
-        <ul class="steps steps-vertical lg:steps-horizontal w-full my-4">
+        <ul class="steps steps-horizontal w-full my-4">
             <li data-content="" class="step" :class="[step === 'final' || step === 'withdraw' || step === 'wait' || step === 'lock' ? 'step-primary' : '']">Approve</li>
             <li data-content="" class="step" :class="[step === 'final' || step === 'withdraw' || step === 'wait' ? 'step-primary' : '']">Lock</li>
             <li data-content="" class="step" :class="[step === 'final' || step === 'withdraw' ? 'step-primary' : '']">Wait</li>
             <li data-content="" class="step" :class="[step === 'final' ? 'step-primary' : '']">Withdraw</li>
         </ul>
-        <div
-            class="grid justify-items-center m-2"
-        >
+        <div class="grid justify-items-center m-2">
             <button
                 v-if="loading"
-                class="btn btn-neutral loading normal-case border border-primary ">
+                class="btn btn-neutral loading static normal-case border border-primary w-32">
                 Loading
             </button>
             <button
@@ -69,7 +67,7 @@
             </button>
             <button
                 v-else-if="step === 'wait'"
-                class="btn btn-neutral loading normal-case border border-primary ">
+                class="btn btn-neutral loading static normal-case border border-primary w-48">
                 Waiting for provider...
             </button>
             <button
@@ -166,13 +164,16 @@ function lock() {
     const amountToSend = (ethers.utils.parseUnits(props.request.amount!.toString(), "18")).toString()
     const lpLockId = 1 //In demo, lpLockId is always 1
     const lpAddress = props.locks[props.request.toNetwork].owner
+
+    const deadline = "1000000000" // TODO
     
     requestContracts.value.originBridge!.methods.createBridgerLock(
         amountToSend,
         props.request.toNetwork,
         chainDetails[web3Store.chainId].token[props.request.token].address,
         lpLockId,
-        lpAddress
+        lpAddress,
+        deadline
     ).send({ from : web3Store.address }).on("receipt", async () => {
         step.value = 'wait'
         loading.value = false
@@ -226,16 +227,15 @@ async function withdraw() {
 
     requestContracts.value.destinationBridge!.methods.bridgerUnlock(
         lpLockId,
-        signature,
+        authIndex,
         props.request.fromNetwork,
         bridgerLockId,
-        authIndex
+        signature
     ).send().on("receipt", async () => {
         step.value = 'final'
         loading.value = false
         window.alert('Success !')
     })
-
 
 }
 
