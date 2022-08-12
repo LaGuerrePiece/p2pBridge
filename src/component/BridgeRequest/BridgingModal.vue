@@ -50,19 +50,19 @@
             <button
                 v-else-if="step === 'approve' && web3Store.chainId.toString() !== props.request.fromNetwork"
                 @click="switchChain"
-                class="btn btn-neutral normal-case border border-primary ">
+                class="btn btn-neutral normal-case border border-primary">
                 Switch chain
             </button>
             <button
                 v-else-if="step === 'approve'"
                 @click="approve"
-                class="btn btn-neutral normal-case border border-primary ">
+                class="btn btn-neutral normal-case border border-primary">
                 Approve
             </button>
             <button
                 v-else-if="step === 'lock'"
                 @click="lock"
-                class="btn btn-neutral normal-case border border-primary ">
+                class="btn btn-neutral normal-case border border-primary">
                 Lock
             </button>
             <button
@@ -73,8 +73,14 @@
             <button
                 v-else-if="step === 'withdraw'"
                 @click="withdraw"
-                class="btn btn-neutral normal-case border border-primary ">
+                class="btn btn-neutral normal-case border border-primary">
                 Withdraw
+            </button>
+            <button
+                v-else-if="step === 'final'"
+                @click="$emit('close')"
+                class="btn btn-neutral normal-case border border-primary">
+                Bridge Successful !
             </button>
         </div>
     </div>
@@ -238,10 +244,6 @@ async function withdraw() {
     })
 
 }
-
-
-
-
 
 
 

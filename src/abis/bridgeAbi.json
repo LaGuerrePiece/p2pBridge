@@ -1,6 +1,12 @@
 [
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_owner",
+        "type": "address"
+      }
+    ],
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
@@ -10,37 +16,37 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_amount",
+        "name": "amount",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "address",
-        "name": "_bridger",
+        "name": "bridger",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_deadline",
+        "name": "deadline",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_chainId",
+        "name": "originChainId",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_lpLockId",
+        "name": "lpLockId",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "_bridgerLockId",
+        "name": "bridgerLockId",
         "type": "uint256"
       }
     ],
@@ -91,6 +97,12 @@
         "internalType": "address",
         "name": "lp",
         "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "deadline",
+        "type": "uint256"
       }
     ],
     "name": "Request",
@@ -107,14 +119,14 @@
       },
       {
         "indexed": false,
-        "internalType": "bytes",
-        "name": "signature",
-        "type": "bytes"
+        "internalType": "uint256",
+        "name": "authIndex",
+        "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "chainId",
+        "name": "originChainId",
         "type": "uint256"
       },
       {
@@ -125,9 +137,9 @@
       },
       {
         "indexed": false,
-        "internalType": "uint256",
-        "name": "authIndex",
-        "type": "uint256"
+        "internalType": "bytes",
+        "name": "signature",
+        "type": "bytes"
       }
     ],
     "name": "Unlock",
@@ -144,7 +156,8 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "constant": true
   },
   {
     "inputs": [
@@ -178,7 +191,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "id",
+        "name": "lockId",
         "type": "uint256"
       },
       {
@@ -198,7 +211,8 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "constant": true
   },
   {
     "inputs": [
@@ -232,12 +246,18 @@
       },
       {
         "internalType": "uint256",
-        "name": "id",
+        "name": "lockId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amountLockedInAuths",
         "type": "uint256"
       }
     ],
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "constant": true
   },
   {
     "inputs": [],
@@ -250,7 +270,56 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "constant": true
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "protocolBalance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
+  },
+  {
+    "inputs": [],
+    "name": "protocolFees",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
+  },
+  {
+    "inputs": [],
+    "name": "protocolOwner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function",
+    "constant": true
   },
   {
     "inputs": [
@@ -306,6 +375,11 @@
         "internalType": "address",
         "name": "_lp",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_deadline",
+        "type": "uint256"
       }
     ],
     "name": "createBridgerLock",
@@ -327,12 +401,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_deadline",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_chainId",
+        "name": "_originChainId",
         "type": "uint256"
       },
       {
@@ -343,6 +412,11 @@
       {
         "internalType": "uint256",
         "name": "_bridgerLockId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_deadline",
         "type": "uint256"
       }
     ],
@@ -359,13 +433,13 @@
         "type": "uint256"
       },
       {
-        "internalType": "bytes",
-        "name": "_signature",
-        "type": "bytes"
+        "internalType": "uint256",
+        "name": "_authIndex",
+        "type": "uint256"
       },
       {
         "internalType": "uint256",
-        "name": "_chainId",
+        "name": "_originChainId",
         "type": "uint256"
       },
       {
@@ -374,9 +448,9 @@
         "type": "uint256"
       },
       {
-        "internalType": "uint256",
-        "name": "_authIndex",
-        "type": "uint256"
+        "internalType": "bytes",
+        "name": "_signature",
+        "type": "bytes"
       }
     ],
     "name": "bridgerUnlock",
@@ -393,7 +467,7 @@
       },
       {
         "internalType": "bytes",
-        "name": "_signature",
+        "name": "_bridgerSignature",
         "type": "bytes"
       }
     ],
@@ -410,7 +484,7 @@
         "type": "uint256"
       }
     ],
-    "name": "bridgerCancelLock",
+    "name": "cancelBridgerLock",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -423,7 +497,7 @@
         "type": "uint256"
       }
     ],
-    "name": "lpCancelLock",
+    "name": "cancelLpLock",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -468,6 +542,32 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      }
+    ],
+    "name": "withdrawProtocolFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_newFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "changeProtocolFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "_user",
         "type": "address"
       }
@@ -481,7 +581,8 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "constant": true
   },
   {
     "inputs": [
@@ -500,7 +601,8 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "constant": true
   },
   {
     "inputs": [
@@ -539,7 +641,8 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "constant": true
   },
   {
     "inputs": [
@@ -588,7 +691,8 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "constant": true
   },
   {
     "inputs": [
@@ -614,12 +718,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "deadline",
-            "type": "uint256"
-          },
-          {
-            "internalType": "uint256",
-            "name": "chainId",
+            "name": "originChainId",
             "type": "uint256"
           },
           {
@@ -631,14 +730,20 @@
             "internalType": "bytes",
             "name": "bridgerSignature",
             "type": "bytes"
+          },
+          {
+            "internalType": "uint256",
+            "name": "deadline",
+            "type": "uint256"
           }
         ],
         "internalType": "struct Auth[]",
-        "name": "auths",
+        "name": "",
         "type": "tuple[]"
       }
     ],
     "stateMutability": "view",
-    "type": "function"
+    "type": "function",
+    "constant": true
   }
 ]

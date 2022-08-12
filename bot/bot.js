@@ -1,8 +1,9 @@
 var chainDetails = require("./chains.js");
 const { ethers } = require("ethers");
+require('dotenv').config()
 var fs = require('fs');
 
-const private_key = "6cb29891cfa8cc9169718e581d59969b087cf9dba8ec2ebd49615d9fd58f4f30";
+const private_key = process.env.PRIVATE_KEY;
 var jsonFile = "./abi.json";
 var abi = JSON.parse(fs.readFileSync(jsonFile));
 var wallet = [];

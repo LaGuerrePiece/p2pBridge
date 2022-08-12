@@ -26,9 +26,8 @@ require("ts-node").register({
  */
 
 const HDWalletProvider = require("@truffle/hdwallet-provider");
-
-const fs = require("fs");
-const mnemonic = fs.readFileSync("mnemonic.txt").toString().trim();
+const PrivateKeyProvider = require("truffle-privatekey-provider");
+require('dotenv').config()
 
 module.exports = {
   /**
@@ -69,29 +68,19 @@ module.exports = {
       host: "https://forno.celo.org",
       network_id: 42220,
     },
-    GnosisTestnet: {
+    RinkebyTestnet: {
       provider: () =>
-        new HDWalletProvider({
-          mnemonic: mnemonic,
-          providerOrUrl: `https://sokol.poa.network/`,
-          pollingInterval: 30000,
-        }),
-      network_id: 77, // Ropsten's id
-      confirmations: 2, // # of confs to wait between deployments. (default: 0)
+        new PrivateKeyProvider(process.env.PRIVATE_KEY, `https://rinkeby.infura.io/v3/49f373294ecd4358abd6a39d55521529`),
+      network_id: 4, // Ropsten's id
       timeoutBlocks: 200, // # of blocks before a deployment times out  (minimum/default: 50)
       skipDryRun: true, // Skip dry run before migrations? (default: false for public nets )
       gasPrice: 20000000000, // 20 gwei (in wei) (default: 100 gwei)
       disableConfirmationListener: true,
     },
-    CronosTestnet: {
+    KovanTestnet: {
       provider: () =>
-        new HDWalletProvider({
-          mnemonic: mnemonic,
-          providerOrUrl: `https://cronos-testnet-3.crypto.org:8545`,
-          pollingInterval: 30000,
-        }),
-      network_id: 338, // Ropsten's id
-      confirmations: 2, // # of confs to wait between deployments. (default: 0)
+        new PrivateKeyProvider(process.env.PRIVATE_KEY, `https://kovan.infura.io/v3/49f373294ecd4358abd6a39d55521529`),
+      network_id: 42, // Ropsten's id
       timeoutBlocks: 200, // # of blocks before a deployment times out  (minimum/default: 50)
       skipDryRun: true, // Skip dry run before migrations? (default: false for public nets )
       disableConfirmationListener: true,
