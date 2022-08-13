@@ -12,11 +12,22 @@ module.exports = (artifacts: Truffle.Artifacts, web3: Web3) => {
       const LpFirstHtlc = artifacts.require("LpFirstHtlc");
       const NuclearToken = artifacts.require("NuclearToken"); 
       
-      await deployer.deploy(LpFirstHtlc)
-      await deployer.deploy(NuclearToken)
-      console.log("Deployed Bridge contract : ", LpFirstHtlc.address)
-      console.log("Deployed ERC20 contract : ", NuclearToken.address)
+      await Promise.all([
+        deployer.deploy(LpFirstHtlc),
+        deployer.deploy(NuclearToken)
+      ]);
 
+      console.log("Deployed Bridge contract : ", LpFirstHtlc.address);
+      console.log("Deployed ERC20 contract : ", NuclearToken.address);
+
+      let bridgeContract = await LpFirstHtlc.deployed();
+      let tokenContract = await NuclearToken.deployed();
+
+      await tokenContract.approve(bridgeContract.address, "10000000000000000000000");
+      console.log("Approved bridge to spend our tokens");
+
+      await bridgeContract.createLpLock("10000000000000000000000", [42, 4], tokenContract.address, 300);
+      console.log("Created LP lock");
 
 
       // const config = require("../dev.config.js");
