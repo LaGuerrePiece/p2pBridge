@@ -7,6 +7,11 @@
     <div class="py-1 flex flex-row-reverse pl-3 pr-1 text-3xl font-sans font-bold text-white grow items-center justify-right">
         <div class="shrink-0">
             <div class="p-1 flex items-center mr-5">
+                <Faucet />
+            </div>
+        </div>
+        <div class="shrink-0">
+            <div class="p-1 flex items-center mr-5">
                 <Metamask />
             </div>
         </div>
@@ -26,6 +31,7 @@
 
 
 <script setup lang="ts">
+import Faucet from "../Buttons/Faucet.vue";
 import ChainInfo from "../ChainInfo/ChainInfo.vue";
 import Metamask from "../Metamask/Metamask.vue";
 import { useWeb3Store } from "../../store/web3";
