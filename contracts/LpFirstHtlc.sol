@@ -57,8 +57,8 @@ contract LpFirstHtlc {
     // event fired when a lp authorizes a bridger for some of his funds 
     event BridgerAuth(uint256 amount, address bridger, uint256 deadline, uint256 originChainId, uint256 lpLockId, uint256 bridgerLockId);       
 
-    constructor(address _owner) {
-        protocolOwner = _owner;
+    constructor() {
+        protocolOwner = msg.sender;
     }
 
     /**
