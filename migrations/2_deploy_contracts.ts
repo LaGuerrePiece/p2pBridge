@@ -10,13 +10,14 @@ module.exports = (artifacts: Truffle.Artifacts, web3: Web3) => {
 
     (deployer as any).then(async () => {
       const LpFirstHtlc = artifacts.require("LpFirstHtlc");
-      // const DummyERC20 = artifacts.require("DummyERC20"); 
+      const NuclearToken = artifacts.require("NuclearToken"); 
       
-      const owner = "0x86c01DD169aE6f3523D1919cc46bc224E733127F"
-      await deployer.deploy(LpFirstHtlc, owner)
-      // await deployer.deploy(DummyERC20)
+      await deployer.deploy(LpFirstHtlc)
+      await deployer.deploy(NuclearToken)
       console.log("Deployed Bridge contract : ", LpFirstHtlc.address)
-      // console.log("Deployed ERC20 contract : ", DummyERC20.address)
+      console.log("Deployed ERC20 contract : ", NuclearToken.address)
+
+
 
       // const config = require("../dev.config.js");
       // try {
