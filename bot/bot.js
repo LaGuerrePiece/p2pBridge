@@ -4,7 +4,7 @@ require('dotenv').config()
 var fs = require('fs');
 
 const private_key = process.env.PRIVATE_KEY;
-var jsonFile = "./abi.json";
+var jsonFile = "../src/abis/bridgeAbi.json";
 var abi = JSON.parse(fs.readFileSync(jsonFile));
 var wallet = [];
 chainDetails.forEach(chain => {
