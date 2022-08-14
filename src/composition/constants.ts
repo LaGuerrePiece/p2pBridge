@@ -43,9 +43,10 @@ export const chainDetails: ChainDetails = {
     bridgeAddress: "0x4e0afA481A5D4FFE7D9891E8A60E6edCbb77f328",
     token: {
       WETH: { name: "WETH", icon: weth, address: "0xc778417E063141139Fce010982780140Aa0cD5Ab" },
+      NUKE: { name: "NUKE", icon: weth,address: "0x35C5d2EDef97edcb682eCa2D168F325c8AE1fD22" },
       USDT: { name: "USDT", icon: tether, address: "0x3b00ef435fa4fcff5c209a37d1f3dcff37c705ad" },
       BUSD: { name: "BUSD", icon: busd, address: "0x4Fabb145d64652a948d72533023f6E7A623C7C53" },
-      USDC: { name: "USDC", icon: usdc, address: "0xeb8f08a975ab53e34d8a0330e0d34de942c95926" },
+      USDC: { name: "USDC", icon: usdc, address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" },
     },
   },
   "42": {
@@ -59,6 +60,7 @@ export const chainDetails: ChainDetails = {
     bridgeAddress: "0x2B4446406Cf12aE8D5dc4E14Edd1fc06cE6f9815",
     token: {
       WETH: { name: "WETH", icon: weth, address: "0xd0A1E359811322d97991E03f863a0C30C2cF029C" },
+      NUKE: { name: "NUKE", icon: weth, address: "0x8900B2DA7aE751CA6780d9C0B09B165eBC9d80F4" },
       USDT: { name: "USDT", icon: tether, address: "0xdac17f958d2ee523a2206206994597c13d831ec7" },
       BUSD: { name: "BUSD", icon: busd, address: "0x4Fabb145d64652a948d72533023f6E7A623C7C53" },
       USDC: { name: "USDC", icon: usdc, address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48" },
