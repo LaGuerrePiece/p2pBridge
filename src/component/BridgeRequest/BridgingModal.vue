@@ -180,7 +180,7 @@ function lock() {
         lpLockId,
         lpAddress,
         deadline
-    ).send({ from : web3Store.address }).on("receipt", async () => {
+    ).send({ from : web3Store.address }).on("transactionHash", async () => {
         step.value = 'wait'
         loading.value = false
         console.log('locked, waiting for event')
