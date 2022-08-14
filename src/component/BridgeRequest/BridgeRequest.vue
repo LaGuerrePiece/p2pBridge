@@ -177,7 +177,7 @@ const bridgeStore = useBridgesStore();
 const request = ref<RequestInfo>({
   fromNetwork: "42",
   toNetwork: "4",
-  token: "WETH",
+  token: "NUKE",
   amount: null,
   lp: null,
   lpLockId: null,
