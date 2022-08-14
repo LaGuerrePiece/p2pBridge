@@ -35,7 +35,7 @@ wallet.forEach(chain => {
                 chainB = chain;
             } 
         });
-        tx = chainB.contractW.authBridger(amount, bridger, 1, chain["id"], lpLockId, bridgerLockId);
+        tx = chainB.contractW.authBridger(amount, bridger, chain["id"], lpLockId, bridgerLockId, Date.now() + 10000);
         tx.then(function(tx) {
             console.log(tx.hash);
         });
