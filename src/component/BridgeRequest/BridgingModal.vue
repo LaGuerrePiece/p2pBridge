@@ -264,8 +264,9 @@ async function checkApproval() {
 async function switchChain() {
     loading.value = true
     await web3Store[Web3Actions.SwitchChain](Number(props.request.fromNetwork))
+    console.log('test')
     loading.value = false
-    checkApproval()
+    initContracts()
 }
 
 </script>

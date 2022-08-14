@@ -108,6 +108,7 @@ export async function switchChain(chainId: number): Promise<void> {
   const web3Store = useWeb3Store();
   try {
     await _switchChain(chainId);
+    web3Store.chainId = chainId
   } catch {
     await addNewChain(chainId);
     await _switchChain(chainId);
