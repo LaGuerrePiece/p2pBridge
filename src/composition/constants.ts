@@ -40,7 +40,7 @@ export const chainDetails: ChainDetails = {
       "https://rinkeby.infura.io/v3/49f373294ecd4358abd6a39d55521529",
       "wss://rinkeby.infura.io/ws/v3/49f373294ecd4358abd6a39d55521529",
     ],
-    bridgeAddress: "0x4e0afA481A5D4FFE7D9891E8A60E6edCbb77f328",
+    bridgeAddress: "0x12e567f179c4fAa810f235fc73C9874B356c829E",
     token: {
       WETH: { name: "WETH", icon: weth, address: "0xc778417E063141139Fce010982780140Aa0cD5Ab" },
       NUKE: { name: "NUKE", icon: weth,address: "0x35C5d2EDef97edcb682eCa2D168F325c8AE1fD22" },
@@ -57,7 +57,7 @@ export const chainDetails: ChainDetails = {
       "https://kovan.infura.io/v3/49f373294ecd4358abd6a39d55521529",
       "wss://kovan.infura.io/ws/v3/49f373294ecd4358abd6a39d55521529",
     ],
-    bridgeAddress: "0x2B4446406Cf12aE8D5dc4E14Edd1fc06cE6f9815",
+    bridgeAddress: "0x47bfCBfBFE9654248D5B55E85fAF9bFE00194E60",
     token: {
       WETH: { name: "WETH", icon: weth, address: "0xd0A1E359811322d97991E03f863a0C30C2cF029C" },
       NUKE: { name: "NUKE", icon: weth, address: "0x8900B2DA7aE751CA6780d9C0B09B165eBC9d80F4" },
