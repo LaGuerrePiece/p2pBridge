@@ -1,7 +1,6 @@
 <template>
   <div
     class="fixed inset-0 backdrop-blur-lg flex"
-    @click="$emit('close')"
   >
     <div
       class="absolute top-20 left-1/2 w-[28rem] max-h-[75%] bg-neutral border-2  border-primary text-white -translate-x-1/2 p-4 rounded-xl overflow-y-scroll"
