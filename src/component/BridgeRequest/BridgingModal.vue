@@ -240,7 +240,6 @@ async function withdraw() {
     ).send().on("receipt", async () => {
         step.value = 'final'
         loading.value = false
-        window.alert('Success !')
     })
 
 }

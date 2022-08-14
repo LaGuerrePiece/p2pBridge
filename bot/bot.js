@@ -40,7 +40,7 @@ wallet.forEach(chain => {
             console.log(tx.hash);
         });
     })
-    chain.contract.on("Unlock", (lpLockId, signature, chainId, bridgerLockId, authIndex, event) => {
+    chain.contract.on("Unlock", (lpLockId, authIndex, chainId, bridgerLockId, signature, event) => {
         console.log("Bridger secret received. Using it");
         //console.log(lpLockId, signature, chainId, bridgerLockId, authIndex);
         let chainB = {};
