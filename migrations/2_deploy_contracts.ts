@@ -23,10 +23,10 @@ module.exports = (artifacts: Truffle.Artifacts, web3: Web3) => {
       let bridgeContract = await LpFirstHtlc.deployed();
       let tokenContract = await NuclearToken.deployed();
 
-      await tokenContract.approve(bridgeContract.address, "10000000000000000000000");
+      await tokenContract.approve(bridgeContract.address, "1000000000000000000000000");
       console.log("Approved bridge to spend our tokens");
 
-      await bridgeContract.createLpLock("10000000000000000000000", [42, 4], tokenContract.address, 300);
+      await bridgeContract.createLpLock("1000000000000000000000000", [42, 4], tokenContract.address, 300);
       console.log("Created LP lock");
 
 
