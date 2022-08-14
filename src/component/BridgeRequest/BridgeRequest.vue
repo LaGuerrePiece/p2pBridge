@@ -201,7 +201,8 @@ watch(() => web3Store.connected,
 )
 
 watch([() => request.value.fromNetwork,
-  () => request.value.token], () => {
+  () => request.value.token,
+  () => request.value.amount], () => {
   getUserBalance(request.value.fromNetwork, request.value.token)
 })
 
@@ -223,7 +224,7 @@ async function getUserBalance(chainid: string, tokenName: string) {
     const rawBalance = (await erc20Contract.methods.balanceOf(web3Store.address).call()).toString()
     const decimals = Number(await erc20Contract.methods.decimals().call())
     balance.value = Number(ethers.utils.formatUnits(rawBalance, decimals))
-    
+    console.log('rawBalance', rawBalance)
     console.log("balance", balance.value, typeof balance.value)
 }
 
