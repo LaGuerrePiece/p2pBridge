@@ -1,5 +1,6 @@
 <template>
   <div
+  @click="openDocs"
     class="flex h-10 hover:bg-secondary items-center p-0.5 lg:p-1 border  border-primary rounded-lg cursor-pointer"
   >
     <div class="rounded-full pl-1">
@@ -14,4 +15,9 @@
 </template>
 <script setup lang="ts">
 import { documentation } from '../../asset/images/images';
+
+function openDocs() {
+  window.open("https://nuclear-bridge.gitbook.io/", "blank")
+}
+
 </script>
