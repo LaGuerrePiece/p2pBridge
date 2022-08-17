@@ -3,60 +3,52 @@ pragma solidity >=0.4.22 <0.9.0;
 
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-struct ChainAChallenge {
-    uint256 otherChain;
-    uint256 nonce;
-    bytes challengerSignature;
-    address challenger;
-    address token;
-}
-
-struct ChainBChallenge {
-    uint24 fees;
-    bytes bridgerSignature;
+struct ProviderTicket {
+    uint256 amount;
+    uint256 chainBId;
+    uint256 requestId;
+    uint256 deadline;
+    bytes signature;
+    address bridger;
 }
 
 struct Lock {
     uint256 amount;
-    ChainAChallenge[] challenges;
+    uint256 accepted;
+    uint256 nonce;
+    uint256[] acceptedChains;
+    ProviderTicket[] tickets;
     address token;
     address owner;
-    uint64 date;
-    bool locked;
-    bool challenged;
+    uint16 fees;
 }
 
 struct Request {
     uint256 amount;
     uint256 chainAId;
-    uint256 chainANonce;
-    uint256 index;
-    bytes initialSignature;
-    address tokenAContract;
+    uint256 lockId;
+    uint256 requestId;
     address tokenBContract;
     address sender;
-    uint64 date;
-    uint24 fees;
-    mapping(address => ChainBChallenge) challenges;
+    address provider;
+    uint64 deadline;
 }
 
 /// @title A simple Decentralized bridge
-contract BridgeDex {
-    uint256 public chainId;
-    address public owner;
+contract BridgeDex is Ownable {
+    uint256 public lockNonce;
+    uint256 public bridgeNonce;
+    uint256 public protocolFees = 10;
 
     mapping(uint256 => Lock) public idToLock;
-    mapping(address => uint256[]) public tokenContractToRequestId;
+    mapping(address => uint256[]) public tokenContractToRequestIds;
+    mapping(address => uint256[]) public tokenContractToLockIds;
     mapping(uint256 => Request) public idToRequest;
 
-    mapping(address => uint256[]) public myDeposits;
     mapping(address => uint256[]) public myRequests;
-    mapping(address => uint256[]) public myChallenges;
     mapping(address => uint256[]) public myLocks;
-
-    mapping(address => uint256) public point;
-    uint256 public nonce;
 
     event LockCreated(
         uint256 indexed id,
@@ -66,47 +58,66 @@ contract BridgeDex {
         uint64 date
     );
     event RequestPublished(
-        uint256 indexed id,
-        address indexed bridger,
-        uint256 amount,
+        address indexed _bridger,
+        uint256 _amount,
         uint256 _chainAId,
-        uint256 _chainANonce,
-        bytes _signature,
-        address _tokenAContract,
+        uint256 _lockId,
+        uint256 _requestId,
         address _tokenBContract,
-        uint256 _date,
-        uint24 _fees
+        uint256 _deadline
     );
 
-    constructor(uint256 _chainId, address _owner) {
-        chainId = _chainId;
-        owner = _owner;
-    }
+    event NewTicket(
+        uint256 _amount,
+        uint256 _deadline,
+        uint256 _chainBId,
+        uint256 _lockId,
+        uint256 _requestId,
+        address _bridger
+    );
+
+    event NewWithdraw(
+        uint256 _lockId,
+        uint256 _challengeIndex,
+        uint256 _chainBId,
+        uint256 _requestId,
+        bytes _signature
+    );
+
+    constructor() Ownable() {}
 
     /**
-     * @notice Used to lock a certain amount of a certain token before
-     * starting the bridge operation
+     * @notice Used to lock a certain amount of a certain token to allow bridge operations
      *
      * @param _amount - The amount to lock into the contract
+     * @param _acceptedChains - The chainids where the provider accepts his funds to be bridged
      * @param _tokenAContract - The ERC20 token address to lock
+     * @param _fees - Fees the provider is going to take (on a /10000 basis)
      */
-    function lock(uint256 _amount, address _tokenAContract) external {
-        uint256 id = ++nonce;
+    function lock(
+        uint256 _amount,
+        address _tokenAContract,
+        uint256[] calldata _acceptedChains,
+        uint256 _fees
+    ) external {
+        uint256 lockId = ++lockNonce;
 
-        Lock storage l = idToLock[id];
-        myLocks[msg.sender].push(id);
+        Lock storage l = idToLock[lockId];
+        myLocks[msg.sender].push(lockId);
+        tokenContractToLockIds[_tokenAContract].push(lockId);
 
         ERC20 c = ERC20(_tokenAContract);
 
-        l.locked = true;
         l.token = _tokenAContract;
         l.owner = msg.sender;
-        l.date = uint64(block.timestamp);
         l.amount = _amount;
+        l.nonce = lockId;
+        l.acceptedChains = _acceptedChains;
+        l.fees = uint16(_fees);
         c.transferFrom(msg.sender, address(this), _amount);
 
         emit LockCreated(
-            id,
+            lockId,
             msg.sender,
             _amount,
             _tokenAContract,
@@ -115,248 +126,341 @@ contract BridgeDex {
     }
 
     /**
-     * @notice Used to withdraw the locked funds, funds can be withdraw immediatly if there is no challenger
-     * else the locker will need to wait for 7 days to unlock its funds
+     * @notice Used to publish a bridge request on chainB
      *
-     * @param _lockId - The lock id on the chain A
+     * @param _amount - The total amount of token to bridge
+     * @param _chainAId - The id of the chain where the bridger will provide tokens
+     * @param _lockId - The nonce of the lock on the chain A
+     * @param _deadline - The deadline corresponding to the chain A lock
+     * @param _tokenBContract - The address of the token willing to be exchanged on chain B
+     * @param _provider - The chosen provider on chainA
      */
-    function withdrawLocked(uint256 _lockId) external {
+    function publishRequest(
+        uint256 _amount,
+        uint256 _chainAId,
+        uint256 _lockId,
+        uint256 _deadline,
+        address _tokenBContract,
+        address _provider
+    ) external {
+        uint256 _requestId = ++bridgeNonce;
+
+        tokenContractToRequestIds[_tokenBContract].push(_requestId);
+        myRequests[msg.sender].push(_requestId);
+
+        Request storage request = idToRequest[_requestId];
+        request.amount = _amount;
+        request.chainAId = _chainAId;
+        request.lockId = _lockId;
+        request.requestId = _requestId;
+        request.tokenBContract = _tokenBContract;
+        request.sender = msg.sender;
+        request.provider = _provider;
+        request.deadline = uint64(_deadline);
+
+        ERC20(_tokenBContract).transferFrom(msg.sender, address(this), _amount);
+
+        emit RequestPublished(
+            msg.sender,
+            _amount,
+            _chainAId,
+            _lockId,
+            _requestId,
+            _tokenBContract,
+            _deadline
+        );
+    }
+
+    /**
+     * @notice - Used by the provider to give a ticket to the trusted bridger
+     * @param _lockId - The lock for the given transaction
+     * @param _bridger - The bridger of the chainB
+     *
+     */
+    function acceptBridger(
+        uint256 _amount,
+        uint256 _lockId,
+        uint256 _chainBId,
+        uint256 _deadline,
+        uint256 _requestId,
+        address _bridger
+    ) external {
         Lock storage l = idToLock[_lockId];
 
-        if (l.challenged) require(l.date + 7 days < block.timestamp);
+        require(l.owner == msg.sender, "You are not the owner of the lock");
+        require(l.amount - l.accepted >= _amount, "Not enough on the lock");
+
+        bytes memory challengerSignature;
+        l.tickets.push(
+            ProviderTicket({
+                amount: _amount,
+                chainBId: _chainBId,
+                requestId: _requestId,
+                deadline: _deadline,
+                bridger: _bridger,
+                signature: challengerSignature
+            })
+        );
+
+        l.accepted += _amount;
+
+        emit NewTicket(
+            _amount,
+            _deadline,
+            _chainBId,
+            _lockId,
+            _requestId,
+            _bridger
+        );
+    }
+
+    /**
+     * @notice Used by the bridger to withdraw its funds on the chain A
+     *
+     * @param _bridgerSignature - The signature of the bridger allowing the provider to withdraw its funds on chain B
+     * @param _ticketIndex - The index of the ticket in the ticket queue
+     * @param _lockId - The id of the lock to withdraw from
+     */
+    function bridgerWithdraw(
+        bytes calldata _bridgerSignature,
+        uint256 _ticketIndex,
+        uint256 _lockId
+    ) external {
+        Lock storage l = idToLock[_lockId];
+        ProviderTicket storage ticket = l.tickets[_ticketIndex];
+
+        require(ticket.deadline > block.timestamp);
+        require(msg.sender == ticket.bridger);
+        require(ticket.amount > 0);
+
+        _verify(
+            ticket.bridger,
+            _bridgerSignature,
+            abi.encodePacked(ticket.chainBId, ticket.requestId)
+        );
+
+        uint256 providerFee = (ticket.amount * l.fees) / 1e4;
+        uint256 prtlFee = (protocolFees * providerFee) / 100;
+        uint256 amount = ticket.amount - providerFee;
+
+        l.amount -= amount + prtlFee;
+        l.accepted -= ticket.amount;
+        ticket.amount = 0;
+        ticket.signature = _bridgerSignature;
+
+        ERC20(l.token).transfer(msg.sender, amount);
+        ERC20(l.token).transfer(owner(), prtlFee);
+
+        emit NewWithdraw(
+            _lockId,
+            _ticketIndex,
+            ticket.chainBId,
+            ticket.requestId,
+            _bridgerSignature
+        );
+    }
+
+    /**
+     * @notice Used on chain B to withdraw the funds of the bridger by the provider
+     * Anyone can send this signature as the only receiver of the lock is the chainA 
+     * provider
+     *
+     * @param _bridgerSignature - The signature sent on the chain A by the bridger to redeem the funds
+     * @param _requestId - The id of the request we are going to withdraw from
+     */
+    function withdrawRequest(
+        bytes calldata _bridgerSignature,
+        uint256 _requestId
+    ) external {
+        (address token, address provider, uint256 amount) = _deleteRequest(
+            _bridgerSignature,
+            _requestId
+        );
+        ERC20(token).transfer(provider, amount);
+    }
+
+    /**
+     * @notice Used on chain B to relock the funds of the bridger into a provider lock
+     *
+     * @param _bridgerSignature - The signature sent on the chain A by the bridger to redeem the funds
+     * @param _requestId - The id of the request we are going to withdraw from
+     * @param _lockId - The id of the lock to relock into
+     */
+    function relockRequest(
+        bytes calldata _bridgerSignature,
+        uint256 _requestId,
+        uint256 _lockId
+    ) external {
+        (address token, address provider, uint256 amount) = _deleteRequest(
+            _bridgerSignature,
+            _requestId
+        );
+
+        Lock storage l = idToLock[_lockId];
+
+        require(l.owner == provider);
         require(l.owner == msg.sender);
+        require(l.token == token);
+        l.amount += amount;
+    }
 
-        delete idToLock[_lockId];
+    /**
+     * @notice - Used by the lock owner to delete an outdated ticket in order
+     * to get the accepted amount of the lock released
+     *
+     * @param _lockId - The id of the lock to remove the ticket from
+     * @param _ticketIndex - The index of the ticket to remove
+     */
+    function deleteTicket(uint256 _lockId, uint256 _ticketIndex) external {
+        Lock storage l = idToLock[_lockId];
+        ProviderTicket storage ticket = l.tickets[_ticketIndex];
 
-        for (uint256 i = 0; i < myLocks[msg.sender].length; ++i) {
+        require(l.owner == msg.sender);
+        require(ticket.deadline < block.timestamp);
+
+        l.accepted -= ticket.amount;
+
+        if (_ticketIndex == l.tickets.length - 1) {
+            l.tickets.pop();
+        } else {
+            l.tickets[_ticketIndex] = l.tickets[l.tickets.length - 1];
+            l.tickets.pop();
+        }
+    }
+
+    /**
+     * @notice Used to withdraw the locked funds, funds can be withdraw immediatly if there is no active challenger
+     * @param _lockId - The lock id on the chain A
+     */
+    function withdrawLock(uint256 _lockId) external {
+        Lock storage l = idToLock[_lockId];
+
+        require(l.owner == msg.sender);
+        uint256 i;
+
+        for (i = 0; i < l.tickets.length; ++i) {
+            require(
+                l.tickets[i].deadline < block.timestamp ||
+                    l.tickets[i].amount == 0
+            );
+        }
+
+        uint256 amount = l.amount;
+        address token = l.token;
+
+        for (i = 0; i < myLocks[msg.sender].length; ++i) {
             if (myLocks[msg.sender][i] == _lockId) {
                 _splice(myLocks[msg.sender], i);
                 break;
             }
         }
 
-        ERC20(l.token).transfer(msg.sender, l.amount);
-    }
+        for (i = 0; i < tokenContractToLockIds[l.token].length; ++i) {
+            if (tokenContractToLockIds[l.token][i] == _lockId) {
+                _splice(tokenContractToLockIds[l.token], i);
+                break;
+            }
+        }
+        delete idToLock[_lockId];
 
-    /**
-     * @notice Used to publish a bridge request on chainB
-     *
-     * @param _amount - The total amount of token to bridge
-     * @param _date - The date corresponding to the chain A lock
-     * @param _chainAId - The id of the chain where the bridger will provide tokens
-     * @param _chainANonce - The nonce of the lock on the chain A
-     * @param _signature - The signature of the bridger for the given request
-     * @param _tokenAContract - The address of the token willing to be exchanged on chain A
-     * @param _tokenBContract - The address of the token willing to be exchanged on chain B
-     * @param _nonce - The nonce of the contract
-     * @param _fees - The amount of fee willing to be given by the sender (on a /10000 basis)
-     */
-    function publishRequest(
-        uint256 _amount,
-        uint256 _date,
-        uint256 _chainAId,
-        uint256 _chainANonce,
-        bytes memory _signature,
-        address _tokenAContract,
-        address _tokenBContract,
-        uint256 _nonce,
-        uint24 _fees
-    ) external {
-        require(_nonce == ++nonce);
-
-        _verify(
-            msg.sender,
-            _signature,
-            abi.encodePacked(_nonce, chainId, _chainANonce, _chainAId)
-        );
-
-        tokenContractToRequestId[_tokenBContract].push(_nonce);
-        Request storage request = idToRequest[_nonce];
-        request.amount = _amount;
-        request.chainAId = _chainAId;
-        request.chainANonce = _chainANonce;
-        request.initialSignature = _signature;
-        request.tokenAContract = _tokenAContract;
-        request.tokenBContract = _tokenBContract;
-        request.sender = msg.sender;
-        request.date = uint64(_date);
-        request.fees = _fees;
-        request.index = tokenContractToRequestId[_tokenBContract].length - 1;
-
-        myRequests[msg.sender].push(_nonce);
-    }
-
-    /**
-     * @notice - Used to drop a certain request from the sender list
-     * @param _index - The index of the request in the owner list to drop
-     */
-    function dropRequest(uint256 _index) external {
-        _splice(myRequests[msg.sender], _index);
-    }
-
-    /**
-     * @notice Used to become one of the challengers on the chain B and
-     * to deposit the tokens for becoming a challenger
-     *
-     * @param _id - the id for the mapping of the request to become challenger of
-     * @param _fees - The amount of fees the challenger want to keep
-     */
-    function becomeChainBChallenger(uint256 _id, uint256 _fees) external {
-        Request storage request = idToRequest[_id];
-        require(
-            request.challenges[msg.sender].fees == 0,
-            "You already locked funds for this request"
-        );
-        require(request.amount != 0, "The request has already been fulfilled");
-        bytes memory none;
-        request.challenges[msg.sender] = ChainBChallenge({
-            fees: uint24(_fees),
-            bridgerSignature: none
-        });
-        uint256 amount = request.amount - (_fees * request.amount) / 2e6;
-        myDeposits[msg.sender].push(_id);
-
-        ERC20(request.tokenBContract).transferFrom(
-            msg.sender,
-            address(this),
-            amount
-        );
-    }
-
-    /**
-     * @notice Used to become the challenger of a given lock on the chainA
-     *
-     * @param _chainBId - The id of the chainB
-     * @param _nonce - The nonce of the transaction
-     * @param _initialSignature - The signature provided by the the bridger on chain B (to be verified here)
-     * @param _lockId - The address which initiated the exchange of token on chain A
-     *
-     */
-    function becomeChainAChallenger(
-        uint256 _chainBId,
-        uint256 _nonce,
-        bytes memory _initialSignature,
-        bytes memory _challengerSignature,
-        uint256 _lockId
-    ) external {
-        Lock storage l = idToLock[_lockId];
-        require(l.locked, "The bridge seeker is not searching to bridge");
-        require(l.date + 5 days > block.timestamp, "The lock is out of date");
-
-        _verify(
-            l.owner,
-            _initialSignature,
-            abi.encodePacked(_nonce, _chainBId, _lockId, chainId)
-        );
-
-        _verify(
-            msg.sender,
-            _challengerSignature,
-            abi.encodePacked(_initialSignature)
-        );
-
-        l.challenges.push(
-            ChainAChallenge({
-                token: l.token,
-                otherChain: _chainBId,
-                nonce: _nonce,
-                challenger: msg.sender,
-                challengerSignature: _challengerSignature
-            })
-        );
-        myChallenges[msg.sender].push(_lockId);
-        l.challenged = true;
+        ERC20(token).transfer(msg.sender, amount);
     }
 
     /**
      * @notice - Used to withdraw the funds locked for a particular token request
-     * @param _id - The id of the challenge to withdraw the funds from
+     * @param _requestId - The id of the challenge to withdraw the funds from
      */
-    function withdrawChainBChallenge(uint256 _id) external {
-        ChainBChallenge storage challenge = idToRequest[_id].challenges[
-            msg.sender
-        ];
-        Request storage request = idToRequest[_id];
+    function withdrawChainBRequest(uint256 _requestId) external {
+        Request storage request = idToRequest[_requestId];
 
-        require(request.date + 5 days < block.timestamp || request.amount == 0);
+        require(request.sender == msg.sender);
+        require(request.deadline < block.timestamp);
 
-        uint256 amount = request.amount -
-            (challenge.fees * request.amount) /
-            2e6;
-        delete idToRequest[_id].challenges[msg.sender];
-        ERC20(request.tokenBContract).transfer(msg.sender, amount);
+        uint256 amount = request.amount;
+        address token = request.tokenBContract;
+
+        for (uint256 i = 0; i < myRequests[msg.sender].length; ++i) {
+            if (myRequests[msg.sender][i] == _requestId) {
+                _splice(myRequests[msg.sender], i);
+                break;
+            }
+        }
+        for (
+            uint256 i = 0;
+            i < tokenContractToRequestIds[request.tokenBContract].length;
+            ++i
+        ) {
+            if (
+                tokenContractToRequestIds[request.tokenBContract][i] ==
+                _requestId
+            ) {
+                _splice(tokenContractToRequestIds[request.tokenBContract], i);
+                break;
+            }
+        }
+        delete idToRequest[_requestId];
+
+        ERC20(token).transfer(msg.sender, amount);
     }
 
     /**
-     * @notice Used on chain B to withdraw the funds of the provider by the bridge seeker
+     * @notice Used to extend lock liquidity.
      *
-     * @param _challengerSignature - The signature sent on the chain A by the challenger to become the challenger
-     * @param _bridgerSignature - The signature of the bridger for the coming request (needed by the provided to withdraw the funds on chain A)
-     * @param _challenger - The address of the challenger which accpted the bridger request
-     * @param _id - The id of the element we are going to withdraw from
+     * @param _lockId - Id of the lock
+     * @param _amount - Amount to add
      */
-    function withdrawRequest(
-        bytes memory _challengerSignature,
-        bytes memory _bridgerSignature,
-        address _challenger,
-        uint256 _id
-    ) external {
-        Request storage request = idToRequest[_id];
-
-        uint256 fees = (request.amount * request.challenges[_challenger].fees) /
-            1e6;
-        uint256 amount = request.amount - fees;
-
-        require(request.date + 5 days > block.timestamp);
-
-        _verify(
-            _challenger,
-            _challengerSignature,
-            abi.encodePacked(request.initialSignature)
-        );
-
-        _verify(
-            request.sender,
-            _bridgerSignature,
-            abi.encodePacked(_challengerSignature)
-        );
-
-        request.challenges[_challenger].bridgerSignature = _bridgerSignature;
-        request.amount = 0;
-
-        _splice(
-            tokenContractToRequestId[request.tokenBContract],
-            request.index
-        );
-
-        ERC20(request.tokenBContract).transfer(msg.sender, amount);
-        ERC20(request.tokenBContract).transfer(owner, fees / 2);
-    }
-
-    /**
-     * @notice Used by the provider to withdraw his funds on chain A
-     *
-     * @param _bridgerSignature - The last signature of the bridger allonwing the provider to withdraw its funds on chain A
-     * @param _challengeId - The id of the challenge in the challenge list
-     * @param _lockId - The id of the lock to withdraw from
-     */
-    function finalWithdraw(
-        bytes memory _bridgerSignature,
-        uint256 _challengeId,
-        uint256 _lockId
-    ) external {
+    function addLiquidity(uint256 _lockId, uint256 _amount) external {
         Lock storage l = idToLock[_lockId];
-        ChainAChallenge storage challenge = l.challenges[_challengeId];
+        require(l.owner == msg.sender);
 
-        _verify(
-            l.owner,
-            _bridgerSignature,
-            abi.encodePacked(challenge.challengerSignature)
-        );
+        l.amount += _amount;
+        ERC20(l.token).transferFrom(msg.sender, address(this), _amount);
+    }
 
-        delete idToLock[_lockId];
+    /**
+     * @notice Remove liquidity from a provider lock
+     * accepted amount is not withdrawable
+     *
+     * @param _lockId - Id of the lock
+     * @param _amount - Amount to remove
+     */
+    function removeLiquidity(uint256 _lockId, uint256 _amount) external {
+        Lock storage l = idToLock[_lockId];
 
-        ERC20(l.token).transfer(challenge.challenger, l.amount);
+        require(l.owner == msg.sender);
+        require(l.amount - l.accepted >= _amount);
+        l.amount -= _amount;
+
+        ERC20(l.token).transfer(msg.sender, _amount);
+
+        if (l.amount == 0) {
+            for (uint256 i = 0; i < myLocks[msg.sender].length; ++i) {
+                if (myLocks[msg.sender][i] == _lockId) {
+                    _splice(myLocks[msg.sender], i);
+                    break;
+                }
+            }
+            for (
+                uint256 i = 0;
+                i < tokenContractToLockIds[l.token].length;
+                ++i
+            ) {
+                if (tokenContractToLockIds[l.token][i] == _lockId) {
+                    _splice(tokenContractToLockIds[l.token], i);
+                    break;
+                }
+            }
+            delete idToLock[_lockId];
+        }
+    }
+
+    /**
+     * @notice Updated the protocol fees
+     * @param _newFee - % of new fee
+     */
+    function changeProtocolFees(uint256 _newFee) external onlyOwner {
+        require(_newFee < 100);
+        protocolFees = _newFee;
     }
 
     /**
@@ -364,106 +468,118 @@ contract BridgeDex {
      * @param _owner - The address to retrieve the locks from
      * @return uint256[] - An array containing the address active lock ids
      */
-    function getMyLocks(address _owner)
-        external
-        view
-        returns (uint256[] memory)
-    {
-        return myLocks[_owner];
+    function getMyLocks(address _owner) external view returns (Lock[] memory) {
+        uint256[] memory lockIds = myLocks[_owner];
+        Lock[] memory response = new Lock[](lockIds.length);
+
+        for (uint256 i; i < lockIds.length; ++i) {
+            response[i] = idToLock[lockIds[i]];
+        }
+        return response;
     }
 
     /**
-     * @notice - Used to get acces to all the address' challenges at once
-     * @param _owner - The address to retrieve the challenges from
-     * @return uint256[] - An array containing the address active challenges ids
-     */
-    function getMyChallenges(address _owner)
-        external
-        view
-        returns (uint256[] memory)
-    {
-        return myChallenges[_owner];
-    }
-
-    /**
-     * @notice - Used to get the challenges of a given lock, not possible other way
+     * @notice - Used to get the tickets of a given lock, not possible other way
      * @param _lockId - The id of the lock to get the challenges
      * @return - The array of the challenges for the given lock
      */
-    function getLockChallenges(uint256 _lockId)
+    function getLockTickets(uint256 _lockId)
         external
         view
-        returns (ChainAChallenge[] memory)
+        returns (ProviderTicket[] memory)
     {
-        return idToLock[_lockId].challenges;
+        return idToLock[_lockId].tickets;
     }
 
     /**
-     *
-     * @notice - Used to get the list of the request id for a given token
-     * @param _token - The address of the token contract to look for requests
-     * @return uint256[] - Array of the requests ids
-     */
-    function getTokenContractRequests(address _token)
-        external
-        view
-        returns (uint256[] memory)
-    {
-        return tokenContractToRequestId[_token];
-    }
-
-    /**
-     * @notice Used to get the request ids for a given address
+     * @notice Used to get the active requests for a given address
      * @param _owner - The address to look for request ids
-     * @return uint256[] - The list of the request ids for a given address
+     * @return Requests[] - The list of the active requests for the user
      */
     function getMyRequests(address _owner)
         external
         view
-        returns (uint256[] memory)
+        returns (Request[] memory)
     {
-        return myRequests[_owner];
+        uint256[] memory requestIds = myRequests[_owner];
+        Request[] memory response = new Request[](requestIds.length);
+
+        for (uint256 i; i < requestIds.length; ++i) {
+            response[i] = idToRequest[requestIds[i]];
+        }
+        return response;
     }
 
     /**
-     * @notice - Used to get the requests ids where the _owner made deposits
-     * @param _owner - The address from which to get the requests Ids of the deposits made
-     * @return - The list of the request ids where deposits where made
-     */
-    function getMyDepositsIds(address _owner)
-        external
-        view
-        returns (uint256[] memory)
-    {
-        return myDeposits[_owner];
-    }
-
-    /**
-     * @notice - Used to the the formal details of a deposit on a specific token request
-     *
-     * @param _id - The id of the token request considered
-     * @param _owner - The address of the challenger to get the informations
-     *
-     * @return - The Challenge details
-     */
-    function getDepositDetails(uint256 _id, address _owner)
-        external
-        view
-        returns (ChainBChallenge memory)
-    {
-        return idToRequest[_id].challenges[_owner];
-    }
-
-    /**
-     * @notice - Used to get the list of the request ids for a given token
+     * @notice - Used to get the list of the request for a given token
      * @param _token - The token address on chain B to look for token requests
      */
-    function getRequestsIdsForToken(address _token)
+    function getRequestsForToken(address _token)
         external
         view
-        returns (uint256[] memory)
+        returns (Request[] memory)
     {
-        return tokenContractToRequestId[_token];
+        uint256[] memory requestIds = tokenContractToRequestIds[_token];
+        Request[] memory response = new Request[](requestIds.length);
+
+        for (uint256 i; i < requestIds.length; ++i) {
+            response[i] = idToRequest[requestIds[i]];
+        }
+        return response;
+    }
+
+    /**
+     * @notice - Used to get the list of the locks for a given token
+     * @param _token - The token address on chain A to look for token locks
+     */
+    function getLocksForToken(address _token)
+        external
+        view
+        returns (Lock[] memory)
+    {
+        uint256[] memory lockIds = tokenContractToLockIds[_token];
+        Lock[] memory response = new Lock[](lockIds.length);
+
+        for (uint256 i; i < lockIds.length; ++i) {
+            response[i] = idToLock[lockIds[i]];
+        }
+        return response;
+    }
+
+    /**
+     * @notice Returns the accepted tickets corresponding to the locks ids given
+     * by the user
+     *
+     * @param _lockIds - The ids of the locks to look into
+     * @param _bridger - The address of the bridger to look for
+     */
+    function getAcceptedTickets(uint256[] calldata _lockIds, address _bridger)
+        external
+        view
+        returns (ProviderTicket[] memory)
+    {
+        uint256 j;
+        uint256 id;
+        uint256 lastLock;
+
+        ProviderTicket[] memory tickets;
+        ProviderTicket[] memory response = new ProviderTicket[](
+            _lockIds.length
+        );
+
+        for (uint256 i = 0; i < _lockIds.length; ++i) {
+            tickets = idToLock[_lockIds[i]].tickets;
+            _lockIds[i] == lastLock ? ++j : j = 0;
+            lastLock = _lockIds[i];
+
+            for (; j < tickets.length; ++j) {
+                if (tickets[j].bridger == _bridger) {
+                    response[id++] = tickets[j];
+                    break;
+                }
+            }
+        }
+        return response;
     }
 
     function _verify(
@@ -491,5 +607,62 @@ contract BridgeDex {
             _array[_index] = _array[_array.length - 1];
             _array.pop();
         }
+    }
+
+    /**
+     * @notice Used to delete a request from the request pool
+     *
+     * @param _bridgerSignature - The signature sent on the chain A by the bridger to redeem the funds
+     * @param _requestId - The id of the request we are going to withdraw from
+     */
+    function _deleteRequest(
+        bytes calldata _bridgerSignature,
+        uint256 _requestId
+    )
+        private
+        returns (
+            address,
+            address,
+            uint256
+        )
+    {
+        Request memory request = idToRequest[_requestId];
+
+        require(request.deadline > block.timestamp);
+
+        uint256 chainId;
+        assembly {
+            chainId := chainid()
+        }
+
+        _verify(
+            request.sender,
+            _bridgerSignature,
+            abi.encodePacked(chainId, _requestId)
+        );
+
+        for (uint256 i = 0; i < myRequests[request.sender].length; ++i) {
+            if (myRequests[request.sender][i] == _requestId) {
+                _splice(myRequests[request.sender], i);
+                break;
+            }
+        }
+
+        for (
+            uint256 i = 0;
+            i < tokenContractToRequestIds[request.tokenBContract].length;
+            ++i
+        ) {
+            if (
+                tokenContractToRequestIds[request.tokenBContract][i] ==
+                _requestId
+            ) {
+                _splice(tokenContractToRequestIds[request.tokenBContract], i);
+                break;
+            }
+        }
+
+        delete idToRequest[_requestId];
+        return (request.tokenBContract, request.provider, request.amount);
     }
 }

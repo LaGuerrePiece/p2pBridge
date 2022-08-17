@@ -1,44 +1,18 @@
 export type Request = {
   amount: number;
-  minBidAmount: number;
   chainAId: number;
-  chainANonce: number;
-  chainBId: number;
-  chainBNonce: number;
-  initialSignature: string;
-  tokenAcontract: string;
+  lockId: number;
+  requestId: number;
   tokenBContract: string;
   sender: string;
-  date: number;
-  fees: number;
+  provider: string;
+  deadline: number;
 };
-
-export type Lock = {
-  amount: number;
-  bridged: number;
-  accepted: number;
-  chainAid: number;
-  nonce: number;
-  token: string;
-  owner: string;
-  date: number;
-  locked: boolean;
-  challenged: boolean;
-};
-
 export type RequestState = {
-  [key in string]: {
-    request?: Request;
-    lock?: Lock;
-  };
+  [key in string]: Request[];
 };
 
 export const RequestActions = {
-    AddRequest: "AddRequest",
-    AddLock: "AddLock"
-} as const  
-
-export const RequestGetters = {
-  MyRequests: "MyRequests",
-  RequestChallenges: "RequestChallenges"
-} as const
+  AddRequest: "AddRequest",
+  NewRequest: "NewRequest"
+} as const;

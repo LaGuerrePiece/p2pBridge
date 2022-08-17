@@ -2,128 +2,82 @@ import Web3 from "web3";
 import { useBridgesStore } from ".";
 import { BridgeDexInstance } from "../../../types/truffle-contracts";
 import { BridgesActions } from "../../types/bridges";
-import { ChallengeActions } from "../../types/challenges";
+import { TicketActions } from "../../types/tickets";
 import { RequestActions, Request } from "../../types/requests";
-import { useChallengeStore } from "../challenges";
+import { useTicketStore } from "../tickets";
 import { useRequestStore } from "../requests";
 import { useWeb3Store } from "../web3";
+import { bnToNumber } from "../../composition/functions";
 
 /**
  * @notice - Used to connect and store the bridge contract on a given chain,
- * and to start the population of the locks and the challenges
+ * and to start the population of the user requests
+ *
  * @param {Object} this - The binded bridge store
  */
 export async function connectContract(
   this: ReturnType<typeof useBridgesStore>
 ): Promise<void> {
   const promises: Array<Promise<any>> = [];
+  const requestStore = useRequestStore();
+  const web3Store = useWeb3Store();
 
   for (const chainId in CONFIG["chains"]) {
-    if (!(chainId == "77" || chainId == "338")) return
     this.$state[chainId] = {
-      contract: new new Web3(CONFIG["chains"][chainId].rpcUrls[0]).eth.Contract(
+      contract: new (web3Store.provider!.chainId == Number(chainId)
+        ? web3Store.web3!
+        : new Web3(CONFIG["chains"][chainId].rpcUrls[0])
+      ).eth.Contract(
         CONFIG.abi.BridgeAbi,
-        CONFIG["chains"][chainId].bridgeAddress
+        CONFIG["chains"][chainId].bridgeAddress,
+        { from: web3Store.address }
       ),
     };
-    promises.push(this[BridgesActions.PopulateMyChallenges](Number(chainId)));
     promises.push(this[BridgesActions.PopulateMyRequests](Number(chainId)));
   }
 
   try {
     await Promise.all(promises);
+    promises.splice(0, promises.length);
   } catch (e: any) {
-    console.log("An error occurend during the contract connection ", e);
+    console.log(
+      "An error occurend during the contract connection for requests",
+      e
+    );
+    return;
   }
-}
 
-/**
- * @notice - Used to populate the challenge store with the users challenges
- *
- * @param { Object } this - The binded bridge store
- * @param { number } chainId - The id of the chain where the data is being fetched
- * @returns
- */
-export async function populateMyChallenges(
-  this: ReturnType<typeof useBridgesStore>,
-  chainId: number
-): Promise<void> {
-  const web3Store = useWeb3Store();
-  const challengeStore = useChallengeStore();
+  const lockRequests: { [key in string]: number[] } = {};
 
-  const address = web3Store.$state.address;
-  const contract = this.$state[chainId].contract;
+  for (const chain in requestStore.$state) {
+    requestStore.$state[chain].forEach((request) => {
+      if (!(String(request.chainAId) in lockRequests))
+        lockRequests[String(request.chainAId)] = [];
+      lockRequests[String(request.chainAId)].push(request.lockId);
+    });
+  }
 
-  const depositIdsPromise = contract.methods.getMyDepositsIds(address).call();
-  const challengesIdsPromise = contract.methods.getMyChallenges(address).call();
-
-  const depositIds = await depositIdsPromise;
-  const challengesIds = await challengesIdsPromise;
-
-  const depositsPromise = Promise.all(
-    depositIds.map((value) =>
-      contract.methods.getDepositDetails(Number(value), address).call()
-    )
-  );
-
-  const challengesListPromise = Promise.all(
-    challengesIds.map((value) =>
-      contract.methods.getLockChallenges(Number(value)).call()
-    )
-  );
-
-  const requestsPromise = Promise.all([
-    depositIds.map((value) => contract.methods.idToRequest(value).call()),
-  ]);
-
-  const deposits = await depositsPromise;
-  const requests = (await requestsPromise) as unknown as Array<
-    Omit<Request, "challenge">
-  >;
-  let challengesList = await challengesListPromise;
-
-  for (const i in challengesList) {
-    challengesList[i] = challengesList[i].filter(
-      (value) => value.challenger == address
+  for (const chain in lockRequests) {
+    promises.push(
+      this[BridgesActions.PopulateMyTickets](Number(chain), lockRequests[chain])
     );
   }
 
-  for (const i in deposits) {
-    const request = requests[i];
-    const deposit = deposits[i];
-    const index = `${Number(request.chainAId)}${Number(
-      request.chainANonce
-    )}${chainId}${Number(request.chainBNonce)}`;
-
-    if (!Number(request.chainBNonce)) return;
-
-    challengeStore[ChallengeActions.AddChainBChallenge](index, deposit);
-  }
-
-  for (const i in challengesIds) {
-    const lockId = challengesIds[i];
-    const chainAid = chainId;
-
-    challengesList[i].forEach((value) => {
-      const nonce = Number(value.nonce);
-      const chainBId = Number(value.otherChain);
-
-      if (!nonce) return;
-
-      const index = `${chainAid}${lockId}${chainBId}${nonce}`;
-      challengeStore[ChallengeActions.AddChainAChallenge](
-        index,
-        chainAid,
-        value
-      );
-    });
+  try {
+    await Promise.all(promises);
+  } catch (e: any) {
+    console.log(
+      "An error occurend during the contract connection for tickets",
+      e
+    );
+    return;
   }
 }
 
 /**
- * @notice - Used to populate the user requests, both locks and requests are populated for data continuity
+ * @notice - Used to populate the user requests
  * @param { Object } this - The binded bridge store
- * @param { number } chainId
+ * @param { number } chainId - The id of the chain where the requests belong
  */
 export async function populateMyRequests(
   this: ReturnType<typeof useBridgesStore>,
@@ -135,38 +89,38 @@ export async function populateMyRequests(
   const address = web3store.address;
   const contract = this.$state[chainId].contract;
 
-  const [locksIds, requestIds] = await Promise.all([
-    contract.methods.getMyLocks(address).call(),
-    contract.methods.getMyRequests(address).call(),
-  ]);
-
-  const [locks, requests]: [
-    Array<Awaited<ReturnType<BridgeDexInstance["idToLock"]>>>,
-    Array<Awaited<ReturnType<BridgeDexInstance["idToRequest"]>>>
-  ] = await Promise.all([
-    Promise.all(
-      locksIds.map((value) => contract.methods.idToLock(Number(value)).call())
-    ),
-    Promise.all(
-      requestIds.map((value) =>
-        contract.methods.idToRequest(Number(value)).call()
-      )
-    ),
-  ]);
-
-  locks.forEach((lock, index: number) => {
-    if (!Number(lock[0])) return;
-
-    requestStore[RequestActions.AddLock](
-      lock,
-      chainId,
-      Number(locksIds[index])
-    );
-  });
+  const requests: Awaited<ReturnType<BridgeDexInstance["getMyRequests"]>> =
+    await contract.methods.getMyRequests(address).call();
 
   requests.forEach((request) => {
-    if (!Number(request[0])) return;
-
     requestStore[RequestActions.AddRequest](request, chainId);
+  });
+}
+
+/**
+ * @notice - Used to populate the ticket store with the user validated and ready to withdraw tickets
+ *
+ * @param { Object } this - The binded bridge store
+ * @param { number } chainId - The id of the chain where the tickets are
+ * @returns
+ */
+export async function populateMyTickets(
+  this: ReturnType<typeof useBridgesStore>,
+  chainId: number,
+  lockIds: number[]
+): Promise<void> {
+  const web3Store = useWeb3Store();
+  const ticketStore = useTicketStore();
+
+  const address = web3Store.$state.address;
+  const contract = this.$state[chainId].contract;
+
+  const tickets: Awaited<ReturnType<BridgeDexInstance["getAcceptedTickets"]>> =
+    await contract.methods.getAcceptedTickets(lockIds, address).call();
+
+  tickets.forEach((ticket) => {
+    const amount = bnToNumber(ticket.amount, true);
+    if (amount == 0 || ticket.signature != "0x") return;
+    ticketStore[TicketActions.AddTicket](chainId, ticket);
   });
 }

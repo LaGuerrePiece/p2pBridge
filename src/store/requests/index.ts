@@ -1,33 +1,37 @@
 import { defineStore } from "pinia";
 import { BridgeDexInstance } from "../../../types/truffle-contracts";
-import {
-  RequestActions,
-  RequestGetters,
-  RequestState,
-} from "../../types/requests";
-import { addLock, addRequest } from "./actions";
-import { getRequestChallenges, myRequests } from "./getters";
+import { RequestActions, RequestState } from "../../types/requests";
+import { addRequest, newRequest } from "./actions";
 import { state } from "./state";
 
 export const useRequestStore = defineStore("requests", {
   state: (): RequestState => state,
-  getters: {
-    [RequestGetters.MyRequests]: myRequests,
-    [RequestGetters.RequestChallenges]: getRequestChallenges,
-  },
+  getters: {},
   actions: {
     [RequestActions.AddRequest](
-      request: Awaited<ReturnType<BridgeDexInstance["idToRequest"]>>,
+      request: Awaited<ReturnType<BridgeDexInstance["getMyRequests"]>>[0],
       chainId: number
     ): void {
       return addRequest.bind(this)(request, chainId);
     },
-    [RequestActions.AddLock](
-      lock: Awaited<ReturnType<BridgeDexInstance["idToLock"]>>,
-      chainId: number,
-      lockNonce: number
-    ): void {
-      return addLock.bind(this)(lock, chainId, lockNonce);
+    async [RequestActions.NewRequest](
+      amount: number,
+      chainBId: number,
+      chainAId: number,
+      lockId: number,
+      deadline: number,
+      tokenBContract: string,
+      provider: string
+    ): Promise<void> {
+      return newRequest.bind(this)(
+        amount,
+        chainBId,
+        chainAId,
+        lockId,
+        deadline,
+        tokenBContract,
+        provider
+      );
     },
   },
 });
