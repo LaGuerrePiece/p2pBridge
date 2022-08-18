@@ -15,11 +15,11 @@ chainDetails.forEach(chain => {
         new Web3WsProvider(chain.rpcUrls[1], {
           clientConfig: {
             keepalive: true,
-            keepaliveInterval: 60000,
+            keepaliveInterval: 600000,
           },
           reconnect: {
             auto: true,
-            delay: 1000,
+            delay: 60000,
             maxAttempts: 5,
             onTimeout: false
           }
