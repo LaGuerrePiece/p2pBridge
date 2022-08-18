@@ -1,10 +1,10 @@
 <template>
   <div
     @click="expandSpan = !expandSpan"
-    class="flex h-10 hover:bg-secondary w-36 items-center p-0.5 lg:p-2 border  border-primary rounded-lg ursor-pointer"
+    class="flex h-10 hover:bg-secondary items-center p-0.5 lg:p-2 border border-primary rounded-lg cursor-pointer"
     v-if="web3Store.chainId"
   >
-    <div class="rounded-full w-7 pl-1">
+    <div class="rounded-full w-7 pl-1 hidden sm:flex">
       <img
         :src="
           web3Store.chainId in chainDetails
@@ -15,7 +15,7 @@
       />
     </div>
     <div
-      class="px-3 flex grow justify-center font-mono font-bold text-xs text-white w-28"
+      class="px-3 flex grow justify-center font-mono font-bold text-xs text-white min-w-16"
     >
       {{
         web3Store.chainId in chainDetails
@@ -31,7 +31,7 @@
     :key="index"
   >
     <div
-      class="absolute h-7 w-36 flex items-center border  border-primary cursor-pointer bg-neutral"
+      class="absolute h-7 flex items-center border border-primary cursor-pointer bg-neutral"
       :class="expandSpan ? 'opacity-1 z-20' : 'opacity-0 top-0 z-10'"
       :style="{ top: expandSpan ? (index + 1) * 28 + 28 + 'px' : '' }"
       @click.capture="
@@ -39,11 +39,11 @@
         expandSpan = !expandSpan;
       "
     >
-      <!-- <div class="rounded-full w-5">
-        <img :src="chain.icon" alt="" class="w-5" />
-      </div> -->
+      <div class="rounded-full w-7 pl-1">
+        <img :src="chain.icon" alt="" />
+      </div>
       <div
-        class="px-3 flex grow justify-center font-mono font-bold text-xs text-white"
+        class="px-3 flex grow justify-center font-mono text-xs"
       >
         {{ chain.name }}
       </div>

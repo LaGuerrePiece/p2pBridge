@@ -1,11 +1,12 @@
 <template>
   <div @click="faucet"
-    class="flex h-10 hover:bg-secondary items-center p-0.5 lg:p-1 border  border-primary rounded-lg cursor-pointer"
+    class="flex h-10 hover:bg-secondary items-center p-0.5 lg:p-1 border border-primary rounded-lg cursor-pointer"
   >
-    <div class="rounded-full pl-1">
+    <div class="rounded-full pl-1 hidden sm:flex">
+      <img :src="radioactive" alt="" class="w-7 h-7"/>
     </div>
     <div
-      class="px-3 flex grow justify-center font-mono font-bold text-xs text-white"
+      class="px-2 flex grow justify-center font-mono font-bold text-xs text-white"
     >
     Faucet
     </div>
@@ -23,6 +24,8 @@ import { useBridgesStore } from "../../store/bridges";
 
 import nuclearTokenAbi from "../../abis/nuclearTokenAbi.json"
 import { NuclearTokenInstance } from "../../../types/truffle-contracts";
+import { radioactive, } from "../../asset/images/images";
+
 
 
 const web3Store = useWeb3Store();

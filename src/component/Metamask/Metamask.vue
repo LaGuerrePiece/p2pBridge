@@ -3,7 +3,7 @@
     @click="web3Store[Web3Actions.Connect]()"
     class="flex h-10 items-center hover:bg-secondary p-0.5 lg:p-1 border border-primary rounded-lg cursor-pointer"
   >
-    <div class="rounded-full pl-1">
+    <div class="rounded-full pl-1 hidden sm:flex">
       <img :src="metamask" alt="" />
     </div>
     <div

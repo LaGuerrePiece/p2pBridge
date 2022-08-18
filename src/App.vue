@@ -1,7 +1,7 @@
 <template>
-  <div class="m-2 grid gap-6 w-screen">
+  <div class="grid gap-9 w-screen">
       <NavBar />
-    <div class="relative flex justify-center">
+    <div class="flex justify-center">
       <BridgeRequest />
     </div>
   </div>

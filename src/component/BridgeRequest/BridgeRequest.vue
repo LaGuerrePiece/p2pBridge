@@ -1,6 +1,6 @@
 <template>
   <div
-    class="grid gap-1 items-center rounded-lg max-w-xl p-2 bg-secondary border-2 border-primary text-white h-96 w-[28rem]"
+    class="grid gap-1 items-center rounded-lg max-w-[28rem] min-w-[14rem] p-2 mx-2 bg-secondary border-2 border-primary text-white h-96"
   >
     <div
       class="justify-self-center text-sm font-mono font-bold text-white px-5"
@@ -25,13 +25,13 @@
       </div>
     </div>
     
-    <div class="flex justify-between w-full h-16 p-1 border border-primary rounded-lg bg-neutral">
+    <div class="flex justify-between h-16 p-1 border border-primary rounded-lg bg-neutral">
       <div class="flex flex-col justify-between p-1">
         <div class="text-xs">
           Send
         </div>
         <input
-            class="bg-neutral border-0 focus:ring-0 outline:none text-lg w-52"
+            class="bg-neutral border-0 focus:ring-0 outline:none w-[70px] sm:w-[200px]"
             v-model.number="request.amount"
             type="number"
             placeholder="0.0"
@@ -48,10 +48,10 @@
             Balance : {{balance.toFixed(4)}}
           </div>
         </div>
-        <SelectTokenButton
-        class="rounded-lg bg-neutral h-7"
-        v-model:actualToken="request.token"
-        />
+        <button
+          class="btn btn-xs btn-outline normal-case rounded-lg">
+          {{request.token}}
+        </button>
       </div>
     </div>
 
@@ -74,13 +74,13 @@
     </div>
 
     <div
-      class="flex justify-between w-full h-16 p-1 border border-primary rounded-lg bg-neutral">
+      class="flex justify-between h-16 p-1 border border-primary rounded-lg bg-neutral">
       <div class="flex flex-col justify-between p-1">
         <div class="text-xs">
           Receive
         </div>
         <input
-            class="bg-neutral border-0 focus:ring-0 focus:outline:none text-lg w-52"
+            class="bg-neutral border-0 focus:ring-0 focus:outline:none text-lg"
             :value="(!request.amountReceivedEst || request.amountReceivedEst < 0)
                       ? 0
                       : request.amountReceivedEst.toFixed(6)"
@@ -152,7 +152,6 @@ import { onMounted, ref, watch } from "vue";
 import { useWeb3Store } from "../../store/web3";
 import ModalFrame from "../Modals/ModalFrame.vue";
 import SelectChainSpan from "./SelectChainSpan.vue";
-import SelectTokenButton from "./SelectTokenButton.vue";
 import ChooseProvider from "./ChooseProvider.vue";
 import BridgingModal from "./BridgingModal.vue";
 import { Web3Actions } from "../../types/web3";

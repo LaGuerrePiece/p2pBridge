@@ -171,7 +171,7 @@ function lock() {
     const lpLockId = 1 //In demo, lpLockId is always 1
     const lpAddress = props.locks[props.request.toNetwork].owner
 
-    const deadline = (Date.now() + 10000).toString()
+    const deadline = (Date.now() + 10000000).toString()
     
     requestContracts.value.originBridge!.methods.createBridgerLock(
         amountToSend,
