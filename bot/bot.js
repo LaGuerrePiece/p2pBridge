@@ -1,5 +1,8 @@
+
 var chainDetails = require("./chains.js");
 const { ethers } = require("ethers");
+const Web3WsProvider = require("web3-providers-ws");
+
 require('dotenv').config()
 var fs = require('fs');
 
@@ -8,13 +11,27 @@ var jsonFile = "../src/abis/bridgeAbi.json";
 var abi = JSON.parse(fs.readFileSync(jsonFile));
 var wallet = [];
 chainDetails.forEach(chain => {
+    const provider = new ethers.providers.Web3Provider(
+        new Web3WsProvider(chain.rpcUrls[1], {
+          clientConfig: {
+            keepalive: true,
+            keepaliveInterval: 60000,
+          },
+          reconnect: {
+            auto: true,
+            delay: 1000,
+            maxAttempts: 5,
+            onTimeout: false
+          }
+        })
+      )
     wallet.push(
     {
-        name : chain["name"],
-        id: chain["id"],
-        provider : new ethers.providers.WebSocketProvider(chain["rpcUrls"][1]),
-        signer : new ethers.Wallet(private_key, new ethers.providers.WebSocketProvider(chain["rpcUrls"][1])),
-        contractAddress: chain["bridgeAddress"],
+        name : chain.name,
+        id: chain.id,
+        provider : provider,
+        signer : new ethers.Wallet(private_key, provider),
+        contractAddress: chain.bridgeAddress,
         contract: null,
         contractW: null
     })
@@ -31,11 +48,11 @@ wallet.forEach(chain => {
         //console.log(bridger, amount, chainWanted, token, bridgerLockId, lpLockId);
         let chainB = {};
         wallet.forEach(chain => {
-            if (chain["id"] == parseInt(chainWanted)){
+            if (chain.id == parseInt(chainWanted)){
                 chainB = chain;
             } 
         });
-        tx = chainB.contractW.authBridger(amount, bridger, chain["id"], lpLockId, bridgerLockId, Date.now() + 10000);
+        tx = chainB.contractW.authBridger(amount, bridger, chain.id, lpLockId, bridgerLockId, Date.now() + 1000000);
         tx.then(function(tx) {
             console.log(tx.hash);
         });
@@ -45,7 +62,7 @@ wallet.forEach(chain => {
         //console.log(lpLockId, signature, chainId, bridgerLockId, authIndex);
         let chainB = {};
         wallet.forEach(chain => {
-            if (chain["id"] == parseInt(chainId)){
+            if (chain.id == parseInt(chainId)){
                 chainB = chain;
             } 
         });
@@ -55,4 +72,5 @@ wallet.forEach(chain => {
         });   
     })
 });
+console.log('bot running...')
 
