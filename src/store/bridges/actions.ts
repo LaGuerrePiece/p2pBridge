@@ -23,15 +23,29 @@ export async function connectContract(
   const web3Store = useWeb3Store();
 
   for (const chainId in CONFIG["chains"]) {
-    this.$state[chainId] = {
-      contract: new (web3Store.provider!.chainId == Number(chainId)
-        ? web3Store.web3!
-        : new Web3(CONFIG["chains"][chainId].rpcUrls[0])
-      ).eth.Contract(
-        CONFIG.abi.BridgeAbi,
-        CONFIG["chains"][chainId].bridgeAddress,
+    const web3 = web3Store.provider!.chainId == Number(chainId)
+               ? web3Store.web3!
+               : new Web3(CONFIG["chains"][chainId].rpcUrls[0])
+    
+    const bridgeContract = new web3.eth.Contract(
+      CONFIG.abi.BridgeAbi,
+      CONFIG["chains"][chainId].bridgeAddress,
+      { from: web3Store.address }
+    )
+
+    let tokenContract: any = {}
+
+    for (const tokenName in CONFIG["chains"][chainId].tokensAddress) {
+      tokenContract[tokenName] = new web3.eth.Contract(
+        CONFIG.abi.ERC20Abi,
+        CONFIG["chains"][chainId].tokensAddress[tokenName],
         { from: web3Store.address }
-      ),
+      )
+    }
+    
+    this.$state[chainId] = {
+      contract: bridgeContract,
+      tokenContracts: tokenContract
     };
     promises.push(this[BridgesActions.PopulateMyRequests](Number(chainId)));
   }

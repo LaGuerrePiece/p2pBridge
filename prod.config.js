@@ -85,7 +85,6 @@ const chains = {
     },
   },
 };
-// };
 
 const abi = {
   BridgeAbi: JSON.parse(fs.readFileSync("./build/contracts/BridgeDex.json"))[

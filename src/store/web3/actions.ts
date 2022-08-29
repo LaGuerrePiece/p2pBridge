@@ -3,6 +3,8 @@ import Web3Modal from "web3modal";
 import Web3 from "web3";
 import { BridgesActions } from "../../types/bridges";
 import { useBridgesStore } from "../bridges";
+import { ethers } from "ethers";
+import { chainDetails } from "../../composition/constants"
 
 /**
  * @notice Function used to check if the user has granted the access
@@ -11,8 +13,10 @@ import { useBridgesStore } from "../bridges";
  export async function checkConnection(
   this: ReturnType<typeof useWeb3Store>
 ): Promise<void> {
+  const web3Store = useWeb3Store()
+  if (!web3Store.provider) return
   try {
-    const accounts: Truffle.Accounts = await (window.ethereum as any).request({
+    const accounts: Truffle.Accounts = await web3Store.provider.request({
       method: "eth_accounts",
     });
 
@@ -29,6 +33,15 @@ export async function connect(
   this: ReturnType<typeof useWeb3Store>
 ): Promise<void> {
 
+  if (this.connected) {
+    this.connected = false
+    this.provider = null;
+    this.web3 = null
+    this.chainId = 0;
+    this.ens = null;
+    return
+  }
+
   const web3Modal = new Web3Modal({
     network: "mainnet",
     cacheProvider: true,
@@ -43,19 +56,24 @@ export async function connect(
   this.address = (await this.web3.eth.getAccounts())[0];
   this.chainId = await this.web3.eth.getChainId();
 
-  if (!(this.chainId in this.config.chains)) {
-    await switchChain(1337); //On unknown chain switch to ganache for user safety
-  }
+  if (this.chainId === 1) this.ens = await getEns(this.address)
+
+  // if (!(this.chainId in chainDetails)) {
+  //   await switchChain(1337); //On unknown chain switch to ganache for user safety
+  // }
 
   const bridgesStore = useBridgesStore();
   await bridgesStore[BridgesActions.ConnectContract]();
 
-  provider.on("accountsChanged", (accounts: string[]) => {
+  provider.on("accountsChanged", async (accounts: string[]) => {
     this.address = accounts[0];
+    this.ens = null
+    if (this.chainId === 1) this.ens = await getEns(this.address)
   });
 
-  provider.on("chainChanged", (chainId: string) => {
+  provider.on("chainChanged", async (chainId: string) => {
     this.chainId = parseInt(chainId);
+    if (this.chainId === 1) this.ens = await getEns(this.address)
   });
   this.connected = true;
 }
@@ -68,8 +86,8 @@ async function addNewChain(chainId: number): Promise<void> {
     params: [
       {
         chainId: `0x${chainId.toString(16)}`,
-        chainName: web3Store.config.chains[chainId].chainName,
-        rpcUrls: [web3Store.config.chains[chainId].rpcUrls[0]],
+        chainName: chainDetails[chainId].name,
+        rpcUrls: [chainDetails[chainId].rpcUrls[0]],
       },
     ],
   });
@@ -92,8 +110,15 @@ export async function switchChain(chainId: number): Promise<void> {
   const web3Store = useWeb3Store();
   try {
     await _switchChain(chainId);
+    web3Store.chainId = chainId
   } catch {
     await addNewChain(chainId);
     await _switchChain(chainId);
   }
+}
+
+async function getEns(address: string) {
+  const web3Store = useWeb3Store();
+  const provider = new ethers.providers.Web3Provider(web3Store.provider!)
+  return await provider.lookupAddress(address)
 }

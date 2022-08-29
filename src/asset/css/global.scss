@@ -6,6 +6,32 @@
 @import "./animations/animations.scss";
 //@import "./variables/variables.scss";
 
+
+.ptit-btn {
+    height: 1rem !important;
+    min-height: 1rem !important;
+}
+
+// remove input arrows
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+input[type=number] {
+  -moz-appearance: textfield !important;
+}
+
+select,
+textarea,
+input {
+    -webkit-appearance: none !important;
+       -moz-appearance: none !important;
+            appearance: none !important;
+}
+
+
+
 *::-webkit-scrollbar {
     display: none;
 }

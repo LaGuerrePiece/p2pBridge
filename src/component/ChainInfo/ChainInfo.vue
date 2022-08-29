@@ -1,91 +1,77 @@
 <template>
   <div
     @click="expandSpan = !expandSpan"
-    class="flex items-center rounded-full bg-slate-400 shadow-md shadow-white/20 p-0.5 lg:p-2 cursor-pointer hover:shadow-xl hover:shadow-black transition-all active:shadow-none bg-gradient-to-r from-transparent via-transparent to-black/30 mr-3"
+    class="flex h-10 hover:bg-secondary items-center p-0.5 lg:p-2 border border-primary rounded-lg cursor-pointer"
     v-if="web3Store.chainId"
   >
-    <div class="rounded-full w-5">
+    <div class="rounded-full w-7 pl-1 hidden sm:flex">
       <img
         :src="
-          web3Store.chainId in web3Store.config.chains
-            ? icons[web3Store.config.chains[web3Store.chainId].chainName]
-            : icons.Unknown
+          web3Store.chainId in chainDetails
+            ? chainDetails[web3Store.chainId].icon
+            : unknownChainIcon
         "
         alt=""
       />
     </div>
     <div
-      class="px-3 flex grow justify-center font-mono font-bold text-xs text-white w-28"
+      class="px-3 flex grow justify-center font-mono font-bold text-xs text-white min-w-16"
     >
       {{
-        web3Store.chainId in web3Store.config.chains
-          ? web3Store.config.chains[web3Store.chainId].chainName
+        web3Store.chainId in chainDetails
+          ? chainDetails[web3Store.chainId].name
           : "Unknown chain"
       }}
     </div>
   </div>
   <template
-    v-for="(chain, key, index) in removeCurrentChainFromList(
-      web3Store.config.chains
+    v-for="(chain, key, index) in removeDisabledChainsFromList(
+      chainDetails
     )"
     :key="index"
   >
     <div
-      class="absolute w-36 flex items-center grow rounded-full bg-slate-400 shadow-md shadow-white/20 p-0.5 lg:p-2 cursor-pointer hover:shadow-xl hover:shadow-black transition-all active:shadow-none bg-gradient-to-r from-transparent via-transparent to-black/30 mr-3"
+      class="absolute h-7 flex items-center border border-primary cursor-pointer bg-neutral"
       :class="expandSpan ? 'opacity-1 z-20' : 'opacity-0 top-0 z-10'"
-      :style="{ top: expandSpan ? (index + 1) * 45 + 30 + 'px' : '' }"
+      :style="{ top: expandSpan ? (index + 1) * 28 + 28 + 'px' : '' }"
       @click.capture="
         web3Store[Web3Actions.SwitchChain](Number(key));
         expandSpan = !expandSpan;
       "
     >
-      <div class="rounded-full w-5">
-        <img :src="icons[chain.chainName]" alt="" class="w-5" />
+      <div class="rounded-full w-7 pl-1">
+        <img :src="chain.icon" alt="" />
       </div>
       <div
-        class="px-3 flex grow justify-center font-mono font-bold text-xs text-white"
+        class="px-3 flex grow justify-center font-mono text-xs"
       >
-        {{ chain.chainName }}
+        {{ chain.name }}
       </div>
     </div>
   </template>
 </template>
 <script setup lang="ts">
-import {
-  ethereum,
-  avalanche,
-  bsc,
-  polygon,
-  ganache,
-  unknown,
-  cronos,
-  gnosis,
-} from "../../asset/images/images";
+import { unknownChainIcon } from "../../asset/images/images";
 import { useWeb3Store } from "../../store/web3";
 import { Web3Actions, Web3State } from "../../types/web3";
+import { ChainDetails } from "../../types/constants";
 import { ref } from "vue";
+import { chainDetails } from "../../composition/constants"
 
-const icons: any = {
-  Ethereum: ethereum,
-  Avalanche: avalanche,
-  BSC: bsc,
-  Polygon: polygon,
-  Ganache: ganache,
-  Unknown: unknown,
-  "Cronos Test": cronos,
-  "Gnosis Test": gnosis,
-};
 const web3Store = useWeb3Store();
-console.log("web3Store.connected", web3Store.connected);
 
 const expandSpan = ref<Boolean>(false);
 
-function removeCurrentChainFromList(
-  supportedList: Web3State["config"]["chains"]
+console.log("web3Store.chainId", web3Store.chainId, typeof web3Store.chainId)
+
+function removeDisabledChainsFromList(
+  chainDetails: ChainDetails
 ) {
-  if (!web3Store.chainId) return supportedList;
-  let newList = Object.assign({}, supportedList);
-  delete newList[web3Store.chainId];
+  let newList = Object.assign({}, chainDetails);
+  for (const chainId in newList) {
+    if (!newList[chainId].enable) delete newList[chainId]
+  }
+  if (web3Store.chainId) delete newList[web3Store.chainId];
   return newList;
 }
 </script>

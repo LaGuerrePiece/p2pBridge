@@ -1,10 +1,9 @@
 <template>
   <div
     class="fixed inset-0 backdrop-blur-lg flex"
-    @click="$emit('close')"
   >
     <div
-      class="absolute lg:top-36 top-20 left-1/2 lg:w-2/3 w-5/6 max-w-5xl lg:max-h-[67%] max-h-[75%] bg-neutral-800 -translate-x-1/2 p-4 rounded-xl shadow-lg shadow-black/50 overflow-y-scroll"
+      class="absolute top-20 left-1/2 w-[28rem] max-w-[95%] max-h-[75%] bg-neutral border-2 border-primary text-white -translate-x-1/2 p-4 rounded-xl overflow-y-scroll"
       @click.stop=""
     >
       <div

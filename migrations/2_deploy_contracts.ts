@@ -1,4 +1,5 @@
 import BigNumber from "bignumber.js";
+// import * as fs from "fs";
 
 module.exports = (artifacts: Truffle.Artifacts, web3: Web3) => {
   return function (
@@ -10,12 +11,23 @@ module.exports = (artifacts: Truffle.Artifacts, web3: Web3) => {
 
     (deployer as any).then(async () => {
       const BridgeDex = artifacts.require("BridgeDex");
-      const DummyERC20 = artifacts.require("DummyERC20");
+      const NuclearToken = artifacts.require("NuclearToken");
 
-      await deployer.deploy(BridgeDex, { from: accounts[5] });
-      await deployer.deploy(DummyERC20);
+      await deployer.deploy(BridgeDex);
+      await deployer.deploy(NuclearToken);
+
       console.log("Deployed Bridge contract : ", BridgeDex.address);
-      console.log("Deployed ERC20 contract : ", DummyERC20.address);
+      console.log("Deployed ERC20 contract : ", NuclearToken.address);
+
+      let bridgeContract = await BridgeDex.deployed();
+      let tokenContract = await NuclearToken.deployed();
+
+      //create first locks :
+      await tokenContract.approve(bridgeContract.address, "1000000000000000000000000");
+      console.log("Approved bridge to spend our tokens");
+
+      await bridgeContract.lock("1000000000000000000000000", tokenContract.address, [42, 4], 300);
+      console.log("Created LP lock");
 
       // const config = require("../dev.config.js");
       // try {

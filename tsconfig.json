@@ -2,6 +2,7 @@
   "compilerOptions": {
     "outDir": "./dist/",
     "experimentalDecorators": true,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "module": "esnext",
     "target": "ESNext",
@@ -20,10 +21,10 @@
   ]
   },
   "exclude": [
-  "node_modules",
-  "build",
-  "cache",
-  "artifacts"
+    "node_modules",
+    "build",
+    "cache",
+    "artifacts"
   ],
   "include": [
     "./jest-setup.ts",
