@@ -168,10 +168,19 @@ import erc20Abi from "../../abis/erc20Abi.json"
 import { arrowupdown } from "../../asset/images/images";
 import { ethers } from "ethers";
 import { useBridgesStore } from "../../store/bridges";
+import { useRequestStore } from "../../store/requests";
 import { notify } from "@kyvg/vue3-notification";
 
 const web3Store = useWeb3Store();
 const bridgeStore = useBridgesStore();
+const requestsStore = useRequestStore();
+
+const providerModalOpen = ref<boolean>(false);
+const bridgingModalOpen = ref<boolean>(false);
+
+const autoMode= ref<boolean>(true);
+
+const balance = ref<number>(0);
 
 const request = ref<RequestInfo>({
   fromNetwork: "42",
@@ -183,12 +192,6 @@ const request = ref<RequestInfo>({
   amountReceivedEst: null,
 })
 
-const providerModalOpen = ref<boolean>(false);
-const bridgingModalOpen = ref<boolean>(false);
-
-const autoMode= ref<boolean>(true);
-
-const balance = ref<number>(0);
 
 const locks = ref<{[chain: string]: any}>({
   "4" : {},
@@ -214,12 +217,7 @@ watch([() => request.value.amount,
 
 async function getUserBalance(chainid: string, tokenName: string) {
   if (!web3Store.connected) return
-    const bridgeStore = useBridgesStore()
-    const erc20Contract = new bridgeStore[chainid].web3.eth.Contract(
-      erc20Abi as AbiItem[],
-      chainDetails[chainid].token[tokenName].address,
-      { from: web3Store.address }) as unknown as Contractify<ERC20Instance, AllEvents>;
-    
+    const erc20Contract = bridgeStore[Number(chainid)].tokenContracts[tokenName]
     const rawBalance = (await erc20Contract.methods.balanceOf(web3Store.address).call()).toString()
     const decimals = Number(await erc20Contract.methods.decimals().call())
     balance.value = Number(ethers.utils.formatUnits(rawBalance, decimals))
@@ -242,14 +240,17 @@ function openBridgingModal() {
 
 async function computeBestLp() {
   if (!web3Store.connected || !request.value.amount) {
-    console.log('return cause not connected or no amount');
+    console.log('return cuz not connected or no amount');
     request.value.lp = null
     request.value.lpLockId = null
     request.value.amountReceivedEst = null
     return
   }
+
   // get providers that accept this trade
 
+  requestsStore[request.value.toNetwork]
+  
   const decimals = Number(await bridgeStore[request.value.toNetwork].token[request.value.token].methods.decimals().call())
 
   const lock = locks.value[request.value.toNetwork]

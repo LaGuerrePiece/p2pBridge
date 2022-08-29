@@ -6,6 +6,7 @@ import { TicketActions } from "../../types/tickets";
 import { RequestActions, Request } from "../../types/requests";
 import { useTicketStore } from "../tickets";
 import { useRequestStore } from "../requests";
+import { useLockStore } from "../locks";
 import { useWeb3Store } from "../web3";
 import { bnToNumber } from "../../composition/functions";
 
@@ -55,7 +56,7 @@ export async function connectContract(
     promises.splice(0, promises.length);
   } catch (e: any) {
     console.log(
-      "An error occurend during the contract connection for requests",
+      "An error occured during the contract connection for requests",
       e
     );
     return;
@@ -79,9 +80,24 @@ export async function connectContract(
 
   try {
     await Promise.all(promises);
+    promises.splice(0, promises.length);
   } catch (e: any) {
     console.log(
-      "An error occurend during the contract connection for tickets",
+      "An error occured during the contract connection for tickets",
+      e
+    );
+    return;
+  }
+
+  for (const chainId in CONFIG["chains"]) {
+    promises.push(this[BridgesActions.PopulateLocks](chainId))
+  }
+
+  try {
+    await Promise.all(promises);
+  } catch (e: any) {
+    console.log(
+      "An error occured during the contract connection for locks",
       e
     );
     return;
@@ -137,4 +153,23 @@ export async function populateMyTickets(
     if (amount == 0 || ticket.signature != "0x") return;
     ticketStore[TicketActions.AddTicket](chainId, ticket);
   });
+}
+
+export async function populateLocks(
+  this: ReturnType<typeof useBridgesStore>,
+  chainId: number
+): Promise<void> {
+  const web3Store = useWeb3Store();
+  const lockStore = useLockStore();
+
+  const contract = this.$state[chainId].contract;
+
+  for (const tokenName in CONFIG["chains"][chainId].tokensAddress) {
+    const tokenAddress = CONFIG["chains"][chainId].tokensAddress[tokenName]
+    const locks: Awaited<ReturnType<BridgeDexInstance["getLocksForToken"]>> =
+    await contract.methods.getLocksForToken(tokenAddress).call();
+
+    // lockStore[LockActions.AddLock](chainId, tokenName, lock);
+    
+  }
 }

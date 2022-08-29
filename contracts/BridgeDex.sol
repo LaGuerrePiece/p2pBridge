@@ -464,7 +464,7 @@ contract BridgeDex is Ownable {
     }
 
     /**
-     * @notice - Used to get acces to all the address' locks at once
+     * @notice - Used to get access to all the address' locks at once
      * @param _owner - The address to retrieve the locks from
      * @return uint256[] - An array containing the address active lock ids
      */

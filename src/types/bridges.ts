@@ -15,5 +15,6 @@ export type BridgesState = {
 export const BridgesActions = {
   ConnectContract: "ConnectContract",
   PopulateMyRequests: "PopulateMyRequests",
-  PopulateMyTickets: "PopulateMyTickets"
+  PopulateMyTickets: "PopulateMyTickets",
+  PopulateLocks: "PopulateLocks"
 } as const;
