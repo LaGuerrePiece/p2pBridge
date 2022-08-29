@@ -209,9 +209,12 @@ async function withdraw() {
     loading.value = true
 
     const bridgerLockId = await requestContracts.value.originBridge!.methods.bridgerNonce().call()
+    console.log("awaited bridger lock id")
+
     const lpLockId = "1" // In demo, lpLockId is one
 
     await web3Store[Web3Actions.SwitchChain](Number(props.request.toNetwork));
+    console.log("awaited chain change")
 
     const auth = await requestContracts.value.destinationBridge!.methods.getAuthsFromLpLockId(lpLockId).call()
     console.log("auth", auth)
