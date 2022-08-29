@@ -3,8 +3,8 @@ module.exports = [
       id: 4,
       name: "Rinkeby",
       rpcUrls: [
-        "https://rinkeby.infura.io/v3/49f373294ecd4358abd6a39d55521529",
-        "wss://rinkeby.infura.io/ws/v3/49f373294ecd4358abd6a39d55521529",
+        "https://rinkeby.infura.io/v3/a035e52afe954afe9c45e781080cde98",
+        "wss://rinkeby.infura.io/ws/v3/a035e52afe954afe9c45e781080cde98",
       ],
       bridgeAddress: "0x93f3C95bE7715E4df9790d861dC86D7550C35b07",
       token: {
@@ -17,8 +17,8 @@ module.exports = [
       id: 42,
       name: "Kovan",
       rpcUrls: [
-        "https://kovan.infura.io/v3/49f373294ecd4358abd6a39d55521529",
-        "wss://kovan.infura.io/ws/v3/49f373294ecd4358abd6a39d55521529",
+        "https://kovan.infura.io/v3/a035e52afe954afe9c45e781080cde98",
+        "wss://kovan.infura.io/ws/v3/a035e52afe954afe9c45e781080cde98",
       ],
       bridgeAddress: "0xA854C7f5F07c4fF61288eBB37c4d054e47595ec2",
       token: {
