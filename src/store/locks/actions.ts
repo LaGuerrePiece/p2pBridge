@@ -12,19 +12,20 @@ import { useBridgesStore } from "../bridges";
  */
 export function addLock(
   this: ReturnType<typeof useLockStore>,
-  chainId: number,
-  token: string,
   lock: Awaited<ReturnType<BridgeDexInstance["getMyLocks"]>>[0],
+  tokenName: string,
+  chainId: number,
 ): void {
-  if (!(chainId in this.$state)) this.$state[chainId] = [];
-  this.$state[chainId].push({
+  if (!(chainId in this.$state)) this.$state[chainId] = {};
+  if (!(tokenName in this.$state[chainId])) this.$state[chainId][tokenName] = [];
+
+  this.$state[chainId][tokenName].push({
     amount: bnToNumber(lock.amount, true),
-    chainAId: bnToNumber(lock.chainAId),
-    deadline: bnToNumber(lock.deadline),
-    lockId: bnToNumber(lock.lockId),
-    provider: lock.provider,
-    lockId: bnToNumber(lock.provider),
-    sender: lock.sender,
-    tokenBContract: lock.tokenBContract,
+    accepted: bnToNumber(lock.accepted),
+    nonce: bnToNumber(lock.nonce),
+    acceptedChains: lock.acceptedChains.map(bn => bnToNumber(bn)),
+    token: lock.token,
+    owner: lock.owner,
+    fees: bnToNumber(lock.fees),
   });
 }

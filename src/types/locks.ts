@@ -2,11 +2,10 @@ export type Lock = {
     amount: number;
     accepted: number,
     nonce: number;
-    lockId: number;
     acceptedChains: number[];
     token: string;
     owner: string;
-    fees: string;
+    fees: number;
 };
 
 // chainId => tokenContrat => Lock[]
