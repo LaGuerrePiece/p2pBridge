@@ -216,7 +216,7 @@ async function withdraw() {
     await web3Store[Web3Actions.SwitchChain](Number(props.request.toNetwork));
     console.log("awaited chain change")
 
-    await new Promise(r => setTimeout(r, 5000));
+    await new Promise(r => setTimeout(r, 10));
     const auth = await requestContracts.value.destinationBridge!.methods.getAuthsFromLpLockId(lpLockId).call()
     console.log("auth", auth)
     const authIndex = auth.length - 1
