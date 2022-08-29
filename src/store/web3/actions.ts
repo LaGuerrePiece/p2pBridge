@@ -13,8 +13,10 @@ import { chainDetails } from "../../composition/constants"
  export async function checkConnection(
   this: ReturnType<typeof useWeb3Store>
 ): Promise<void> {
+  const web3Store = useWeb3Store()
+  if (!web3Store.provider) return
   try {
-    const accounts: Truffle.Accounts = await (window.ethereum as any).request({
+    const accounts: Truffle.Accounts = await web3Store.provider.request({
       method: "eth_accounts",
     });
 
@@ -116,6 +118,7 @@ export async function switchChain(chainId: number): Promise<void> {
 }
 
 async function getEns(address: string) {
-  const provider = new ethers.providers.Web3Provider(window.ethereum)
+  const web3Store = useWeb3Store();
+  const provider = new ethers.providers.Web3Provider(web3Store.provider!)
   return await provider.lookupAddress(address)
 }

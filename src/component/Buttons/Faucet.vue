@@ -41,7 +41,7 @@ async function faucet(){
   faucetContract.methods.faucet().send().on("receipt", async () => {
         try {
           // wasAdded is a boolean. Like any RPC method, an error may be thrown.
-          const wasAdded = await window.ethereum.request({
+          const wasAdded = await web3Store.provider!.request({
             method: 'wallet_watchAsset',
             params: {
               type: 'ERC20', 

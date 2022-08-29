@@ -19,9 +19,9 @@
       </div>
       <div class="flex flex-row">
         <div class="flex items-center text-xs pl-2 pr-3">
-          Easy mode
+          Auto mode
         </div>
-        <input type="checkbox" v-model="ezmode" class="toggle cursor-pointer" checked />
+        <input type="checkbox" v-model="ezmode" class="toggle cursor-pointer" checked/>
       </div>
     </div>
     
