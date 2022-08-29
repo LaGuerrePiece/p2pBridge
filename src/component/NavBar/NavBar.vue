@@ -6,6 +6,11 @@
     </div>
     <div class="flex flex-row py-1 px-1 text-3xl font-sans font-bold text-white items-center">
         <div class="shrink-0">
+            <div class="p-1 flex items-center mr-2">
+                <History />
+            </div>
+        </div>
+        <div class="shrink-0">
             <div class="p-1 flex items-center">
                 <Documentation />
             </div>
@@ -25,6 +30,7 @@
                 <Faucet />
             </div>
         </div>
+
     </div>
 </div>
 </template>
@@ -37,6 +43,7 @@ import Metamask from "../Metamask/Metamask.vue";
 import { useWeb3Store } from "../../store/web3";
 import { radioactive, bridge4 } from "../../asset/images/images";
 import Documentation from "../Buttons/Documentation.vue";
+import History from "../Buttons/History.vue";
 
 
 const web3Store = useWeb3Store();
