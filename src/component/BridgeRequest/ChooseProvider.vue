@@ -1,10 +1,10 @@
 <template>
   <div
-    class="flex flex-col font-mono text-white mt-8 gap-3"
+    class="btn flex flex-col font-mono text-white mt-8 gap-3"
   >
     <template v-for="lock in props.request.validLocks">
       <div
-        class="grid grid-cols-2 text-xs relative rounded-lg justify-items-center p-3 gap-y-1.5 bg-secondary cursor-pointer"
+        class="btn grid grid-cols-2 text-xs relative rounded-lg justify-items-center p-3 gap-y-1.5 bg-secondary cursor-pointer"
         @click="
         $emit('lockChosen', lock);
         $emit('close')"

@@ -143,6 +143,20 @@
       </transition>
     </teleport>
   </div>
+
+<!-- The history modal -->
+
+<input type="checkbox" id="history-modal" class="modal-toggle" />
+<div class="modal modal-bottom sm:modal-middle">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg">History</h3>
+    <p class="py-4">Your past bridges and locks</p>
+    <div class="modal-action">
+      <label for="history-modal" class="btn">Close</label>
+    </div>
+  </div>
+</div>
+
 </template>
 
 <script setup lang="ts">
