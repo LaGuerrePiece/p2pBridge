@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="mytheme">
   <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -8,7 +8,6 @@
     <style>
 
       body {
-        background-color: rgb(35, 35, 37);
         height: 100%;
         width: 100%;
         max-width: 100%;
@@ -68,17 +67,5 @@
         e.parentElement.removeChild(e);
       }
     });
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker
-          .register("/service-worker.js")
-          .then((registration) => {
-            console.log("SW registered: ", registration);
-          })
-          .catch((registrationError) => {
-            console.log("SW registration failed: ", registrationError);
-          });
-      });
-    }
   </script>
 </html>
