@@ -4,6 +4,7 @@ import { BridgeDexInstance } from "../../../types/truffle-contracts";
 import { BridgesActions } from "../../types/bridges";
 import { TicketActions } from "../../types/tickets";
 import { RequestActions, Request } from "../../types/requests";
+import { LockActions } from "../../types/locks";
 import { useTicketStore } from "../tickets";
 import { useRequestStore } from "../requests";
 import { useLockStore } from "../locks";
@@ -90,7 +91,7 @@ export async function connectContract(
   }
 
   for (const chainId in CONFIG["chains"]) {
-    promises.push(this[BridgesActions.PopulateLocks](chainId))
+    promises.push(this[BridgesActions.PopulateLocks](Number(chainId)))
   }
 
   try {
@@ -159,7 +160,6 @@ export async function populateLocks(
   this: ReturnType<typeof useBridgesStore>,
   chainId: number
 ): Promise<void> {
-  const web3Store = useWeb3Store();
   const lockStore = useLockStore();
 
   const contract = this.$state[chainId].contract;
@@ -167,9 +167,10 @@ export async function populateLocks(
   for (const tokenName in CONFIG["chains"][chainId].tokensAddress) {
     const tokenAddress = CONFIG["chains"][chainId].tokensAddress[tokenName]
     const locks: Awaited<ReturnType<BridgeDexInstance["getLocksForToken"]>> =
-    await contract.methods.getLocksForToken(tokenAddress).call();
+      await contract.methods.getLocksForToken(tokenAddress).call();
 
-    // lockStore[LockActions.AddLock](chainId, tokenName, lock);
-    
+    locks.forEach(lock => {
+      lockStore[LockActions.AddLock](lock, tokenName, chainId);
+    })
   }
 }

@@ -92,8 +92,8 @@
         <div class="text-[10px] text-gray-400">
           {{request.amount === null
           ? ""
-          : request.lp
-          ? `provider : ${trimAddress(request.lp)}`
+          : request.bestLock
+          ? `provider : ${trimAddress(request.bestLock.owner)}`
           : "No valid LP detected"}}
         </div>
       </div>
@@ -127,7 +127,6 @@
           <template #title>Bridging</template>
           <BridgingModal
             :request="request"
-            :locks="locks"
             @close="bridgingModalOpen = false">
           </BridgingModal>
         </ModalFrame>
@@ -137,8 +136,7 @@
           <template #title>Providers</template>
           <ChooseProvider
             :request="request"
-            :locks="locks"
-            @provider-chosen="(n: string) => request.lp = n"
+            @lock-chosen="(lock: Lock) => {request.bestLock = lock; request.amountReceivedEst = computeAmountReceived(lock)}"
             @close="providerModalOpen = false">
           </ChooseProvider>
         </ModalFrame>
@@ -152,10 +150,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { useWeb3Store } from "../../store/web3";
 import ModalFrame from "../Modals/ModalFrame.vue";
-import SelectChainSpan from "./SelectChainSpan.vue";
 import ChooseProvider from "./ChooseProvider.vue";
 import BridgingModal from "./BridgingModal.vue";
 import { Web3Actions } from "../../types/web3";
@@ -164,21 +161,22 @@ import HistoryModal from "../Modals/HistoryModal.vue";
 import BigNumber from "bignumber.js";
 import { trimAddress } from "../../composition/functions"
 import { chainDetails } from "../../composition/constants"
-import { AllEvents } from "../../../types/truffle-contracts/ERC20";
-import { ERC20Instance } from "../../../types/truffle-contracts";
-import { Contractify, Web3ify } from "../../types/commons";
-import { RequestInfo } from "../../types/bridgeRequests";
 
-import erc20Abi from "../../abis/erc20Abi.json"
+import { RequestInfo } from "../../types/bridgeRequests";
+import { Lock } from "../../types/locks";
+
 import { arrowupdown } from "../../asset/images/images";
 import { ethers } from "ethers";
 import { useBridgesStore } from "../../store/bridges";
 import { useRequestStore } from "../../store/requests";
+import { useLockStore } from "../../store/locks";
 import { notify } from "@kyvg/vue3-notification";
+
 
 const web3Store = useWeb3Store();
 const bridgeStore = useBridgesStore();
 const requestsStore = useRequestStore();
+const lockStore = useLockStore();
 
 const providerModalOpen = ref<boolean>(false);
 const bridgingModalOpen = ref<boolean>(false);
@@ -192,20 +190,10 @@ const request = ref<RequestInfo>({
   toNetwork: "4",
   token: "NUKE",
   amount: null,
-  lp: null,
-  lpLockId: null,
+  validLocks: null,
+  bestLock: null,
   amountReceivedEst: null,
 })
-
-
-const locks = ref<{[chain: string]: any}>({
-  "4" : {},
-  "42": {}
-})
-
-watch(() => web3Store.connected,
-  getLocks
-)
 
 watch([() => request.value.fromNetwork,
   () => request.value.token,
@@ -217,7 +205,7 @@ watch([() => request.value.amount,
   () => request.value.toNetwork,
   () => request.value.fromNetwork,
   () => request.value.token],
-  computeBestLp
+  updateBestLp
 )
 
 async function getUserBalance(chainid: string, tokenName: string) {
@@ -243,72 +231,58 @@ function openBridgingModal() {
   }
 }
 
-async function computeBestLp() {
+async function updateBestLp() {
   if (!web3Store.connected || !request.value.amount) {
     console.log('return cuz not connected or no amount');
-    request.value.lp = null
-    request.value.lpLockId = null
+    request.value.validLocks = null
+    request.value.bestLock = null
     request.value.amountReceivedEst = null
     return
   }
 
-  // get providers that accept this trade
+  const locks = await getValidLocks()
+  request.value.validLocks = locks
 
-  requestsStore[request.value.toNetwork]
-  
-  const decimals = Number(await bridgeStore[request.value.toNetwork].token[request.value.token].methods.decimals().call())
-
-  const lock = locks.value[request.value.toNetwork]
-  
-  if (Number(ethers.utils.formatUnits(lock[0], decimals)) < request.value.amount) {
+  if (locks.length === 0) {
     console.log('No valid LP detected')
-    request.value.lp = null
-    request.value.lpLockId = null
+    request.value.validLocks = null
+    request.value.bestLock = null
     request.value.amountReceivedEst = null
     return
   }
+  
+  const bestLock = computeBestLock(locks)
 
-  // const validLpLocks = locks.filter(lock => 
-  //   (Number(ethers.utils.formatUnits(lock.amount, decimals)) >= request.value.amount!)
-  //   // && (lock.acceptedChains.includes(request.value.fromNetwork))
-  //   //to-do check if auth amount in others is good
-  //   //to-do check if it is the same token 
-  // )
-  // to do : compute reputation
 
-  const estGasFees = 0
-  const estAmountReceived = request.value.amount - (request.value.amount * lock[4]/1e6) - estGasFees
-
-  request.value.amountReceivedEst = estAmountReceived
-  request.value.lp = lock[1]
-  request.value.lpLockId = 1
+  request.value.bestLock = bestLock
+  request.value.amountReceivedEst = computeAmountReceived(bestLock)
 }
 
-async function getLocks() {
+function computeAmountReceived(lock: Lock) {
+  const estGasFees = 0
+  const estimation = request.value.amount! - (request.value.amount! * lock.fees/1e6) - estGasFees
 
-  // In demo, the only lock available if the one run by our bot
-  locks.value["4"] = await bridgeStore["4"].bridge.methods.getLpLockFromId(1).call()
-  locks.value["42"] = await bridgeStore["42"].bridge.methods.getLpLockFromId(1).call()
+  return estimation
+}
 
-  // const lpNonce = Number(await bridgeStore[request.value.toNetwork].bridge.methods.lpNonce().call())
 
-  // console.log('lpNonce', lpNonce)
+function computeBestLock(locks: Lock[]) {
+  // to do : compute reputation
+  return locks[0]
+}
 
-  // const promises: Array<Promise<any>> = [];
-  // for (let i = 1; i <= lpNonce; i++) {
-  //   promises.push(bridgeStore[request.value.toNetwork].bridge.methods.getLpLockFromId(i).call());
-  // }
-  // const lpLocks = await Promise.all(promises);
+async function getValidLocks() {
+  // get providers that accept this trade
+  const toNetwork = request.value.toNetwork
+  const token = request.value.token
+  const fromNetwork = request.value.fromNetwork
+  const decimals = Number(await bridgeStore[Number(toNetwork)].tokenContracts[token].methods.decimals().call())
+  
+  let locks = lockStore[toNetwork][token]
+  locks = locks.filter(lock => lock.acceptedChains.includes(Number(fromNetwork)))
+  locks = locks.filter(lock => Number(ethers.utils.formatUnits(lock.amount - lock.accepted, decimals)) >= request.value.amount!)
 
-  // const authPromises: Array<Promise<any>> = [];
-  // for (let i = 1; i <= lpNonce; i++) {
-  //   authPromises.push(bridgeStore[request.value.toNetwork].bridge.methods.getAuthsFromLpLockId(i).call());
-  // }
-  // const auth = await Promise.all(authPromises);
-  // console.log('auths', auth)
-  // for (let i = 0; i < lpLocks.length; i++) {
-  //   lpLocks[i].auths = auth[i]
-  // }
+  return locks
 }
 
 function rotateNetworks() {

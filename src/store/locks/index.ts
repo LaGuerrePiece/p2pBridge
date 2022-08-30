@@ -10,9 +10,10 @@ export const useLockStore = defineStore("locks", {
   actions: {
     [LockActions.AddLock](
       lock: Awaited<ReturnType<BridgeDexInstance["getMyLocks"]>>[0],
+      tokenName: string,
       chainId: number
     ): void {
-      return addLock.bind(this)(lock, chainId);
+      return addLock.bind(this)(lock, tokenName, chainId);
     },
   },
 });

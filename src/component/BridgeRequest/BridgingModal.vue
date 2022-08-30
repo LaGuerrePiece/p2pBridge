@@ -95,33 +95,23 @@ import { AllEvents } from "../../../types/truffle-contracts/ERC20";
 import { BridgerAuth } from "../../../types/truffle-contracts/LpFirstHtlc";
 import {
   ERC20Instance,
-  LpFirstHtlcInstance
+  BridgeDexInstance
 } from "../../../types/truffle-contracts";
 import { Contractify } from "../../types/commons";
-import { RequestInfo, RequestContracts } from "../../types/bridgeRequests";
+import { RequestInfo } from "../../types/bridgeRequests";
 import { Web3Actions } from "../../types/web3";
 import { ethers } from "ethers"
 import { useBridgesStore } from "../../store/bridges";
-import { request } from "http";
-
 
 const web3Store = useWeb3Store();
+const BridgesStore = useBridgesStore()
 
 const props = defineProps<{
     request: RequestInfo,
-    locks: any
 }>();
+
 const step = ref<"approve" | "lock" | "wait" | "withdraw" | "final">("approve");
 const loading = ref<boolean>(false);
-
-const requestContracts = ref<RequestContracts>({
-    originERC20: null,
-    originBridge: null,
-    destinationERC20: null,
-    destinationBridge: null,
-})
-
-onMounted(initContracts)
 
 function initContracts() {
 
