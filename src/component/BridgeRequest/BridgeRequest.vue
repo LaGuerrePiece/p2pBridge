@@ -145,19 +145,9 @@
       </transition>
     </teleport>
   </div>
-
-<!-- The history modal -->
-
-<input type="checkbox" id="history-modal" class="modal-toggle" />
-<div class="modal modal-bottom sm:modal-middle">
-  <div class="modal-box">
-    <h3 class="font-bold text-lg">History</h3>
-    <p class="py-4">Your past bridges and locks</p>
-    <div class="modal-action">
-      <label for="history-modal" class="btn">Close</label>
-    </div>
-  </div>
-</div>
+  
+  <input type="checkbox" id="history-modal" class="modal-toggle" />
+  <HistoryModal/>
 
 </template>
 
@@ -169,6 +159,7 @@ import SelectChainSpan from "./SelectChainSpan.vue";
 import ChooseProvider from "./ChooseProvider.vue";
 import BridgingModal from "./BridgingModal.vue";
 import { Web3Actions } from "../../types/web3";
+import HistoryModal from "../Modals/HistoryModal.vue";
 
 import BigNumber from "bignumber.js";
 import { trimAddress } from "../../composition/functions"
