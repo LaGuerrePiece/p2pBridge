@@ -48,7 +48,7 @@
                 Loading
             </button>
             <button
-                v-else-if="step === 'approve' && web3Store.chainId.toString() !== props.request.fromNetwork"
+                v-else-if="web3Store.chainId.toString() !== props.request.fromNetwork && (step === 'approve' || step === 'lock')"
                 @click="switchChain"
                 class="btn btn-neutral normal-case border border-primary">
                 Switch chain
@@ -111,6 +111,7 @@ const props = defineProps<{
     request: RequestInfo,
     locks: any
 }>();
+
 const step = ref<"approve" | "lock" | "wait" | "withdraw" | "final">("approve");
 const loading = ref<boolean>(false);
 
@@ -145,8 +146,8 @@ function initContracts() {
         chainDetails[props.request.toNetwork].bridgeAddress,
         { from: web3Store.address }
         ) as unknown as Contractify<ERC20Instance, AllEvents>;
-    
-    checkApproval()
+
+    if (web3Store.chainId.toString() == props.request.fromNetwork) checkApproval()
 }
 
 function approve() {
@@ -268,9 +269,9 @@ async function checkApproval() {
 async function switchChain() {
     loading.value = true
     await web3Store[Web3Actions.SwitchChain](Number(props.request.fromNetwork))
-    console.log('test')
+    console.log('chain switched')
     loading.value = false
-    initContracts()
+    setTimeout(initContracts, 1000)
 }
 
 </script>

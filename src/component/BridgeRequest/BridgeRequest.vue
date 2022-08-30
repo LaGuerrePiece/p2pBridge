@@ -21,7 +21,7 @@
         <div class="flex items-center text-xs pl-2 pr-3">
           Auto mode
         </div>
-        <input type="checkbox" v-model="ezmode" class="toggle cursor-pointer" checked/>
+        <input type="checkbox" v-model="ezmode" class="toggle cursor-pointer" />
       </div>
     </div>
     
@@ -109,6 +109,12 @@
           Connect
       </button>
       <button
+        v-else-if="balance === 0"
+        @click="faucet"
+        class="btn normal-case btn-wide border border-primary">
+          Get some NUKE token to test !
+      </button>
+      <button
         v-else-if="ezmode"
         @click="openBridgingModal"
         class="btn normal-case btn-wide border border-primary">
@@ -163,6 +169,9 @@ import { AllEvents } from "../../../types/truffle-contracts/ERC20";
 import { ERC20Instance } from "../../../types/truffle-contracts";
 import { Contractify, Web3ify } from "../../types/commons";
 import { RequestInfo } from "../../types/bridgeRequests";
+import { NuclearTokenInstance } from "../../../types/truffle-contracts";
+import nuclearTokenAbi from "../../abis/nuclearTokenAbi.json"
+
 
 import erc20Abi from "../../abis/erc20Abi.json"
 import { arrowupdown } from "../../asset/images/images";
@@ -201,7 +210,11 @@ watch(() => web3Store.connected,
 
 watch([() => request.value.fromNetwork,
   () => request.value.token,
-  () => request.value.amount], () => {
+  () => request.value.amount,
+  () => web3Store.chainId,
+  () => web3Store.connected,
+  () => balance.value
+], () => {
   getUserBalance(request.value.fromNetwork, request.value.token)
 })
 
@@ -228,6 +241,7 @@ async function getUserBalance(chainid: string, tokenName: string) {
 }
 
 function openBridgingModal() {
+  console.log('web3Store.chainId', web3Store.chainId, 'request.value.fromNetwork', request.value.fromNetwork)
   if (request.value.amount == null) {
     // notify({
     //   title: "Important message",
@@ -313,6 +327,46 @@ function rotateNetworks() {
 
 function maximizeAmount() {
   request.value.amount = balance.value
+}
+
+// Dirty copié-collé de faucet.vue
+async function faucet() {
+    if (!web3Store.connected) return
+    if (web3Store.chainId.toString() !== request.value.fromNetwork) {
+      await web3Store[Web3Actions.SwitchChain](Number(request.value.fromNetwork))
+      await new Promise(r => setTimeout(r, 1000));
+    }
+
+
+    const faucetContract = new web3Store.web3!.eth.Contract(
+      nuclearTokenAbi as AbiItem[],
+      chainDetails[web3Store.chainId].token["NUKE"].address,
+      { from: web3Store.address }) as unknown as Contractify<NuclearTokenInstance, AllEvents>;
+  
+  faucetContract.methods.faucet().send().on("receipt", async () => {
+        getUserBalance(request.value.fromNetwork, request.value.token)
+        try {
+          // wasAdded is a boolean. Like any RPC method, an error may be thrown.
+          const wasAdded = await web3Store.provider!.request({
+            method: 'wallet_watchAsset',
+            params: {
+              type: 'ERC20', 
+              options: {
+                address: chainDetails[web3Store.chainId].token["NUKE"].address, 
+                symbol: "NUKE", 
+                decimals: 18, 
+              },
+            },
+          });
+          if (wasAdded) {
+            console.log('Thanks for your interest!');
+          } else {
+            console.log('Your loss!');
+          }
+        } catch (error) {
+          console.log(error);
+        }
+    });
 }
 
 </script>

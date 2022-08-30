@@ -14,13 +14,11 @@
 </template>
 <script setup lang="ts">
 
-import { onMounted, ref, watch } from "vue";
 import { useWeb3Store } from "../../store/web3";
 
 import { chainDetails } from "../../composition/constants"
 import { AllEvents } from "../../../types/truffle-contracts/ERC20";
 import { Contractify, Web3ify } from "../../types/commons";
-import { useBridgesStore } from "../../store/bridges";
 
 import nuclearTokenAbi from "../../abis/nuclearTokenAbi.json"
 import { NuclearTokenInstance } from "../../../types/truffle-contracts";
@@ -32,7 +30,6 @@ const web3Store = useWeb3Store();
 
 async function faucet(){
     if (!web3Store.connected) return
-    const bridgeStore = useBridgesStore()
     const faucetContract = new web3Store.web3!.eth.Contract(
       nuclearTokenAbi as AbiItem[],
       chainDetails[web3Store.chainId].token["NUKE"].address,
