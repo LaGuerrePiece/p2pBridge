@@ -85,6 +85,23 @@ module.exports = {
       skipDryRun: true, // Skip dry run before migrations? (default: false for public nets )
       disableConfirmationListener: true,
     },
+    Mumbai: {
+      provider: () =>
+        new PrivateKeyProvider(process.env.PRIVATE_KEY, `	https://rpc-mumbai.matic.today`),
+      network_id: 80001, // Ropsten's id
+      timeoutBlocks: 500, // # of blocks before a deployment times out  (minimum/default: 50)
+      skipDryRun: true, // Skip dry run before migrations? (default: false for public nets )
+      disableConfirmationListener: true,
+    },
+    Mumbai: {
+      provider: () =>
+        new PrivateKeyProvider(process.env.PRIVATE_KEY, `	https://rpc-mumbai.matic.today`),
+      network_id: 43113, // Ropsten's id
+      timeoutBlocks: 500, // # of blocks before a deployment times out  (minimum/default: 50)
+      skipDryRun: true, // Skip dry run before migrations? (default: false for public nets )
+      disableConfirmationListener: true,
+    },
+
     // Another network with more advanced options...
     // advanced: {
     // port: 8777,             // Custom port
